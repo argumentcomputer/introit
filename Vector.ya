@@ -1,0 +1,18 @@
+package Vector
+  with Nat
+where
+
+def Vector (A: Type) (k: Nat): Type =
+  ∀.self
+  (P : ∀ (k: Nat) (Vector A k) -> Type)
+  (nil : P zero (λ P n c => n))
+  (cons: ∀ (k: Nat) (x: A) (xs: Vector A k) -> P (succ k) (λ P n c => c k x xs))
+  -> P k self
+
+def nil (A: Type) : Vector A zero
+  = λ P n c => n
+
+def cons (A: Type) (k: Nat) (x: A) (xs: Vector A k): Vector A (succ k)
+  = λ P n c => c k x xs
+
+

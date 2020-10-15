@@ -1,0 +1,15 @@
+package Nat where
+
+def Nat : Type =
+  ∀.self
+  (0 P : ∀ Nat -> Type)
+  (& zero : (P (λ P z s => z)))
+  (& succ : ∀ (pred : Nat) -> (P (λ P z s => s pred)))
+  -> P self
+
+def zero: Nat = λ P z s => z
+
+def succ (x: Nat): Nat = λ P z s => s x
+
+def pred (x: Nat): Nat = x (λ _ => Nat) zero (λ p => p)
+

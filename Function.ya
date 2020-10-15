@@ -1,0 +1,24 @@
+package Function where
+
+def Function (A: Type) (B: ∀ A -> Type): Type = ∀ (x: A) -> B x
+
+def const (A B: Type) (x: A) (y: B): A = x
+
+def id (A: Type) (x: A): A = x
+
+def compose (A B C: Type) (g: ∀ B -> C) (f: ∀ A -> B): ∀ A -> C
+  = λ x => g (f x)
+
+def call (A: Type) (B: ∀ A -> Type) (x: A) (f: ∀ (a:A) -> B a) : B x
+  = f x
+
+def composeD
+  (A: Type)
+  (B: ∀ A -> Type)
+  (C: ∀ (a: A) (B a) -> Type)
+  (x: A)
+  (f: ∀ (a: A)  -> B a)
+  (g: ∀ (b : B x) -> C x (f x))
+  : C x (f x)
+  = g (f x)
+

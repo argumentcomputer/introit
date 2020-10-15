@@ -1,0 +1,16 @@
+package Pair where
+
+def Pair (A : Type) (B : Type) : Type
+  = ∀.self
+  (0 P : ∀ (Pair A B) -> Type)
+  (& new : ∀ (a : A) (b : B) -> (P (λ P n => n a b)))
+  -> P self
+
+def new (0 A : Type) (0 B : Type) (a : A) (b : B) : Pair A B
+  = λ P n => n a b
+
+def curry (A B C: Type) (f: ∀ (Pair A B) -> C) (x: A) (y: B): C
+  = f (new A B x y)
+
+def uncurry (A B C: Type) (f: ∀ A B -> C) (ab: Pair A B): C
+  = ab (\_ => C) (λ a b => f a b)

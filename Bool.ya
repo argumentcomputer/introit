@@ -1,0 +1,19 @@
+package Bool where
+
+def Bool : Type =
+  ∀.self
+  (0 P     : ∀ Bool -> Type)
+  (& true  : P (λ P t f => t))
+  (& false : P (λ P t f => f))
+  -> P self
+
+def true  : Bool = λ P t f => t
+def false : Bool = λ P t f => f
+
+def and (a b: Bool): Bool = a (\_ => Bool) (b (\_ => Bool) true false) false
+def or  (a b: Bool): Bool = a (\_ => Bool) true (b (\_ => Bool) true false)
+def not (a  : Bool): Bool = a (\_ => Bool) false true
+def xor (a b: Bool): Bool = a (\_ => Bool) (not b) b
+
+
+
