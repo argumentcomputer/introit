@@ -1,12 +1,12 @@
 package Equal where
 
 def Equal (A: Type) (a b: A) : Type =
-  ∀.self
+  @self ∀
   (0 P    : ∀ (b: A) (Equal A a b) -> Type)
-  (& refl : P a (λ P refl => refl))
+  (& refl : P a (data λ P refl => refl))
   -> P b self
 
-def refl (A: Type) (a : A) : Equal A a a = λ P refl => refl
+def refl (A: Type) (a : A) : Equal A a a = data λ P refl => refl
 
 def sym (A: Type) (a b: A) (e: Equal A a b) : Equal A b a
   = e (λ b e => Equal A b a) (refl A a)

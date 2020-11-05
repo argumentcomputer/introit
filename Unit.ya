@@ -1,9 +1,9 @@
 package Unit where
 
 def Unit : Type = 
-  ∀.self
+  @self ∀
   (0 P : ∀ Unit -> Type)
-  (& new : (P (λ P u => u)))
+  (& new : (P (data λ P u => u)))
   -> P self
 
-def new : Unit = λ P u => u
+def new : Unit = data λ P u => u

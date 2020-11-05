@@ -1,16 +1,16 @@
 package String where
 
 def String : Type
-  = ∀.self
+  = @self ∀
   ( P : ∀ String -> Type)
   ( be: P (λ P be b0 b1 => be) )
-  ( b0: ∀ (pred: String) -> P (λ P be b0 b1 => b0 pred))
-  ( b1: ∀ (pred: String) -> P (λ P be b0 b1 => b1 pred))
+  ( b0: ∀ (pred: String) -> P (data λ P be b0 b1 => b0 pred))
+  ( b1: ∀ (pred: String) -> P (data λ P be b0 b1 => b1 pred))
   -> P self
 
 def be : String = λ P be b0 b1 => be
-def b0 (pred : String) : String = λ P be b0 b1 => b0 pred
-def b1 (pred : String) : String = λ P be b0 b1 => b1 pred
+def b0 (pred : String) : String = data λ P be b0 b1 => b0 pred
+def b1 (pred : String) : String = data λ P be b0 b1 => b1 pred
 
 def concat (x y: String) : String =
   x (\_ => String) y (λ xs => b0 (concat xs y)) (λ xs => b1 (concat xs y))
