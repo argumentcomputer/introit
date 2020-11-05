@@ -1,6 +1,6 @@
 package Empty where
 
 def Empty : Type =
-  ∀.self
+  @self ∀
   (P : ∀ Empty -> Type) ->
   P self
