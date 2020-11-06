@@ -10,10 +10,10 @@ def Bool : Type =
 def true  : Bool = data λ P t f => t
 def false : Bool = data λ P t f => f
 
-def and (a b: Bool): Bool = a (\_ => Bool) (b (\_ => Bool) true false) false
-def or  (a b: Bool): Bool = a (\_ => Bool) true (b (\_ => Bool) true false)
-def not (a  : Bool): Bool = a (\_ => Bool) false true
-def xor (a b: Bool): Bool = a (\_ => Bool) (not b) b
+def and (a b: Bool): Bool = (case a) (\_ => Bool) ((case b) (\_ => Bool) true false) false
+def or  (a b: Bool): Bool = (case a) (\_ => Bool) true ((case b) (\_ => Bool) true false)
+def not (a  : Bool): Bool = (case a) (\_ => Bool) false true
+def xor (a b: Bool): Bool = (case a) (\_ => Bool) (not b) b
 
 
 
