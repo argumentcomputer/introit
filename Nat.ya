@@ -22,3 +22,13 @@ def mul (a b : Nat): Nat
   = (case a) (\x => Nat)
         zero
         (\pred => add b (mul pred b))
+
+def from_natural (n : #Natural): Nat
+  = (case n) (\x => Nat)
+        zero
+        (\pred => succ (from_natural pred))
+
+def to_natural (n : Nat): #Natural
+  = (case n) (\x => #Natural)
+        0
+        (\pred => #Natural_succ (to_natural pred))
