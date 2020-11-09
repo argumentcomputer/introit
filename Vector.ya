@@ -15,4 +15,7 @@ def nil (A: Type) : Vector A zero
 def cons (A: Type) (k: Nat) (x: A) (xs: Vector A k): Vector A (succ k)
   = data λ P n c => c k x xs
 
-
+def fill (A: Type) (n: Nat) (a: A): Vector A n
+  = (case n) (\ x => (Vector A x))
+       (nil A)
+       (\ pred => cons A pred a (fill A pred a))
