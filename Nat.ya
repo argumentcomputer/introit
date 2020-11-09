@@ -17,3 +17,8 @@ def add (a b: Nat): Nat
   = (case a) (\x => Nat)
         b
         (\pred => succ (add pred b))
+
+def mul (a b : Nat): Nat
+  = (case a) (\x => Nat)
+        zero
+        (\pred => add b (mul pred b))
