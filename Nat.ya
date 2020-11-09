@@ -13,3 +13,7 @@ def succ (x: Nat): Nat = data λ P z s => s x
 
 def pred (x: Nat): Nat = (case x) (λ _ => Nat) zero (λ p => p)
 
+def add (a b: Nat): Nat
+  = (case a) (\x => Nat)
+        b
+        (\pred => succ (add pred b))
