@@ -9,13 +9,15 @@ where
 def Matrix (A: Type) (rows: Nat) (cols: Nat): Type =
   @self ∀
   (P : ∀ (rows: Nat) -> ∀ (cols: Nat) -> ∀ (Matrix A rows cols) -> Type)
-  (new: ∀ (rows: Nat) -> ∀  (cols: Nat) -> ∀  (vec: (Vector (Vector A cols) rows)) -> P rows cols (data λ P n => n rows cols vec))
+  (new: ∀ (rows: Nat) -> ∀ (cols: Nat) -> ∀ (vec: (Vector (Vector A cols) rows)) -> P rows cols (data λ P n => n rows cols vec))
   -> P rows cols self
 
 def new (A: Type) (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)): Matrix A rows cols
   = data λ P n => n rows cols vec
 
 def fill (A: Type) (a: A) (rows: Nat) (cols : Nat): Matrix A rows cols =
-    letrec row: Vector A cols = Vector.fill A cols a;
-    letrec rows_vec : Vector (Vector A cols) rows = Vector.fill A rows row;
-    new A rows cols rows_vec
+    new A rows cols (Vector.fill (Vector A cols) rows (Vector.fill A cols a))
+
+def getRows (A: Type) (rows: Nat) (cols: Nat) (matrix: Matrix A rows cols): Vector (Vector A cols) rows
+  = (case matrix) (\r c m => Vector (Vector A c) r)
+        (\r c vec => vec)
