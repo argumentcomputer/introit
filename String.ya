@@ -3,26 +3,26 @@ package String where
 def String : Type
   = @self ∀
   ( P : ∀ String -> Type)
-  ( be: P (λ P be b0 b1 => be) )
+  ( be: P (data λ P be b0 b1 => be) )
   ( b0: ∀ (pred: String) -> P (data λ P be b0 b1 => b0 pred))
   ( b1: ∀ (pred: String) -> P (data λ P be b0 b1 => b1 pred))
   -> P self
 
-def be : String = λ P be b0 b1 => be
+def be : String = data λ P be b0 b1 => be
 def b0 (pred : String) : String = data λ P be b0 b1 => b0 pred
 def b1 (pred : String) : String = data λ P be b0 b1 => b1 pred
 
 def concat (x y: String) : String =
-  x (\_ => String) y (λ xs => b0 (concat xs y)) (λ xs => b1 (concat xs y))
+  (case x) (\_ => String) y (λ xs => b0 (concat xs y)) (λ xs => b1 (concat xs y))
 
 def inc (a: String) : String
-  = a (\_ => String) (b1 be) (λ xs => b1 xs) (λ xs => b0 (inc xs))
+  = (case a) (\_ => String) (b1 be) (λ xs => b1 xs) (λ xs => b0 (inc xs))
 
 def add (x y: String) : String =
-  y (\_ => String) x
-    (λ ys => x (\_ => String) y
+  (case y) (\_ => String) x
+    (λ ys => (case x) (\_ => String) y
       (λ xs => b0 (add xs ys))
       (λ xs => b1 (add xs ys)))
-    (λ ys => x (\_ => String) y
+    (λ ys => (case x) (\_ => String) y
       (λ xs => b1 (add xs ys))
       (λ xs => b0 (add (inc xs) ys)))

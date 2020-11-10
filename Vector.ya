@@ -1,5 +1,10 @@
 package Vector
-  with Nat
+  with Nat (Nat, zero, succ)
+  with Nat as Nat
+  with Unit (Unit)
+  with Unit as Unit
+  with Pair (Pair)
+  with Pair as Pair
 where
 
 def Vector (A: Type) (k: Nat): Type =
@@ -19,3 +24,17 @@ def fill (A: Type) (n: Nat) (a: A): Vector A n
   = (case n) (\ x => (Vector A x))
        (nil A)
        (\ pred => cons A pred a (fill A pred a))
+
+def extract (size: Nat) (A: Type) (xs: Vector A (succ size)): Pair A (Vector A size)
+  = (case xs)
+      (\k _ => (case k) (\_ => Type) Unit (\pred => Pair A (Vector A pred)))
+      Unit.new
+      (\k y ys => Pair.new A (Vector A k) y ys)
+
+def add (size : Nat) (as bs: Vector Nat size): Vector Nat size
+  = (case as) (\k _ => forall (Vector Nat k) -> Vector Nat k)
+      (\bs => bs)
+      (\k a as bs => (case (extract k Nat bs))
+                       (\_ => Vector Nat (Nat.succ k))
+                       (\b bs => cons Nat k (Nat.add a b) (add k as bs)))
+      bs

@@ -19,5 +19,5 @@ def bind (A : Type) (B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): Maybe B
         (none B)
         fun
 
-def maybeMonad : Monad (Maybe)
+def monad : Monad (Maybe)
   = Monad.new Maybe bind just
