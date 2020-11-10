@@ -8,8 +8,8 @@ where
 
 def Matrix (A: Type) (rows: Nat) (cols: Nat): Type =
   @self ∀
-  (P : ∀ (rows: Nat) -> ∀ (cols: Nat) -> ∀ (Matrix A rows cols) -> Type)
-  (new: ∀ (rows: Nat) -> ∀ (cols: Nat) -> ∀ (vec: (Vector (Vector A cols) rows)) -> P rows cols (data λ P n => n rows cols vec))
+  (P : ∀ (rows: Nat) (cols: Nat) (Matrix A rows cols) -> Type)
+  (new: ∀ (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)) -> P rows cols (data λ P n => n rows cols vec))
   -> P rows cols self
 
 def new (A: Type) (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)): Matrix A rows cols
