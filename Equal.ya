@@ -9,13 +9,13 @@ def Equal (A: Type) (a b: A) : Type =
 def refl (A: Type) (a : A) : Equal A a a = data λ P refl => refl
 
 def sym (A: Type) (a b: A) (e: Equal A a b) : Equal A b a
-  = e (λ b e => Equal A b a) (refl A a)
+  = (case e) (λ b e => Equal A b a) (refl A a)
 
 def trans (A: Type) (a b c: A) (ab: Equal A a b) (bc: Equal A b c): Equal A a c
-  = bc (λ b' _ => Equal A a b') ab
+  = (case bc) (λ b' _ => Equal A a b') ab
 
 def cong (A B: Type) (a b: A) (f: ∀ A -> B) (e: Equal A a b): Equal B (f a) (f b)
-  = e (λ b' _ => Equal B (f a) (f b')) (refl B (f a))
+  = (case e) (λ b' _ => Equal B (f a) (f b')) (refl B (f a))
 
 def cast (A: Type) (a b: A) (P: ∀ A -> Type) (e: Equal A a b) (x: P a): P b
-  = e (λ b' _ => P b') x
+  = (case e) (λ b' _ => P b') x
