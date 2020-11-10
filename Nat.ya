@@ -32,3 +32,16 @@ def to_natural (n : Nat): #Natural
   = (case n) (\x => #Natural)
         0
         (\pred => #Natural_succ (to_natural pred))
+
+def Addable (A: Type) : Type =
+  @self forall
+  (P: forall (Addable A) -> Type)
+  (newAddable: forall
+    (add: forall (a b: A) -> A)
+    -> P (data \P n => n add)
+  ) -> P self
+
+def newAddable (A: Type) (add: forall (a b: A) -> A): Addable A
+  = data \P n => n add
+
+
