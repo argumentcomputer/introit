@@ -13,4 +13,4 @@ def curry (A B C: Type) (f: ∀ (Pair A B) -> C) (x: A) (y: B): C
   = f (new A B x y)
 
 def uncurry (A B C: Type) (f: ∀ A B -> C) (ab: Pair A B): C
-  = ab (\_ => C) (λ a b => f a b)
+  = (case ab) (\_ => C) (λ a b => f a b)
