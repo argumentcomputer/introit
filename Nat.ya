@@ -44,4 +44,5 @@ def Addable (A: Type) : Type =
 def newAddable (A: Type) (add: forall (a b: A) -> A): Addable A
   = data \P n => n add
 
-
+def natAddable: Addable Nat
+  = newAddable Nat add
