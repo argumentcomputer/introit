@@ -1,5 +1,5 @@
 package Vector
-  with Nat (Nat, zero, succ, Addable)
+  with Nat (Nat, zero, succ, Addable, newAddable)
   with Nat as Nat
   with Unit (Unit)
   with Unit as Unit
@@ -40,3 +40,6 @@ def add (A : Type) (impl : Addable A) (size : Nat) (as bs: Vector A size): Vecto
                        (\_ => Vector A (Nat.succ k))
                        (\b bs => cons A k (add_a a b) (add A impl k as bs)))
                 bs)
+
+def deriveAddable (A: Type) (impl: Addable A) (size: Nat): Addable (Vector A size)
+  = newAddable (Vector A size) (add A impl size)

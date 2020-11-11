@@ -46,3 +46,6 @@ def newAddable (A: Type) (add: forall (a b: A) -> A): Addable A
 
 def natAddable: Addable Nat
   = newAddable Nat add
+
+def naturalAddable: Addable #Natural
+  = newAddable #Natural #Natural_add
