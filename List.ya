@@ -1,4 +1,9 @@
 package List
+  with Functor
+  with Functor as Functor
+  with Maybe (Maybe, just, none)
+  with Monad (Monad)
+  with Monad as Monad
 where
 
 def List (A: Type): Type =
@@ -11,7 +16,25 @@ def List (A: Type): Type =
 def nil (A : Type) : List A = data \P n c => n
 def cons (A : Type) (head : A) (tail : List A) : List A = data \P n c => c head tail
 
+def head (A : Type) (a : List A): Maybe A
+  = (case a) (\_ => Maybe A)
+        (none A)
+        (\head tail => just A head)
+
+def tail (A : Type) (a : List A): List A
+  = (case a) (\_ => List A)
+        (nil A)
+        (\head tail => tail)
+
+def concat (A : Type) (a b : List A): List A
+  = (case a) (\_ => List A)
+        b
+        (\head tail => cons A head (concat A tail b))
+
 def map (A : Type) (B : Type) (f: forall A -> B) (list : List A): List B
   = (case list) (\_ => List B)
         (nil B)
         (\head tail => cons B (f head) (map A B f tail))
+
+def functor : Functor List
+  = Functor.new List map
