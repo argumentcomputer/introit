@@ -49,3 +49,7 @@ def natAddable: Addable Nat
 
 def naturalAddable: Addable #Natural
   = newAddable #Natural #Natural_add
+
+def addAddables (A: Type) (impl: Addable A) (x y: A): A
+  = (case impl) (\_ => A)
+        (\add_a => add_a x y)

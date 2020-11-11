@@ -16,7 +16,7 @@ def Matrix (A: Type) (rows: Nat) (cols: Nat): Type =
 def new (A: Type) (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)): Matrix A rows cols
   = data λ P n => n rows cols vec
 
-def fill (A: Type) (a: A) (rows: Nat) (cols : Nat): Matrix A rows cols =
+def fill (A: Type) (rows: Nat) (cols : Nat) (a: A) : Matrix A rows cols =
     new A rows cols (Vector.fill (Vector A cols) rows (Vector.fill A cols a))
 
 def getRows (A: Type) (rows: Nat) (cols: Nat) (matrix: Matrix A rows cols): Vector (Vector A cols) rows
