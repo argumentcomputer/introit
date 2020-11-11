@@ -1,0 +1,12 @@
+package List
+where
+
+def List (A: Type): Type =
+  @self forall
+  (P: forall (List A) -> Type)
+  (nil : P (data \P n c => n))
+  (cons : forall (head : A) (tail : List A) -> P (data \P n c => c head tail))
+  -> P self
+
+def nil (A : Type) : List A = data \P n c => n
+def cons (A : Type) (head : A) (tail : List A) : List A = data \P n c => c head tail
