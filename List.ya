@@ -31,10 +31,24 @@ def concat (A : Type) (a b : List A): List A
         b
         (\head tail => cons A head (concat A tail b))
 
+def flatten (A : Type) (list : List (List A)): List A
+  = (case list) (\_ => List A)
+        (nil A)
+        (\head tail => concat A head (flatten A tail))
+
+def singleton (A : Type) (a : A): List A
+  = cons A a (nil A)
+
 def map (A : Type) (B : Type) (f: forall A -> B) (list : List A): List B
   = (case list) (\_ => List B)
         (nil B)
         (\head tail => cons B (f head) (map A B f tail))
 
+def flatMap (A : Type) (B: Type) (l: List A) (fun: forall A -> (List B)): List B
+  = flatten B (map A (List B) fun l)
+
 def functor : Functor List
   = Functor.new List map
+
+def monad : Monad List
+  = Monad.new List flatMap singleton
