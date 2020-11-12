@@ -5,6 +5,7 @@ package Introit
   with Function
   with Equal
   with BitString as BitString
+  with Bool
   with Function
   with List   as List
   with Matrix as Matrix
