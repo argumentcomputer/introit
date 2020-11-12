@@ -1,6 +1,4 @@
-package Show
-  with String
-where
+package Show where
 
 def Show (A: Type) : Type =
   @self forall
@@ -13,7 +11,6 @@ def Show (A: Type) : Type =
 def newShow (A: Type) (show: forall (a: A) -> #String): Show A
   = data \P n => n show
 
-
 def show (A: Type) (impl: Show A) (x: A): #String
-  = (case impl) (\_ => A)
+  = (case impl) (\_ => #String)
         (\show_a => show_a x)
