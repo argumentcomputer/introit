@@ -3,14 +3,14 @@ where
 
 def Monad (M: forall Type -> Type) : Type =
   @self forall
-  (P: forall (Monad M) -> Type)
-  (new: forall
+  (0 P: forall (Monad M) -> Type)
+  (& new: forall
     (bind: forall (A : Type) (B: Type) (m: M A) (fun: forall A -> (M B)) -> M B)
     (pure: forall (A : Type) (a: A) -> M A)
     -> P (data \P n => n bind pure)
   ) -> P self
 
-def new (M: forall Type -> Type) (bind: forall (A : Type) (B: Type) (M A) (fun: forall A -> (M B)) -> M B)
+def new (0 M: forall Type -> Type) (bind: forall (A : Type) (B: Type) (M A) (fun: forall A -> (M B)) -> M B)
         (pure: forall (A : Type) (a: A) -> M A)
         : Monad M
   = data \P n => n bind pure

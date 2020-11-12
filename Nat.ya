@@ -35,13 +35,13 @@ def to_natural (n : Nat): #Natural
 
 def Addable (A: Type) : Type =
   @self forall
-  (P: forall (Addable A) -> Type)
+  (0 P: forall (Addable A) -> Type)
   (newAddable: forall
     (add: forall (a b: A) -> A)
     -> P (data \P n => n add)
   ) -> P self
 
-def newAddable (A: Type) (add: forall (a b: A) -> A): Addable A
+def newAddable (0 A: Type) (add: forall (a b: A) -> A): Addable A
   = data \P n => n add
 
 def natAddable: Addable Nat
@@ -50,6 +50,6 @@ def natAddable: Addable Nat
 def naturalAddable: Addable #Natural
   = newAddable #Natural #Natural_add
 
-def addAddables (A: Type) (impl: Addable A) (x y: A): A
+def addAddables (0 A: Type) (impl: Addable A) (x y: A): A
   = (case impl) (\_ => A)
         (\add_a => add_a x y)

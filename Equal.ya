@@ -6,16 +6,16 @@ def Equal (A: Type) (a b: A) : Type =
   (& refl : P a (data λ P refl => refl))
   -> P b self
 
-def refl (A: Type) (a : A) : Equal A a a = data λ P refl => refl
+def refl (0 A: Type) (a : A) : Equal A a a = data λ P refl => refl
 
-def sym (A: Type) (a b: A) (e: Equal A a b) : Equal A b a
+def sym (0 A: Type) (a b: A) (e: Equal A a b) : Equal A b a
   = (case e) (λ b e => Equal A b a) (refl A a)
 
-def trans (A: Type) (a b c: A) (ab: Equal A a b) (bc: Equal A b c): Equal A a c
+def trans (0 A: Type) (a b c: A) (ab: Equal A a b) (bc: Equal A b c): Equal A a c
   = (case bc) (λ b' _ => Equal A a b') ab
 
-def cong (A B: Type) (a b: A) (f: ∀ A -> B) (e: Equal A a b): Equal B (f a) (f b)
+def cong (0 A B: Type) (a b: A) (f: ∀ A -> B) (e: Equal A a b): Equal B (f a) (f b)
   = (case e) (λ b' _ => Equal B (f a) (f b')) (refl B (f a))
 
-def cast (A: Type) (a b: A) (P: ∀ A -> Type) (e: Equal A a b) (x: P a): P b
+def cast (0 A: Type) (a b: A) (0 P: ∀ A -> Type) (e: Equal A a b) (x: P a): P b
   = (case e) (λ b' _ => P b') x

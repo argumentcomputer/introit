@@ -2,10 +2,10 @@ package BitString where
 
 def BitString : Type
   = @self ∀
-  ( P : ∀ BitString -> Type)
-  ( be: P (data λ P be b0 b1 => be) )
-  ( b0: ∀ (pred: BitString) -> P (data λ P be b0 b1 => b0 pred))
-  ( b1: ∀ (pred: BitString) -> P (data λ P be b0 b1 => b1 pred))
+  (0 P : ∀ BitString -> Type)
+  (& be: P (data λ P be b0 b1 => be) )
+  (& b0: ∀ (pred: BitString) -> P (data λ P be b0 b1 => b0 pred))
+  (& b1: ∀ (pred: BitString) -> P (data λ P be b0 b1 => b1 pred))
   -> P self
 
 def be : BitString = data λ P be b0 b1 => be
