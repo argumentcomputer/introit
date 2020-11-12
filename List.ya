@@ -1,0 +1,54 @@
+package List
+  with Functor
+  with Functor as Functor
+  with Maybe (Maybe, just, none)
+  with Monad (Monad)
+  with Monad as Monad
+where
+
+def List (A: Type): Type =
+  @self forall
+  (P: forall (List A) -> Type)
+  (nil : P (data \P n c => n))
+  (cons : forall (head : A) (tail : List A) -> P (data \P n c => c head tail))
+  -> P self
+
+def nil (A : Type) : List A = data \P n c => n
+def cons (A : Type) (head : A) (tail : List A) : List A = data \P n c => c head tail
+
+def head (A : Type) (a : List A): Maybe A
+  = (case a) (\_ => Maybe A)
+        (none A)
+        (\head tail => just A head)
+
+def tail (A : Type) (a : List A): List A
+  = (case a) (\_ => List A)
+        (nil A)
+        (\head tail => tail)
+
+def concat (A : Type) (a b : List A): List A
+  = (case a) (\_ => List A)
+        b
+        (\head tail => cons A head (concat A tail b))
+
+def flatten (A : Type) (list : List (List A)): List A
+  = (case list) (\_ => List A)
+        (nil A)
+        (\head tail => concat A head (flatten A tail))
+
+def singleton (A : Type) (a : A): List A
+  = cons A a (nil A)
+
+def map (A : Type) (B : Type) (f: forall A -> B) (list : List A): List B
+  = (case list) (\_ => List B)
+        (nil B)
+        (\head tail => cons B (f head) (map A B f tail))
+
+def flatMap (A : Type) (B: Type) (l: List A) (fun: forall A -> (List B)): List B
+  = flatten B (map A (List B) fun l)
+
+def functor : Functor List
+  = Functor.new List map
+
+def monad : Monad List
+  = Monad.new List flatMap singleton

@@ -1,0 +1,19 @@
+package Show
+  with String
+where
+
+def Show (A: Type) : Type =
+  @self forall
+  (P: forall (Show A) -> Type)
+  (newShow: forall
+    (show: forall (a: A) -> #String)
+    -> P (data \P n => n show)
+  ) -> P self
+
+def newShow (A: Type) (show: forall (a: A) -> #String): Show A
+  = data \P n => n show
+
+
+def show (A: Type) (impl: Show A) (x: A): #String
+  = (case impl) (\_ => A)
+        (\show_a => show_a x)
