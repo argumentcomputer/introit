@@ -1,10 +1,16 @@
 package Introit
   with Empty
-  with Pair as P
-  with Unit as U
+  with Pair as Pair
+  with Unit as Unit
   with Function
   with Equal
-  with String
+  with BitString as BitString
+  with Function
+  with List   as List
+  with Matrix as Matrix
+  with Vector as Vector
+  with Monad
+  with Show
 where
 
 
