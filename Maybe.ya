@@ -5,15 +5,15 @@ where
 
 def Maybe (A: Type) : Type =
    @self ∀
-   (P   : ∀ (Maybe A) -> Type)
+   (0 P   : ∀ (Maybe A) -> Type)
    (& none : P (data λ P n j => n))
    (& just : ∀ (x: A) -> P (data λ P n j => j x))
    -> P self
 
-def none (A: Type) : Maybe A = data λ P n j => n
-def just (A: Type) (x: A) : Maybe A = data λ P n j => j x
+def none (0 A: Type) : Maybe A = data λ P n j => n
+def just (0 A: Type) (x: A) : Maybe A = data λ P n j => j x
 
-def bind (A : Type) (B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): Maybe B
+def bind (0 A : Type) (0 B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): Maybe B
   = (case m)
         (\m => Maybe B)
         (none B)
