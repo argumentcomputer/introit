@@ -1,4 +1,10 @@
-package Nat where
+package Nat
+  with Either
+  with Pair (Pair)
+  with Pair as Pair
+  with List as List
+  with List (List)
+where
 
 def Nat : Type =
   @self ∀
@@ -53,3 +59,37 @@ def naturalAddable: Addable #Natural
 def addAddables (A: Type) (impl: Addable A) (x y: A): A
   = (case impl) (\_ => A)
         (\add_a => add_a x y)
+
+-- Subtraction of Nat (n - m)
+-- The sign is encoded in Either; right is minus left is plus.
+def sub (n : Nat) (m : Nat): Either Nat Nat
+  = (case m) (\_ => Either Nat Nat)
+        (left Nat Nat n)
+        (\m_pred =>
+            (case n) (\_ => Either Nat Nat)
+                (right Nat Nat (succ m_pred))
+                (\n_pred => sub n_pred m_pred))
+
+-- Division with remainder
+def divMod (n : Nat) (m : Nat): Pair Nat Nat =
+  letrec fun : (forall Nat Nat Nat -> Pair Nat Nat) =
+    (\n m d => (case (sub n m)) (\_ => Pair Nat Nat)
+        (\r => fun r m (succ d))
+        (\r => Pair.new Nat Nat d n)
+    );
+  fun n m zero
+
+def toBase (base : Nat) (n : Nat): List Nat
+  = letrec fun : (forall Nat Nat (List Nat) -> List Nat) =
+        (\base n list => (case (divMod n base)) (\_ => List Nat)
+            (\div mod =>
+                let l : List Nat = List.cons Nat mod list;
+                (case div) (\_ => List Nat)
+                    l
+                    (\_ => fun base div l)
+            )
+        );
+    fun base n (List.nil Nat)
+
+--def toStringOfBase (base : Nat) (n : Nat): #String
+--  = map 
