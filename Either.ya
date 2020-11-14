@@ -1,0 +1,32 @@
+package Either
+  with Monad
+  with Monad as Monad
+where
+
+def Either (A: Type) (B: Type) : Type =
+   @self ∀
+   (P   : ∀ (Either A B) -> Type)
+   (& left : ∀ (x: A) -> P (data λ P l r => l x))
+   (& right : ∀ (x: B) -> P (data λ P l r => r x))
+   -> P self
+
+def left (A: Type) (B: Type) (x: A) : Either A B = data λ P l r => l x
+def right (A : Type) (B: Type) (x: B) : Either A B = data λ P l r => r x
+
+def bindRight (A : Type) (B: Type) (C: Type) (e: Either A B) (fun: forall B -> (Either A C)): Either A C
+  = (case e)
+        (\m => Either A C)
+        (left A C)
+        fun
+
+def bindLeft (A : Type) (B: Type) (C: Type) (e: Either A B) (fun: forall A -> (Either C B)): Either C B
+  = (case e)
+        (\m => Either C B)
+        fun
+        (right C B)
+
+def monadRight (A : Type) : Monad (Either A)
+  = Monad.new (Either A) (bindRight A) (right A)
+
+def monadLeft (B : Type) : Monad (\A => Either A B)
+  = Monad.new (\A => Either A B) (\A => bindLeft A B) (\A => left A B)
