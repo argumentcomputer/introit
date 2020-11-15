@@ -16,4 +16,5 @@ def not (a  : Bool): Bool = (case a) (\_ => Bool) false true
 def xor (a b: Bool): Bool = (case a) (\_ => Bool) (not b) b
 
 
-
+def if (A : Type) (bool : Bool) (a1 a2 : A): A
+  = (case bool) (\_ => A) a1 a2

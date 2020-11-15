@@ -1,5 +1,11 @@
 package Show
   with Function
+  with Nat
+  with List (List)
+  with List as List
+  with Bool
+  with Maybe (Maybe)
+  with Maybe as Maybe
 where
 
 def Show (A: Type) : Type =
@@ -18,4 +24,46 @@ def show (A: Type) (impl: Show A) (x: A): #String
         (\show_a => show_a x)
 
 def stringShow: Show #String
-  = newShow #String id
+  = newShow #String (id #String)
+
+def base64 : List #Char =
+    (List.cons #Char '0' (List.cons #Char '1' (List.cons #Char '2' (List.cons #Char '3' (List.cons #Char '4' (List.cons #Char '5'
+    (List.cons #Char '6' (List.cons #Char '7' (List.cons #Char '8' (List.cons #Char '9' (List.cons #Char 'A' (List.cons #Char 'B'
+    (List.cons #Char 'C' (List.cons #Char 'D' (List.cons #Char 'E' (List.cons #Char 'F' (List.cons #Char 'G' (List.cons #Char 'H'
+    (List.cons #Char 'I' (List.cons #Char 'J' (List.cons #Char 'K' (List.cons #Char 'L' (List.cons #Char 'M' (List.cons #Char 'N'
+    (List.cons #Char 'O' (List.cons #Char 'P' (List.cons #Char 'Q' (List.cons #Char 'R' (List.cons #Char 'S' (List.cons #Char 'T'
+    (List.cons #Char 'U' (List.cons #Char 'V' (List.cons #Char 'W' (List.cons #Char 'X' (List.cons #Char 'Y' (List.cons #Char 'Z'
+    (List.cons #Char 'a' (List.cons #Char 'b' (List.cons #Char 'c' (List.cons #Char 'd' (List.cons #Char 'e' (List.cons #Char 'f'
+    (List.cons #Char 'g' (List.cons #Char 'h' (List.cons #Char 'i' (List.cons #Char 'j' (List.cons #Char 'k' (List.cons #Char 'l'
+    (List.cons #Char 'm' (List.cons #Char 'n' (List.cons #Char 'o' (List.cons #Char 'p' (List.cons #Char 'q' (List.cons #Char 'r'
+    (List.cons #Char 's' (List.cons #Char 't' (List.cons #Char 'u' (List.cons #Char 'v' (List.cons #Char 'w' (List.cons #Char 'x'
+    (List.cons #Char 'y' (List.cons #Char 'z' (List.cons #Char '+' (List.cons #Char '/' (List.nil #Char))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+def showDigit (base n : Nat): #String
+  =
+  let m : Nat = mod n base;
+  #String_cons
+    (if #Char
+        (and (gtn base (from_natural 0)) (lte base (from_natural 64)))
+        (Maybe.default #Char (List.at #Char base64 m) '#')
+        '#'
+    )
+    ""
+
+def toBase (base : Nat) (n : Nat): List Nat
+  = letrec fun : (forall Nat Nat (List Nat) -> List Nat) =
+        (\base n list => (case (divMod n base)) (\_ => List Nat)
+            (\div mod =>
+                let l : List Nat = List.cons Nat mod list;
+                (case div) (\_ => List Nat)
+                    l
+                    (\_ => fun base div l)
+            )
+        );
+    fun base n (List.nil Nat)
+
+def toStringOfBase (base : Nat) (n : Nat): #String
+  = let digits : List Nat = toBase base n;
+  List.foldr Nat #String (\digit str => #String_concat str (showDigit (from_natural 10) digit)) "" digits

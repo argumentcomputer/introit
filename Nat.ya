@@ -2,8 +2,10 @@ package Nat
   with Either
   with Pair (Pair)
   with Pair as Pair
-  with List as List
-  with List (List)
+  with Bool (Bool, if, and, or)
+  with Bool as Bool
+  with Compared as Compared
+  with Compared (Compared)
 where
 
 def Nat : Type =
@@ -79,17 +81,31 @@ def divMod (n : Nat) (m : Nat): Pair Nat Nat =
     );
   fun n m zero
 
-def toBase (base : Nat) (n : Nat): List Nat
-  = letrec fun : (forall Nat Nat (List Nat) -> List Nat) =
-        (\base n list => (case (divMod n base)) (\_ => List Nat)
-            (\div mod =>
-                let l : List Nat = List.cons Nat mod list;
-                (case div) (\_ => List Nat)
-                    l
-                    (\_ => fun base div l)
-            )
-        );
-    fun base n (List.nil Nat)
+-- Modulo division
+def mod (n m : Nat): Nat = Pair.fst Nat Nat (divMod n m)
 
---def toStringOfBase (base : Nat) (n : Nat): #String
---  = map 
+-- Compare two Nat returns a Compared
+def compare (a b : Nat): Compared
+  = (case a) (\_ => Compared)
+        ((case b) (\_ => Compared) Compared.eql (\_ => Compared.ltn))
+        (\a_pred => (case b) (\_ => Compared)
+            Compared.gtn
+            (\b_pred => compare a_pred b_pred)
+        )
+
+-- Greater than a > b
+def gtn (a b : Nat): Bool
+  = Compared.equals (compare a b) Compared.gtn
+
+-- Less than a < b
+def ltn (a b : Nat): Bool
+  = Compared.equals (compare a b) Compared.ltn
+
+-- Less than or equal a <= b
+def lte (a b : Nat): Bool
+  = let c : Compared = compare a b;
+  or (Compared.equals c Compared.ltn) (Compared.equals c Compared.gtn)
+
+-- Equals a = b
+def eql (a b : Nat): Bool
+  = Compared.equals (compare a b) Compared.eql

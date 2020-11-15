@@ -4,6 +4,8 @@ package List
   with Maybe (Maybe, just, none)
   with Monad (Monad)
   with Monad as Monad
+  with Nat as Nat
+  with Nat (Nat)
 where
 
 def List (A: Type): Type =
@@ -30,6 +32,12 @@ def concat (A : Type) (a b : List A): List A
   = (case a) (\_ => List A)
         b
         (\head tail => cons A head (concat A tail b))
+
+def at (A : Type) (list : List A) (idx : Nat): Maybe A
+  = (case idx) (\_ => Maybe A)
+        (head list)
+        (\pred => at A list pred)
+
 
 def flatten (A : Type) (list : List (List A)): List A
   = (case list) (\_ => List A)
