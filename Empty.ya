@@ -2,5 +2,5 @@ package Empty where
 
 def Empty : Type =
   @self ∀
-  (P : ∀ Empty -> Type) ->
+  (0 P : ∀ Empty -> Type) ->
   P self

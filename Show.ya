@@ -10,16 +10,16 @@ where
 
 def Show (A: Type) : Type =
   @self forall
-  (P: forall (Show A) -> Type)
-  (newShow: forall
+  (0 P: forall (Show A) -> Type)
+  (& newShow: forall
     (show: forall (a: A) -> #String)
     -> P (data \P n => n show)
   ) -> P self
 
-def newShow (A: Type) (show: forall (a: A) -> #String): Show A
+def newShow (0 A: Type) (show: forall (a: A) -> #String): Show A
   = data \P n => n show
 
-def show (A: Type) (impl: Show A) (x: A): #String
+def show (0 A: Type) (impl: Show A) (x: A): #String
   = (case impl) (\_ => #String)
         (\show_a => show_a x)
 
