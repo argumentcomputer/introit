@@ -1,0 +1,21 @@
+package Compared
+    with Bool
+where
+
+def Compared : Type =
+  @self ∀
+  (0 P : ∀ Compared -> Type)
+  (& ltn : P (data λ P l e g => l))
+  (& eql : P (data λ P l e g => e))
+  (& gtn : P (data λ P l e g => g))
+  -> P self
+
+def ltn : Compared = data \P l e g => l
+def eql : Compared = data \P l e g => e
+def gtn : Compared = data \P l e g => g
+
+def equals (a b : Compared): Bool
+  = (case a) (\_ => Bool)
+        ((case b) (\_ => Bool) true false false)
+        ((case b) (\_ => Bool) false true false)
+        ((case b) (\_ => Bool) false false true)
