@@ -35,7 +35,7 @@ def concat (0 A : Type) (a b : List A): List A
 
 def at (A : Type) (list : List A) (idx : Nat): Maybe A
   = (case idx) (\_ => Maybe A)
-        (head list)
+        (head A list)
         (\pred => at A list pred)
 
 def flatten (0 A : Type) (list : List (List A)): List A
