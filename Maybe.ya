@@ -21,7 +21,7 @@ def bind (0 A : Type) (0 B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): May
         fun
 
 def default (A : Type) (m : Maybe A) (a : A): A
-  = (case m) (\_ => A) a id
+  = (case m) (\_ => A) a (id A)
 
 def monad : Monad (Maybe)
   = Monad.new Maybe bind just
