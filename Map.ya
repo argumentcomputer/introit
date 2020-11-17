@@ -1,0 +1,49 @@
+package Map
+  with Pair as Pair
+  with Pair (Pair)
+  with Compared
+  with List (List)
+where
+
+def Map (K: Type) (V: Type) (O: Ordered K): Type =
+    @self forall
+    (0 P : forall (Map K V O) -> Type)
+    (& empty : P (data \P e t => e))
+    (& tie : forall (key : K) (value : V) (left : Map K V O) (right : Map K V O) -> P (data \P e t => t key value left right))
+    -> P self
+
+def empty (0 K V: Type) (ordering : Ordered K): Map K V ordering
+  = data \P e t => e
+
+
+def tie (0 K V: Type) (O : Ordered K) (key : K) (value : V) (left : Map K V O) (right : Map K V O): Map K V O
+  = data \P e t => t key value left right
+
+def singleton (0 K V: Type) (ordering : Ordered K) (key : K) (value : V): Map K V ordering
+  = tie K V ordering key value (empty K V ordering) (empty K V ordering)
+
+
+def fromList (K V: Type) (ordering : Ordered K) (list : List (Pair K V)): Map K V ordering
+  =
+  let getKey : forall (Pair K V) -> K = Pair.fst K V;
+  let getValue : forall (Pair K V) -> V = Pair.snd K V;
+  let empty : Map K V ordering = empty K V ordering;
+  let singleton : forall K V -> Map K V ordering = singleton K V ordering;
+  let tie : forall K V (Map K V ordering) (Map K V ordering) -> (Map K V ordering) = tie K V ordering;
+  (case list) (\_ => Map K V ordering)
+        empty
+        (\head tail =>
+            let key : K = getKey head;
+            let value : V = getValue head;
+            (case tail) (\_ => Map K V ordering)
+                (singleton key value)
+                (\next skipTail =>
+                    let nKey : K = getKey next;
+                    let nValue : V = getValue next;
+                    (case (compareOrdered K ordering key nKey))
+                        (\_ => Map K V ordering)
+                        (tie key value (fromList K V ordering tail) empty)
+                        (tie key value (fromList K V ordering skipTail) empty)
+                        (tie key value empty (fromList K V ordering tail))
+                )
+        )
