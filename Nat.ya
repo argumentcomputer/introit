@@ -5,7 +5,7 @@ package Nat
   with Bool (Bool, if, and, or)
   with Bool as Bool
   with Compared as Compared
-  with Compared (Compared)
+  with Compared (Compared, Ordered, newOrdered)
 where
 
 def Nat : Type =
@@ -92,6 +92,9 @@ def compare (a b : Nat): Compared
             Compared.gtn
             (\b_pred => compare a_pred b_pred)
         )
+
+def orderedNat: Ordered Nat
+  = newOrdered Nat compare
 
 -- Greater than a > b
 def gtn (a b : Nat): Bool
