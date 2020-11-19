@@ -1,6 +1,8 @@
 package Vector
   with Nat (Nat, zero, succ, Addable, newAddable)
   with Nat as Nat
+  with Maybe (Maybe, none, just)
+  with Maybe as Maybe
   with Unit (Unit)
   with Unit as Unit
   with Pair (Pair)
@@ -40,6 +42,32 @@ def add (0 A : Type) (impl : Addable A) (0 size : Nat) (as bs: Vector A size): V
                        (\_ => Vector A (Nat.succ k))
                        (\b bs => cons A k (add_a a b) (add A impl k as bs)))
                 bs)
+
+def head (0 A : Type) (0 size : Nat) (a : Vector A size): Maybe A
+  = (case a) (\_ _ => Maybe A)
+        (none A)
+        (\_ head tail => just A head)
+
+def tail (0 A : Type) (0 size : Nat) (a : Vector A size): Vector A (succ size)
+  = (case a) (\_ _ => Vector A size)
+        (nil A)
+        (\_ head tail => tail)
+
+def concat (0 A : Type) (0 sizeA sizeB : Nat) (a : Vector A sizeA) (b : Vector A sizeB): Vector A (Nat.add sizeA sizeB)
+  = (case a) (\_ _ => Vector A (Nat.add sizeA sizeB))
+        b
+        (\_ head tail => cons A (Nat.add sizeA sizeB) head (concat A (Nat.add (succ sizeA) sizeB) tail b))
+
+def at (A : Type) (0 size : Nat) (vec : Vector A size) (idx : Nat): Maybe A
+  = (case idx) (\_ => Maybe A)
+        (head A size vec)
+        (\pred => at A size vec pred)
+
+def map (0 A B: Type) (0 size: Nat) (f: ∀ A -> B) (vec: Vector A size): Vector B size
+  = (case vec) (λ _ _ => Vector B size)
+        (nil B)
+        (λ _ x xs => cons size (f x) (map A B (succ size) f xs))
+
 
 def deriveAddable (0 A: Type) (impl: Addable A) (0 size: Nat): Addable (Vector A size)
   = newAddable (Vector A size) (add A impl size)
