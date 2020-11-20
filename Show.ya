@@ -116,3 +116,14 @@ def deriveMapShow (K V : Type) (ord : Ordered K) (implK : Show K) (implV : Show 
             #String_concat "Map {"
             (#String_concat (List.foldr (Pair K V) #String subShow "" list) "}")
         )
+
+def deriveVectorShow (0 A : Type) (size : Nat) (impl : Show A): Show (Vector A size)
+  = let subShow : forall A #String -> #String = (\a str =>
+        #String_concat str (#String_concat ", " (show A impl a))
+    );
+  newShow (Vector A size)
+        (\vec =>
+            #String_concat "Vector ("
+            (#String_concat (show Nat natShow size) ") ["
+            (#String_concat (Vector.foldr A #String size subShow "" vec) "]"))
+        )

@@ -49,7 +49,7 @@ def head (0 A : Type) (0 size : Nat) (a : Vector A size): Maybe A
         (\_ head tail => just A head)
 
 def tail (0 A : Type) (0 size : Nat) (a : Vector A size): Vector A (succ size)
-  = (case a) (\_ _ => Vector A size)
+  = (case a) (\k _ => Vector A (succ k))
         (nil A)
         (\_ head tail => tail)
 
@@ -64,10 +64,19 @@ def at (A : Type) (0 size : Nat) (vec : Vector A size) (idx : Nat): Maybe A
         (\pred => at A size vec pred)
 
 def map (0 A B: Type) (0 size: Nat) (f: ∀ A -> B) (vec: Vector A size): Vector B size
-  = (case vec) (λ _ _ => Vector B size)
+  = (case vec) (λ k _ => Vector B k)
         (nil B)
         (λ _ x xs => cons size (f x) (map A B (succ size) f xs))
 
+def foldr (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
+  = (case vec) (\_ _ => B)
+        b
+        (\_ head tail => f head (foldr A B (succ size) f b tail))
+
+def foldl (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
+  = (case vec) (\_ _ => B)
+        b
+        (\_ head tail => (foldl A B (succ size) f (f head b) tail))
 
 def deriveAddable (0 A: Type) (impl: Addable A) (0 size: Nat): Addable (Vector A size)
   = newAddable (Vector A size) (add A impl size)
