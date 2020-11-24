@@ -39,7 +39,7 @@ def from_natural (n : #Natural): Nat
 def to_natural (n : Nat): #Natural
   = (case n) (\x => #Natural)
         0
-        (\pred => #Natural_succ (to_natural pred))
+        (\pred => #Natural.succ (to_natural pred))
 
 def Addable (A: Type) : Type =
   @self forall
@@ -56,7 +56,7 @@ def natAddable: Addable Nat
   = newAddable Nat add
 
 def naturalAddable: Addable #Natural
-  = newAddable #Natural #Natural_add
+  = newAddable #Natural #Natural.add
 
 def addAddables (0 A: Type) (impl: Addable A) (x y: A): A
   = (case impl) (\_ => A)

@@ -6,6 +6,7 @@ package List
   with Monad as Monad
   with Nat as Nat
   with Nat (Nat)
+  with Compared
 where
 
 def List (A: Type): Type =
