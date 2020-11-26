@@ -6,6 +6,8 @@ package Nat
   with Bool as Bool
   with Compared as Compared
   with Compared (Compared, Ordered, newOrdered)
+  with Equal (Equal)
+  with Equal as Equal
 where
 
 def Nat : Type =

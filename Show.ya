@@ -110,7 +110,7 @@ def deriveMapShow (K V : Type) (ord : Ordered K) (implK : Show K) (implV : Show 
     (#String.concat " => " (show V implV (Pair.snd K V p)))
   );
   letrec subShow : ∀ (Pair K V) #String -> #String = (\p str =>
-        #String.concat str (#String.concat ", " (pairShow p))
+        #String.concat str (#String.concat (pairShow p) ", ")
     );
   newShow (Map K V ord)
         (\m =>
@@ -126,6 +126,7 @@ def deriveVectorShow (0 A : Type) (size : Nat) (impl : Show A): Show (Vector A s
   newShow (Vector A size)
         (\vec =>
             #String.concat "Vector ("
-            (#String.concat (show Nat natShow size) ") ["
-            (#String.concat (Vector.foldr A #String size subShow "" vec) "]"))
+            (#String.concat (show Nat natShow size)
+            (#String.concat ") ["
+            (#String.concat (Vector.foldr A #String size subShow "" vec) "]")))
         )
