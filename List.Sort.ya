@@ -1,6 +1,6 @@
 package List.Sort
-    with List (List, cons, singleton)
-    with Compared (Compared)
+    with List (List, cons, singleton, nil)
+    with Compared (Compared, Ordered, compareOrdered)
 where
 
 
