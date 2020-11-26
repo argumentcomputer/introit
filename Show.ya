@@ -90,7 +90,12 @@ def deriveListShow (A : Type) (impl : Show A): Show (List A)
     );
   newShow (List A)
         (\list =>
-            #String.concat "List [" (#String.concat (List.foldr A #String subShow "" list) "]")
+            #String.concat "List ["
+            (#String.concat ((case list) (\_ => #String)
+                ""
+                (\head tail => List.foldr A #String subShow (show A impl head) list)
+                )
+            "]")
         )
 
 def derivePairShow (A B : Type) (implA : Show A) (implB : Show B): Show (Pair A B)
@@ -116,17 +121,25 @@ def deriveMapShow (K V : Type) (ord : Ordered K) (implK : Show K) (implV : Show 
         (\m =>
             let list : List (Pair K V) = Map.toList K V ord m;
             #String.concat "Map {"
-            (#String.concat (List.foldr (Pair K V) #String subShow "" list) "}")
+            (#String.concat ((case list) (\_ => #String)
+                ""
+                (\head tail => List.foldr (Pair K V) #String subShow (pairShow head) tail)
+                )
+            "}")
         )
 
-def deriveVectorShow (0 A : Type) (size : Nat) (impl : Show A): Show (Vector A size)
-  = let subShow : forall A #String -> #String = (\a str =>
-        #String.concat str (#String.concat ", " (show A impl a))
+def deriveVectorShow (0 A : Type) (size : Nat) (impl : Show A): Show (Vector A size) =
+  letrec showIt : ∀ A -> #String = show A impl;
+  let subShow : forall A #String -> #String = (\a str =>
+        #String.concat str (#String.concat ", " (showIt a))
     );
   newShow (Vector A size)
         (\vec =>
             #String.concat "Vector ("
             (#String.concat (show Nat natShow size)
             (#String.concat ") ["
-            (#String.concat (Vector.foldr A #String size subShow "" vec) "]")))
+            (#String.concat ((case vec) (\_ _ => #String)
+                    ""
+                    (\size head tail => Vector.foldr A #String size subShow (showIt head) tail))
+                "]")))
         )
