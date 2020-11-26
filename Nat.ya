@@ -93,8 +93,19 @@ def compare (a b : Nat): Compared
             (\b_pred => compare a_pred b_pred)
         )
 
+def compareNatural (a b : #Natural): Compared
+  = (case a) (\_ => Compared)
+        ((case b) (\_ => Compared) Compared.eql (\_ => Compared.ltn))
+        (\a_pred => (case b) (\_ => Compared)
+            Compared.gtn
+            (\b_pred => compareNatural a_pred b_pred)
+        )
+
 def orderedNat: Ordered Nat
   = newOrdered Nat compare
+
+def orderedNatural: Ordered #Natural
+  = newOrdered #Natural compareNatural
 
 -- Greater than a > b
 def gtn (a b : Nat): Bool

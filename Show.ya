@@ -3,6 +3,8 @@ package Show
   with Nat
   with List (List)
   with List as List
+  with Vector as Vector
+  with Vector (Vector)
   with Map (Map)
   with Map as Map
   with Bool
