@@ -1,0 +1,89 @@
+{| Simple parser combinator library
+|}
+package Parser
+    with Monad (Monad)
+    with Monad as Monad
+    with List (List)
+    with List as List
+    with Pair (Pair)
+    with Pair as Pair
+    with Either (Either)
+    with Either as Either
+where
+
+
+
+{| A parser combinator type
+This can either succeed and produce a value of type A or fail with an empty list
+|}
+def Parser (A: Type) : Type =
+  @self forall
+  (0 P: forall (Parser A) -> Type)
+  (& parser: forall (parse : ∀ #String -> List (Pair A #String)) -> P (data \P p => p parse))
+  -> P self
+
+def parser (0 A : Type) (parse : ∀ #String -> List (Pair A #String)) : Parser A
+  = data \P p => p parse
+
+{| Monadic bind
+|}
+def bind (A B : Type) (p: Parser A) (fun : ∀ A -> Parser B): Parser B
+  =
+  let fstA: ∀ (Pair A #String) -> A = Pair.fst A #String;
+  let snd: ∀ (Pair A #String) -> #String = Pair.snd A #String;
+  parser B (\str =>
+        (case p) (\_ => List (Pair B #String))
+            (\parseA => List.flatMap (Pair A #String) (Pair B #String)
+                (\pair => (case (fun (fstA pair))) (\_ => List (Pair B #String))
+                    (\parseB => parseB (snd pair))
+                )
+                (parseA str)
+            )
+  )
+
+{| Identity parser also called unity
+|}
+def pure (0 A : Type) (a : A): Parser A
+  = parser A (\s => List.singleton (Pair A #String) (Pair.new A #String a s))
+
+def monad: Monad Parser
+  = Monad.new Parser bind pure
+
+{| Runs a high level parser on the entire stream
+|}
+def runParser (A : Type) (p : Parser A) (str : #String) : Either A #String =
+  let fstA: ∀ (Pair A #String) -> A = Pair.fst A #String;
+  let snd: ∀ (Pair A #String) -> #String = Pair.snd A #String;
+  let error: ∀ #String -> Either A #String = Either.right A #String;
+  (case p) (\_ => Either A #String)
+        (\parse => (case (parse str)) (\_ => Either A #String)
+            (error "Parser error.")
+            (\head tail => (case tail) (\_ => Either A #String)
+                ((case (snd head)) (\_ => Either A #String)
+                    (Either.left A #String (fstA head))
+                    (\_ _ => error "Parser didn't consume entire string.")
+                )
+                (\_ _ => error "Multiple elements in top level.")
+            )
+        )
+
+{| Advance the parser one char
+|}
+def item: Parser #Char
+  = parser #Char (\s => (case s) (\_ => List (Pair #Char #String))
+        (List.nil (Pair #Char #String))
+        (\c tail => List.singleton (Pair #Char #String) (Pair.new #Char #String c tail))
+    )
+
+{| Map the parser value
+|}
+def map (A B : Type) (fun : ∀ A -> B) (p: Parser A): Parser B =
+  let fstA: ∀ (Pair A #String) -> A = Pair.fst A #String;
+  let snd: ∀ (Pair A #String) -> #String = Pair.snd A #String;
+  (case p) (\_ => Parser B)
+    (\parse => parser B (\s =>
+       (List.map (Pair A #String) (Pair B #String)
+         (\pair => Pair.new B #String (fun (fstA pair)) (snd pair))
+         (parse s)
+       ))
+    )

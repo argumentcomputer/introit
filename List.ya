@@ -62,11 +62,11 @@ def foldl (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
         b
         (\head tail => (foldl A B f (f head b) tail))
 
-def flatMap (0 A : Type) (0 B: Type) (l: List A) (fun: forall A -> (List B)): List B
+def flatMap (0 A : Type) (0 B: Type) (fun: forall A -> (List B)) (l: List A): List B
   = flatten B (map A (List B) fun l)
 
 def functor : Functor List
   = Functor.new List map
 
 def monad : Monad List
-  = Monad.new List flatMap singleton
+  = Monad.new List (\A B l f => flatMap A B f l) singleton
