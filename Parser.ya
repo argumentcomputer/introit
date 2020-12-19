@@ -3,12 +3,20 @@
 package Parser
     with Monad (Monad)
     with Monad as Monad
+    with MonadPlus (MonadPlus)
+    with MonadPlus as MonadPlus
+    with Functor as Functor
+    with Functor (Functor)
     with List (List)
     with List as List
     with Pair (Pair)
     with Pair as Pair
     with Either (Either)
     with Either as Either
+    with Alternative as Alternative
+    with Alternative (Alternative)
+    with Applicative as Applicative
+    with Applicative (Applicative)
 where
 
 
@@ -17,9 +25,9 @@ where
 This can either succeed and produce a value of type A or fail with an empty list
 |}
 def Parser (A: Type) : Type =
-  @self forall
-  (0 P: forall (Parser A) -> Type)
-  (& parser: forall (parse : ∀ #String -> List (Pair A #String)) -> P (data \P p => p parse))
+  @self ∀
+  (0 P: ∀ (Parser A) -> Type)
+  (& parser: ∀ (parse : ∀ #String -> List (Pair A #String)) -> P (data \P p => p parse))
   -> P self
 
 def parser (0 A : Type) (parse : ∀ #String -> List (Pair A #String)) : Parser A
@@ -81,9 +89,81 @@ def map (A B : Type) (fun : ∀ A -> B) (p: Parser A): Parser B =
   let fstA: ∀ (Pair A #String) -> A = Pair.fst A #String;
   let snd: ∀ (Pair A #String) -> #String = Pair.snd A #String;
   (case p) (\_ => Parser B)
-    (\parse => parser B (\s =>
-       (List.map (Pair A #String) (Pair B #String)
-         (\pair => Pair.new B #String (fun (fstA pair)) (snd pair))
-         (parse s)
-       ))
+    (\parse => parser B
+      (\s =>
+        (List.map (Pair A #String) (Pair B #String)
+          (\pair => Pair.new B #String (fun (fstA pair)) (snd pair))
+          (parse s)
+        )
+      )
     )
+
+def functor: Functor Parser
+  = Functor.new Parser map
+
+{| Applicative combinator
+|}
+def applicate (A B : Type) (p1 : Parser (∀ A -> B)) (p2 : Parser A): Parser B =
+  let fstA  : ∀ (Pair A #String) -> A = Pair.fst A #String;
+  let fstAB : ∀ (Pair (∀ A -> B) #String) -> (∀ A -> B) = Pair.fst (∀ A -> B) #String;
+  let sndA  : ∀ (Pair A #String) -> #String = Pair.snd A #String;
+  let sndAB : ∀ (Pair (∀ A -> B) #String) -> #String = Pair.snd (∀ A -> B) #String;
+  parser B
+    (\str => (case p1) (\_ => (List (Pair B #String)))
+      (\parseAB => (case p2) (\_ => (List (Pair B #String)))
+        (\parseA =>
+          List.flatMap (Pair (∀ A -> B) #String) (Pair B #String)
+            (\pairAB =>
+              let s1 : #String = sndAB pairAB;
+              let f  : (∀ A -> B) = fstAB pairAB;
+              List.map (Pair A #String) (Pair B #String)
+                (\pairA =>
+                  let s2 : #String = sndA pairA;
+                  let a  : A = fstA pairA;
+                  Pair.new B #String (f a) s2
+                )
+                (parseA s1)
+            )
+            (parseAB str)
+        )
+      )
+    )
+
+{| Concatenate the parsing result
+|}
+def combine (0 A : Type) (p1 : Parser A) (p2 : Parser A): Parser A =
+  parser A
+    (\str => (case p1) (\_ => List (Pair A #String))
+      (\parse1 => (case p2) (\_ => List (Pair A #String))
+        (\parse2 =>
+          List.concat (Pair A #String) (parse1 str) (parse2 str)
+        )
+      )
+    )
+
+def failure (0 A : Type): Parser A
+  = parser A (\s => List.nil (Pair A #String))
+
+{| Choose between two options
+|}
+def option (0 A : Type) (p q : Parser A): Parser A =
+  (case p) (\_ => Parser A)
+      (\parseP =>
+        (case q) (\_ => Parser A)
+          (\parseQ =>
+            parser A (\str =>
+              (case (parseP str)) (\_ => List (Pair A #String))
+                (parseQ str)
+                (List.cons (Pair A #String))
+              )
+          )
+      )
+
+def alternative : Alternative Parser
+  = Alternative.new Parser failure option
+
+def applicative : Applicative Parser
+  = Applicative.new Parser pure applicate
+
+def monadPlus : MonadPlus Parser
+  = MonadPlus.new Parser failure combine

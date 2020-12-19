@@ -20,3 +20,7 @@ def fst (A B : Type) (p : Pair A B): A
 
 def snd (A B : Type) (p : Pair A B): B
   = (case p) (\_ => B) (λ a b => b)
+
+def map (A B C : Type) (f : ∀ A B -> C) (p : Pair A B): C
+  = (case p) (\_ => C) f
+

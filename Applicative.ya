@@ -1,0 +1,19 @@
+package Applicative
+where
+
+{| An applicative functor
+|}
+def Applicative (F: ∀ Type -> Type) : Type =
+  @self ∀
+  (0 P: ∀ (Applicative F) -> Type)
+  (& new: ∀
+    (pure : ∀ (A : Type) (a : A) -> F A)
+    (applicate : ∀ (A B : Type) (p : F (∀ A -> B)) (q : F A) -> F B)
+    -> P (data \P n => n pure applicate)
+  ) -> P self
+
+def new (0 F: ∀ Type -> Type)
+        (pure : ∀ (A : Type) (a : A) -> F A)
+        (applicate : ∀ (A B : Type) (p : F (∀ A -> B)) (q : F A) -> F B)
+        : Applicative F
+  = data \P n => n pure applicate

@@ -1,0 +1,30 @@
+package Alternative
+where
+
+{| A structure for choosing between two alternatives
+|}
+def Alternative (F: ∀ Type -> Type) : Type =
+  @self ∀
+  (0 P: ∀ (Alternative F) -> Type)
+  (& new: ∀
+    (empty: ∀ (A : Type) -> F A)
+    (option: ∀ (A : Type) (p q : F A) -> F A)
+    -> P (data \P n => n empty option)
+  ) -> P self
+
+def new (0 F: ∀ Type -> Type)
+        (empty : ∀ (A : Type) -> F A)
+        (option : ∀ (A : Type) (p q : F A) -> F A)
+        : Alternative F
+  = data \P n => n empty option
+
+{| Empty alternative
+|}
+def empty (0 F: ∀ Type -> Type) (impl : Alternative F) (A : Type): F A
+  = (case impl) (\_ => F A)
+      (\emptyF _ => emptyF A)
+
+def option (0 F : ∀ Type -> Type) (impl : Alternative F)
+           (A : Type) (p q : F A): F A  =
+  (case impl) (\_ => F A)
+      (\_ optionF => optionF A p q)

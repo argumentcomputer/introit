@@ -1,0 +1,19 @@
+package MonadPlus
+where
+
+{| An applicative functor
+|}
+def MonadPlus (F: ∀ Type -> Type) : Type =
+  @self ∀
+  (0 P: ∀ (MonadPlus F) -> Type)
+  (& new: ∀
+    (mzero : ∀ (A : Type) -> F A)
+    (mplus : ∀ (A : Type) (p q : F A) -> F A)
+    -> P (data \P n => n mzero mplus)
+  ) -> P self
+
+def new (0 F: ∀ Type -> Type)
+        (mzero : ∀ (A : Type) -> F A)
+        (mplus : ∀ (A : Type) (p q : F A) -> F A)
+        : MonadPlus F
+  = data \P n => n mzero mplus
