@@ -1,4 +1,6 @@
 package Applicative
+  with Functor (Functor)
+  with Functor as Functor
 where
 
 {| An applicative functor
@@ -7,13 +9,28 @@ def Applicative (F: ∀ Type -> Type) : Type =
   @self ∀
   (0 P: ∀ (Applicative F) -> Type)
   (& new: ∀
+    (functor : Functor F)
     (pure : ∀ (A : Type) (a : A) -> F A)
     (applicate : ∀ (A B : Type) (p : F (∀ A -> B)) (q : F A) -> F B)
-    -> P (data \P n => n pure applicate)
+    -> P (data \P n => n functor pure applicate)
   ) -> P self
 
 def new (0 F: ∀ Type -> Type)
+        (functor : Functor F)
         (pure : ∀ (A : Type) (a : A) -> F A)
         (applicate : ∀ (A B : Type) (p : F (∀ A -> B)) (q : F A) -> F B)
         : Applicative F
-  = data \P n => n pure applicate
+  = data \P n => n functor pure applicate
+
+def functor (0 F: ∀ Type -> Type) (impl : Applicative F): Functor F
+  = (case impl) (\_ => Functor F)
+      (\functorF _ _ => functorF)
+
+def pure (F : ∀ Type -> Type) (impl : Applicative F) (A : Type) (a : A): F A =
+  (case impl) (\_ => F A)
+    (\_ pureF _ => pureF A a)
+
+def applicate (F : ∀ Type -> Type) (impl : Applicative F) (A B : Type)
+              (p : F (∀ A -> B)) (q : F A): F B =
+  (case impl) (\_ => F B)
+    (\_ _ applicateF => applicateF A B p q)

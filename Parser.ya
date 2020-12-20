@@ -17,6 +17,8 @@ package Parser
     with Alternative (Alternative)
     with Applicative as Applicative
     with Applicative (Applicative)
+    with Bool as Bool
+    with Bool (Bool, if)
 where
 
 
@@ -159,11 +161,16 @@ def option (0 A : Type) (p q : Parser A): Parser A =
           )
       )
 
-def alternative : Alternative Parser
-  = Alternative.new Parser failure option
-
 def applicative : Applicative Parser
-  = Applicative.new Parser pure applicate
+  = Applicative.new Parser functor pure applicate
+
+def alternative : Alternative Parser
+  = Alternative.new Parser applicative failure option
 
 def monadPlus : MonadPlus Parser
-  = MonadPlus.new Parser failure combine
+  = MonadPlus.new Parser monad failure combine
+
+def satisfy (f : ∀ #Char -> Bool): Parser #Char =
+  bind #Char #Char 
+    item 
+    \c => if (Parser #Char) (f c) (pure #Char c) (failure #Char)

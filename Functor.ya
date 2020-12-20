@@ -1,14 +1,18 @@
 package Functor
 where
 
-def Functor (F: forall Type -> Type) : Type =
-  @self forall
-  (0 P: forall (Functor F) -> Type)
-  (& new: forall
-    (map: forall (A : Type) (B: Type) (fun: forall A -> B) (f: F A) -> F B)
+def Functor (F: ∀ Type -> Type) : Type =
+  @self ∀
+  (0 P: ∀ (Functor F) -> Type)
+  (& new: ∀
+    (map: ∀ (A : Type) (B: Type) (fun: ∀ A -> B) (f: F A) -> F B)
     -> P (data \P n => n map)
   ) -> P self
 
-def new (0 F: forall Type -> Type) (map: forall (A : Type) (B: Type) (fun: forall A -> B) (F A) -> F B)
+def new (0 F: ∀ Type -> Type) (map: ∀ (A : Type) (B: Type) (fun: ∀ A -> B) (F A) -> F B)
         : Functor F
   = data \P n => n map
+
+def map (0 F: ∀ Type -> Type) (impl : Functor F) (A : Type) (B : Type) (fun : ∀ A -> B) (f : F A): F B =
+  (case impl) (\_ => F B)
+    (\m => m A B fun f)

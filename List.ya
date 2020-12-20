@@ -1,5 +1,5 @@
 package List
-  with Functor
+  with Functor (Functor)
   with Functor as Functor
   with Maybe (Maybe, just, none)
   with Monad (Monad)
