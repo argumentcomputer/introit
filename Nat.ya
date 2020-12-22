@@ -84,7 +84,7 @@ def divMod (n : Nat) (m : Nat): Pair Nat Nat =
   fun n m zero
 
 -- Modulo division
-def mod (n m : Nat): Nat = Pair.fst Nat Nat (divMod n m)
+def mod (n m : Nat): Nat = Pair.snd Nat Nat (divMod n m)
 
 -- Compare two Nat returns a Compared
 def compare (a b : Nat): Compared

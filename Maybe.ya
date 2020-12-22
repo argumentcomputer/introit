@@ -1,5 +1,5 @@
 package Maybe
-  with Monad
+  with Monad (Monad)
   with Monad as Monad
   with Function (id)
 where

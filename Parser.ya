@@ -19,6 +19,7 @@ package Parser
     with Applicative (Applicative)
     with Bool as Bool
     with Bool (Bool, if)
+    with String as String
 where
 
 
@@ -37,8 +38,7 @@ def parser (0 A : Type) (parse : ∀ #String -> List (Pair A #String)) : Parser 
 
 {| Monadic bind
 |}
-def bind (A B : Type) (p: Parser A) (fun : ∀ A -> Parser B): Parser B
-  =
+def bind (A B : Type) (p: Parser A) (fun : ∀ A -> Parser B): Parser B =
   let fstA: ∀ (Pair A #String) -> A = Pair.fst A #String;
   let snd: ∀ (Pair A #String) -> #String = Pair.snd A #String;
   parser B (\str =>
@@ -170,7 +170,34 @@ def alternative : Alternative Parser
 def monadPlus : MonadPlus Parser
   = MonadPlus.new Parser monad failure combine
 
+{| Satisfy a Char predicate
+|}
 def satisfy (f : ∀ #Char -> Bool): Parser #Char =
   bind #Char #Char 
     item 
     \c => if (Parser #Char) (f c) (pure #Char c) (failure #Char)
+
+def oneOf (str : #String): Parser #Char = 
+  satisfy (\c => String.in c str)
+
+{| One or more Parser A separated by Parser (∀ A -> A -> A)
+|}
+def chain1 (A : Type) (p : Parser A) (op : Parser (∀ A A -> A)): Parser A =
+  letrec rest : ∀ A -> Parser A = (\a =>
+    option A
+      (Monad.bind Parser monad (∀ A A -> A) A
+        op
+        (\f => 
+        Monad.bind Parser monad A A
+          p
+          (\b =>
+            rest (f a b)
+          )
+        )
+      )
+      (pure A a)
+  );
+  Monad.bind Parser monad A A p (\a => rest a)
+
+def chain (A : Type) (p : Parser A) (op : Parser (∀ A A -> A)) (a : A): Parser A =
+  option A (chain1 A p op) (pure A a)
