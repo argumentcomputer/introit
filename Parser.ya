@@ -201,3 +201,47 @@ def chain1 (A : Type) (p : Parser A) (op : Parser (∀ A A -> A)): Parser A =
 
 def chain (A : Type) (p : Parser A) (op : Parser (∀ A A -> A)) (a : A): Parser A =
   option A (chain1 A p op) (pure A a)
+
+def char (c : #Char): Parser #Char =
+  satisfy (\b => String.charEq c b)
+
+def string (s : #String): Parser #String =
+  (case s) (\_ => Parser #String)
+    (pure #String "")
+    (\c cs => 
+      Monad.bind Parser monad #Char #String
+        (char c)
+        (\_ => Monad.bind Parser monad #String #String
+          (string cs)
+          (\_ => Monad.pure Parser monad #String (#String.cons c cs))
+        )
+    )
+
+def whiteSpaces: Parser (List #Char) =
+  Alternative.many Parser alternative #Char (oneOf " \n\r")
+
+def token (A : Type) (p : Parser A): Parser A =
+  Monad.bind Parser monad A A
+    p
+    (\a =>
+      Monad.bind Parser monad (List #Char) A
+        whiteSpaces
+        (\_ => Monad.pure Parser monad A a)
+    )
+
+def reserved (s : #String): Parser #String =
+  token #String (string s)
+
+def digit: Parser #Char =
+  satisfy String.isDigit
+
+def inParentheses (A : Type) (p : Parser A): Parser A =
+  Monad.bind Parser monad #String A
+    (reserved "(")
+    (\_ => Monad.bind Parser monad A A
+      p
+      (\a => Monad.bind Parser monad #String A
+        (reserved ")")
+        (\_ => Monad.pure Parser monad A a)
+      )
+    )

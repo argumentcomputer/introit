@@ -21,3 +21,6 @@ def in (c : #Char) (s : #String): Bool =
         true
         (in c tail)
     )
+
+def isDigit (c : #Char): Bool =
+  in c "0123456789"
