@@ -5,6 +5,8 @@ package Show
   with List as List
   with Vector as Vector
   with Vector (Vector)
+  with Matrix as Matrix
+  with Matrix (Matrix)
   with Map (Map)
   with Map as Map
   with Bool
@@ -108,8 +110,7 @@ def derivePairShow (A B : Type) (implA : Show A) (implB : Show B): Show (Pair A 
                 )
         )
 
-def deriveMapShow (K V : Type) (ord : Ordered K) (implK : Show K) (implV : Show V): Show (Map K V ord)
-  =
+def deriveMapShow (K V : Type) (ord : Ordered K) (implK : Show K) (implV : Show V): Show (Map K V ord) =
   letrec pairShow : ∀ (Pair K V) -> #String = (\p =>
     #String.concat (show K implK (Pair.fst K V p))
     (#String.concat " => " (show V implV (Pair.snd K V p)))
@@ -143,3 +144,34 @@ def deriveVectorShow (0 A : Type) (size : Nat) (impl : Show A): Show (Vector A s
                     (\size head tail => Vector.foldr A #String size subShow (showIt head) tail))
                 "]")))
         )
+
+
+{| Get a matrix show instance
+|}
+def deriveMatrixShow (0 A : Type) (impl : Show A) (rows cols : Nat): Show (Matrix A rows cols) =
+  letrec showIt : ∀ A -> #String = show A impl;
+  letrec subShow : forall A #String -> #String = (\a str =>
+        #String.concat str (#String.concat " " (showIt a))
+    );
+  letrec showRow : ∀ (Vector A cols) #String -> #String = (\row str =>
+    #String.concat
+      str
+      ((case row) (\_ _ => #String)
+        "\n"
+        (\cols head tail => Vector.foldr A #String cols subShow (showIt head) tail))
+  ); 
+  (newShow (Matrix A rows cols)
+        (\matrix =>
+            (case matrix) (\_ rows cols => #String)
+              (\rowsVec =>
+
+                #String.concat "Matrix ("
+                (#String.concat (show Nat natShow rows)
+                (#String.concat " x "
+                (#String.concat (show Nat natShow cols)
+                (#String.concat ")\n["
+                (#String.concat (Vector.foldr (Vector A cols) #String rows showRow rowsVec)
+                    "]"
+                )))
+              )))
+        ))

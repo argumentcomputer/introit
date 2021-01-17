@@ -1,4 +1,5 @@
 package Monad
+  with Equal
 where
 
 def Monad (M: ∀ Type -> Type) : Type =
@@ -22,3 +23,39 @@ def bind (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (B: Type) (m: M A) 
 def pure (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (a : A): M A =
   (case impl) (\_ => M A)
     (\bind pure => pure A a)
+
+def MonadLaws (0 M: ∀ Type -> Type) (impl : Monad M): Type =
+  @self ∀
+  (0 P : ∀ (MonadLaws M impl) -> Type)
+  (& proof : ∀
+    -- First monad law
+    (leftIdentity : ∀ (A B : Type) (a : A) (fun: ∀ A -> (M B))
+      -> Equal (M B) (bind M impl A B (pure M impl A a) fun) (fun a))
+    -- Second monad law
+    (rightIdentity : ∀ (A : Type) (m : M A)
+      -> Equal (M A) (bind M impl A A m (pure M impl A)) (m))
+    -- Third monad law
+    (associativity : ∀ (A B C : Type)
+      (m : M A) (f : ∀ A -> (M B)) (g : ∀ B -> (M C))
+      -> Equal (M C)
+        (bind M impl B C (bind M impl A B m f) g)
+        (bind M impl A C m (\x => bind M impl B C (f x) g)))
+    -> P (data \P p => p leftIdentity rightIdentity associativity)
+  ) -> P self
+
+def proveMonadLaws
+    (0 M: ∀ Type -> Type)
+    (impl : Monad M)
+    (leftIdentity : ∀ (A B : Type) (a : A) (fun: ∀ A -> (M B))
+      -> Equal (M B) (bind M impl A B (pure M impl A a) fun) (fun a))
+    -- Second monad law
+    (rightIdentity : ∀ (A : Type) (m : M A)
+      -> Equal (M A) (bind M impl A A m (pure M impl A)) (m))
+    -- Third monad law
+    (associativity : ∀ (A B C : Type)
+      (m : M A) (f : ∀ A -> (M B)) (g : ∀ B -> (M C))
+      -> Equal (M C)
+        (bind M impl B C (bind M impl A B m f) g)
+        (bind M impl A C m (\x => bind M impl B C (f x) g))) :
+    MonadLaws M impl =
+    data \P proof => proof leftIdentity rightIdentity associativity
