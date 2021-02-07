@@ -1,6 +1,7 @@
 package Maybe
-  with Monad
+  with Monad (Monad)
   with Monad as Monad
+  with Function (id)
 where
 
 def Maybe (A: Type) : Type =
@@ -18,6 +19,9 @@ def bind (0 A : Type) (0 B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): May
         (\m => Maybe B)
         (none B)
         fun
+
+def default (A : Type) (m : Maybe A) (a : A): A
+  = (case m) (\_ => A) a (id A)
 
 def monad : Monad (Maybe)
   = Monad.new Maybe bind just

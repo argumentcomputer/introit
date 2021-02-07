@@ -1,0 +1,33 @@
+package Tree
+  with List
+  with Compared
+where
+
+def BinaryTree (A : Type): Type =
+    @self forall
+    (0 P : forall (BinaryTree A) -> Type)
+    (& empty : P (data \P e n => e))
+    (& node : forall (value : A) (left : BinaryTree A) (right : BinaryTree A) -> P (data \P e n => n value left right))
+    -> P self
+
+-- Empty tree
+def empty (0 A : Type): BinaryTree A = data \P e n => e
+
+def node (0 A : Type) (value : A) (left : BinaryTree A) (right : BinaryTree A): BinaryTree A
+  = data \P e n => n value left right
+
+-- A leaf node
+def leaf (0 A : Type) (value : A): BinaryTree A
+  = node A value (empty A) (empty A)
+
+def fromList (A : Type) (ordering : Ordered A) (list : List A): BinaryTree A
+  = (case list) (\_ => BinaryTree A)
+        (empty A)
+        (\head tail =>
+            (case tail) (\_ => BinaryTree A)
+                (leaf A head)
+                (\next _ => if (BinaryTree A) (isLessThanOrEqual A ordering head next)
+                    (node A head (fromList A ordering tail) (empty A))
+                    (node A head (empty A) (fromList A ordering tail))
+                )
+        )

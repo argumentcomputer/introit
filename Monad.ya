@@ -1,16 +1,24 @@
 package Monad
 where
 
-def Monad (M: forall Type -> Type) : Type =
-  @self forall
-  (0 P: forall (Monad M) -> Type)
-  (& new: forall
-    (bind: forall (A : Type) (B: Type) (m: M A) (fun: forall A -> (M B)) -> M B)
-    (pure: forall (A : Type) (a: A) -> M A)
+def Monad (M: ∀ Type -> Type) : Type =
+  @self ∀
+  (0 P: ∀ (Monad M) -> Type)
+  (& new: ∀
+    (bind: ∀ (A : Type) (B: Type) (m: M A) (fun: ∀ A -> (M B)) -> M B)
+    (pure: ∀ (A : Type) (a: A) -> M A)
     -> P (data \P n => n bind pure)
   ) -> P self
 
-def new (0 M: forall Type -> Type) (bind: forall (A : Type) (B: Type) (M A) (fun: forall A -> (M B)) -> M B)
-        (pure: forall (A : Type) (a: A) -> M A)
+def new (0 M: ∀ Type -> Type) (bind: ∀ (A : Type) (B: Type) (M A) (fun: ∀ A -> (M B)) -> M B)
+        (pure: ∀ (A : Type) (a: A) -> M A)
         : Monad M
   = data \P n => n bind pure
+
+def bind (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (B: Type) (m: M A) (fun: ∀ A -> (M B)): M B =
+  (case impl) (\_ => M B)
+    (\bind _ => bind A B m fun)
+
+def pure (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (a : A): M A =
+  (case impl) (\_ => M A)
+    (\bind pure => pure A a)
