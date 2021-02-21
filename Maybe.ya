@@ -1,8 +1,8 @@
-package Maybe
-  with Monad (Monad)
-  with Monad as Monad
-  with Function (id)
-where
+package Maybe where
+
+open Monad (Monad)
+open Monad as Monad
+open Function (id)
 
 def Maybe (A: Type) : Type =
    @self ∀
@@ -16,12 +16,12 @@ def just (0 A: Type) (x: A) : Maybe A = data λ P n j => j x
 
 def bind (0 A : Type) (0 B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): Maybe B
   = (case m)
-        (\m => Maybe B)
+        (λ m => Maybe B)
         (none B)
         fun
 
 def default (A : Type) (m : Maybe A) (a : A): A
-  = (case m) (\_ => A) a (id A)
+  = (case m) (λ _ => A) a (id A)
 
 def monad : Monad (Maybe)
   = Monad.new Maybe bind just

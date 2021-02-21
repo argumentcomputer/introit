@@ -1,7 +1,7 @@
-package Either
-  with Monad
-  with Monad as Monad
-where
+package Either where
+
+open Monad
+open Monad as Monad
 
 def Either (A: Type) (B: Type) : Type =
    @self ∀
@@ -15,18 +15,18 @@ def right (A : Type) (B: Type) (x: B) : Either A B = data λ P l r => r x
 
 def bindRight (A : Type) (B: Type) (C: Type) (e: Either A B) (fun: forall B -> (Either A C)): Either A C
   = (case e)
-        (\m => Either A C)
+        (λ m => Either A C)
         (left A C)
         fun
 
 def bindLeft (A : Type) (B: Type) (C: Type) (e: Either A B) (fun: forall A -> (Either C B)): Either C B
   = (case e)
-        (\m => Either C B)
+        (λ m => Either C B)
         fun
         (right C B)
 
 def monadRight (A : Type) : Monad (Either A)
   = Monad.new (Either A) (bindRight A) (right A)
 
-def monadLeft (B : Type) : Monad (\A => Either A B)
-  = Monad.new (\A => Either A B) (\A => bindLeft A B) (\A => left A B)
+def monadLeft (B : Type) : Monad (λ A => Either A B)
+  = Monad.new (λ A => Either A B) (λ A => bindLeft A B) (λ A => left A B)

@@ -6,22 +6,18 @@ def Equal (A: Type) (a b: A) : Type =
   (& refl : P a (data λ P refl => refl))
   -> P b self
 
-{| a ~ a
-|}
+// a ~ a
 def refl (0 A: Type) (a : A) : Equal A a a = data λ P refl => refl
 
-{| if a ~ b then b ~ a
-|}
+// if a ~ b then b ~ a
 def sym (0 A: Type) (a b: A) (e: Equal A a b) : Equal A b a
   = (case e) (λ b e => Equal A b a) (refl A a)
 
-{| ∀ a, b, c if a ~ b and b ~ c then a ~ c
-|}
+// ∀ a, b, c if a ~ b and b ~ c then a ~ c
 def trans (0 A: Type) (a b c: A) (ab: Equal A a b) (bc: Equal A b c): Equal A a c
   = (case bc) (λ b' _ => Equal A a b') ab
 
-{| if a ~A b then f(a) ~B f(b)
-|}
+// if a ~A b then f(a) ~B f(b)
 def cong (0 A B: Type) (a b: A) (f: ∀ A -> B) (e: Equal A a b): Equal B (f a) (f b)
   = (case e) (λ b' _ => Equal B (f a) (f b')) (refl B (f a))
 

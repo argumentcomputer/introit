@@ -1,14 +1,14 @@
-package Nat
-  with Either
-  with Pair (Pair)
-  with Pair as Pair
-  with Bool (Bool, if, and, or)
-  with Bool as Bool
-  with Compared as Compared
-  with Compared (Compared, Ordered, newOrdered)
-  with Equal (Equal)
-  with Equal as Equal
-where
+package Nat where
+
+open Either
+open Pair (Pair)
+open Pair as Pair
+open Bool as Bool
+open Bool (Bool, if, and, or)
+open Compared as Compared
+open Compared (Compared, Ordered, newOrdered)
+open Equal (Equal)
+open Equal as Equal
 
 def Nat : Type =
   @self ∀
@@ -24,83 +24,83 @@ def succ (x: Nat): Nat = data λ P z s => s x
 def pred (x: Nat): Nat = (case x) (λ _ => Nat) zero (λ p => p)
 
 def add (a b: Nat): Nat
-  = (case a) (\x => Nat)
+  = (case a) (λ x => Nat)
         b
-        (\pred => succ (add pred b))
+        (λ pred => succ (add pred b))
 
 def mul (a b : Nat): Nat
-  = (case a) (\x => Nat)
+  = (case a) (λ x => Nat)
         zero
-        (\pred => add b (mul pred b))
+        (λ pred => add b (mul pred b))
 
 def from_natural (n : #Natural): Nat
-  = (case n) (\x => Nat)
+  = (case n) (λ x => Nat)
         zero
-        (\pred => succ (from_natural pred))
+        (λ pred => succ (from_natural pred))
 
 def to_natural (n : Nat): #Natural
-  = (case n) (\x => #Natural)
-        0
-        (\pred => #Natural.succ (to_natural pred))
+  = (case n) (λ x => #Natural)
+        0d0
+        (λ pred => #suc (to_natural pred))
 
 def Addable (A: Type) : Type =
   @self forall
   (0 P: forall (Addable A) -> Type)
   (newAddable: forall
     (add: forall (a b: A) -> A)
-    -> P (data \P n => n add)
+    -> P (data λ P n => n add)
   ) -> P self
 
 def newAddable (0 A: Type) (add: forall (a b: A) -> A): Addable A
-  = data \P n => n add
+  = data λ P n => n add
 
 def natAddable: Addable Nat
   = newAddable Nat add
 
 def naturalAddable: Addable #Natural
-  = newAddable #Natural #Natural.add
+  = newAddable #Natural #add
 
 def addAddables (0 A: Type) (impl: Addable A) (x y: A): A
-  = (case impl) (\_ => A)
-        (\add_a => add_a x y)
+  = (case impl) (λ _ => A)
+        (λ add_a => add_a x y)
 
--- Subtraction of Nat (n - m)
--- The sign is encoded in Either; right is minus left is plus.
+// Subtraction of Nat (n - m)
+// The sign is encoded in Either; right is minus left is plus.
 def sub (n : Nat) (m : Nat): Either Nat Nat
-  = (case m) (\_ => Either Nat Nat)
+  = (case m) (λ _ => Either Nat Nat)
         (left Nat Nat n)
-        (\m_pred =>
-            (case n) (\_ => Either Nat Nat)
+        (λ m_pred =>
+            (case n) (λ _ => Either Nat Nat)
                 (right Nat Nat (succ m_pred))
-                (\n_pred => sub n_pred m_pred))
+                (λ n_pred => sub n_pred m_pred))
 
--- Division with remainder
+// Division with remainder
 def divMod (n : Nat) (m : Nat): Pair Nat Nat =
   letrec fun : (forall Nat Nat Nat -> Pair Nat Nat) =
-    (\n m d => (case (sub n m)) (\_ => Pair Nat Nat)
-        (\r => fun r m (succ d))
-        (\r => Pair.new Nat Nat d n)
+    (λ n m d => (case (sub n m)) (λ _ => Pair Nat Nat)
+        (λ r => fun r m (succ d))
+        (λ r => Pair.new Nat Nat d n)
     );
   fun n m zero
 
--- Modulo division
+// Modulo division
 def mod (n m : Nat): Nat = Pair.snd Nat Nat (divMod n m)
 
--- Compare two Nat returns a Compared
+// Compare two Nat returns a Compared
 def compare (a b : Nat): Compared
-  = (case a) (\_ => Compared)
-        ((case b) (\_ => Compared) Compared.eql (\_ => Compared.ltn))
-        (\a_pred => (case b) (\_ => Compared)
+  = (case a) (λ _ => Compared)
+        ((case b) (λ _ => Compared) Compared.eql (λ _ => Compared.ltn))
+        (λ a_pred => (case b) (λ _ => Compared)
             Compared.gtn
-            (\b_pred => compare a_pred b_pred)
+            (λ b_pred => compare a_pred b_pred)
         )
 
 def compareNatural (a b : #Natural): Compared
-  = (case a) (\_ => Compared)
-        ((case b) (\_ => Compared) Compared.eql (\_ => Compared.ltn))
-        (\a_pred => (case b) (\_ => Compared)
+  = (case a) (λ _ => Compared)
+        ((case b) (λ _ => Compared) Compared.eql (λ _ => Compared.ltn))
+        (λ a_pred => (case b) (λ _ => Compared)
             Compared.gtn
-            (\b_pred => compareNatural a_pred b_pred)
+            (λ b_pred => compareNatural a_pred b_pred)
         )
 
 def orderedNat: Ordered Nat
@@ -109,19 +109,19 @@ def orderedNat: Ordered Nat
 def orderedNatural: Ordered #Natural
   = newOrdered #Natural compareNatural
 
--- Greater than a > b
+// Greater than a > b
 def gtn (a b : Nat): Bool
   = Compared.equals (compare a b) Compared.gtn
 
--- Less than a < b
+// Less than a < b
 def ltn (a b : Nat): Bool
   = Compared.equals (compare a b) Compared.ltn
 
--- Less than or equal a <= b
+// Less than or equal a <= b
 def lte (a b : Nat): Bool
   = let c : Compared = compare a b;
   or (Compared.equals c Compared.ltn) (Compared.equals c Compared.gtn)
 
--- Equals a = b
+// Equals a = b
 def eql (a b : Nat): Bool
   = Compared.equals (compare a b) Compared.eql

@@ -1,12 +1,11 @@
-package MonadPlus
-  with Monad (Monad)
-  with Monad as Monad
-  with List as List
-  with List (List)
-where
+package MonadPlus where
 
-{| A monoid monad with identity and a binary operation
-|}
+with Monad (Monad)
+with Monad as Monad
+with List as List
+with List (List)
+
+// A monoid monad with identity and a binary operation
 def MonadPlus (M: ∀ Type -> Type) : Type =
   @self ∀
   (0 P: ∀ (MonadPlus M) -> Type)
@@ -14,7 +13,7 @@ def MonadPlus (M: ∀ Type -> Type) : Type =
     (monad : Monad M)
     (mzero : ∀ (A : Type) -> M A)
     (mplus : ∀ (A : Type) (p q : M A) -> M A)
-    -> P (data \P n => n monad mzero mplus)
+    -> P (data λ P n => n monad mzero mplus)
   ) -> P self
 
 def new (0 M: ∀ Type -> Type)
@@ -22,16 +21,16 @@ def new (0 M: ∀ Type -> Type)
         (mzero : ∀ (A : Type) -> M A)
         (mplus : ∀ (A : Type) (p q : M A) -> M A)
         : MonadPlus M
-  = data \P n => n monad mzero mplus
+  = data λ P n => n monad mzero mplus
 
 def monad (0 M: ∀ Type -> Type) (impl : MonadPlus M): Monad M
-  = (case impl) (\_ => Monad M)
-      (\monad _ _ => monad)
+  = (case impl) (λ _ => Monad M)
+      (λ monad _ _ => monad)
 
 def mzero (0 M: ∀ Type -> Type) (impl : MonadPlus M): ∀ (A : Type) -> M A
-  = (case impl) (\_ => ∀ (A : Type) -> M A)
-      (\_ mzero _ => mzero)
+  = (case impl) (λ _ => ∀ (A : Type) -> M A)
+      (λ _ mzero _ => mzero)
 
 def mplus (0 M: ∀ Type -> Type) (impl : MonadPlus M): ∀ (A : Type) (p q : M A) -> M A
-  = (case impl) (\_ => ∀ (A : Type) (p q : M A) -> M A)
-      (\_ _ mplus => mplus)
+  = (case impl) (λ _ => ∀ (A : Type) (p q : M A) -> M A)
+      (λ _ _ mplus => mplus)

@@ -1,11 +1,10 @@
-{| Basic Matrix functions
-|}
-package Matrix
-  with Nat (Addable, Nat)
-  with Nat as Nat
-  with Vector as Vector
-  with Vector (Vector, nil, cons)
-where
+// Basic Matrix functions
+package Matrix where
+
+open Nat (Addable, Nat)
+open Nat as Nat
+open Vector as Vector
+open Vector (Vector, nil, cons)
 
 def Matrix (A: Type) (rows: Nat) (cols: Nat): Type =
   @self ∀
@@ -20,8 +19,8 @@ def fill (0 A: Type) (rows: Nat) (cols : Nat) (a: A) : Matrix A rows cols =
     new A rows cols (Vector.fill (Vector A cols) rows (Vector.fill A cols a))
 
 def getRows (0 A: Type) (rows: Nat) (cols: Nat) (matrix: Matrix A rows cols): Vector (Vector A cols) rows
-  = (case matrix) (\r c m => Vector (Vector A c) r)
-        (\r c vec => vec)
+  = (case matrix) (λ r c m => Vector (Vector A c) r)
+        (λ r c vec => vec)
 
 def vec_vec_addable (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat): Addable (Vector (Vector A cols) rows)
   = Vector.deriveAddable (Vector A cols) (Vector.deriveAddable A impl cols) rows

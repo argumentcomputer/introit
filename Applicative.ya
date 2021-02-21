@@ -1,10 +1,9 @@
-package Applicative
-  with Functor (Functor)
-  with Functor as Functor
-where
+package Applicative where
 
-{| An applicative functor
-|}
+open Functor (Functor)
+open Functor as Functor
+
+// An applicative functor
 def Applicative (F: ∀ Type -> Type) : Type =
   @self ∀
   (0 P: ∀ (Applicative F) -> Type)
@@ -12,7 +11,7 @@ def Applicative (F: ∀ Type -> Type) : Type =
     (functor : Functor F)
     (pure : ∀ (A : Type) (a : A) -> F A)
     (applicate : ∀ (A B : Type) (p : F (∀ A -> B)) (q : F A) -> F B)
-    -> P (data \P n => n functor pure applicate)
+    -> P (data λ P n => n functor pure applicate)
   ) -> P self
 
 def new (0 F: ∀ Type -> Type)
@@ -20,17 +19,17 @@ def new (0 F: ∀ Type -> Type)
         (pure : ∀ (A : Type) (a : A) -> F A)
         (applicate : ∀ (A B : Type) (p : F (∀ A -> B)) (q : F A) -> F B)
         : Applicative F
-  = data \P n => n functor pure applicate
+  = data λ P n => n functor pure applicate
 
 def functor (0 F: ∀ Type -> Type) (impl : Applicative F): Functor F
-  = (case impl) (\_ => Functor F)
-      (\functorF _ _ => functorF)
+  = (case impl) (λ _ => Functor F)
+      (λ functorF _ _ => functorF)
 
 def pure (F : ∀ Type -> Type) (impl : Applicative F) (A : Type) (a : A): F A =
-  (case impl) (\_ => F A)
-    (\_ pureF _ => pureF A a)
+  (case impl) (λ _ => F A)
+    (λ _ pureF _ => pureF A a)
 
 def applicate (F : ∀ Type -> Type) (impl : Applicative F) (A B : Type)
               (p : F (∀ A -> B)) (q : F A): F B =
-  (case impl) (\_ => F B)
-    (\_ _ applicateF => applicateF A B p q)
+  (case impl) (λ _ => F B)
+    (λ _ _ applicateF => applicateF A B p q)

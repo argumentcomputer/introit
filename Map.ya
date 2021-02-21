@@ -1,25 +1,25 @@
-package Map
-  with Pair as Pair
-  with Pair (Pair)
-  with Compared
-  with List (List)
-  with List as List
-  with Maybe (Maybe, none, just)
-where
+package Map where
+
+open Pair as Pair
+open Pair (Pair)
+open Compared
+open List (List)
+open List as List
+open Maybe (Maybe, none, just)
 
 def Map (K: Type) (V: Type) (O: Ordered K): Type =
     @self forall
     (0 P : forall (Map K V O) -> Type)
-    (& empty : P (data \P e t => e))
-    (& tie : forall (key : K) (value : V) (left : Map K V O) (right : Map K V O) -> P (data \P e t => t key value left right))
+    (& empty : P (data λ P e t => e))
+    (& tie : forall (key : K) (value : V) (left : Map K V O) (right : Map K V O) -> P (data λ P e t => t key value left right))
     -> P self
 
 def empty (0 K V: Type) (ordering : Ordered K): Map K V ordering
-  = data \P e t => e
+  = data λ P e t => e
 
 
 def tie (0 K V: Type) (O : Ordered K) (key : K) (value : V) (left : Map K V O) (right : Map K V O): Map K V O
-  = data \P e t => t key value left right
+  = data λ P e t => t key value left right
 
 def singleton (0 K V: Type) (ordering : Ordered K) (key : K) (value : V): Map K V ordering
   = tie K V ordering key value (empty K V ordering) (empty K V ordering)
@@ -32,18 +32,18 @@ def fromList (K V: Type) (ordering : Ordered K) (list : List (Pair K V)): Map K 
   let empty : Map K V ordering = empty K V ordering;
   let singleton : forall K V -> Map K V ordering = singleton K V ordering;
   let tie : forall K V (Map K V ordering) (Map K V ordering) -> (Map K V ordering) = tie K V ordering;
-  (case list) (\_ => Map K V ordering)
+  (case list) (λ _ => Map K V ordering)
         empty
-        (\head tail =>
+        (λ head tail =>
             let key : K = getKey head;
             let value : V = getValue head;
-            (case tail) (\_ => Map K V ordering)
+            (case tail) (λ _ => Map K V ordering)
                 (singleton key value)
-                (\next skipTail =>
+                (λ next skipTail =>
                     let nKey : K = getKey next;
                     let nValue : V = getValue next;
                     (case (compareOrdered K ordering key nKey))
-                        (\_ => Map K V ordering)
+                        (λ _ => Map K V ordering)
                         (tie key value (fromList K V ordering tail) empty)
                         (tie key value (fromList K V ordering skipTail) empty)
                         (tie key value empty (fromList K V ordering tail))
@@ -51,9 +51,9 @@ def fromList (K V: Type) (ordering : Ordered K) (list : List (Pair K V)): Map K 
         )
 
 def toList (0 K V: Type) (ordering : Ordered K) (map : Map K V ordering): List (Pair K V)
-  = (case map) (\_ => List (Pair K V))
+  = (case map) (λ _ => List (Pair K V))
         (List.nil (Pair K V))
-        (\key value left right =>
+        (λ key value left right =>
             List.cons (Pair K V) (Pair.new K V key value)
                 (List.concat (Pair K V) (toList K V ordering left) (toList K V ordering right))
         )
@@ -67,9 +67,9 @@ def mapMap (K V BK BV : Type) (ord : Ordered K) (ordB : Ordered BK) (f : ∀ (Pa
 def put (0 K V: Type) (ord : Ordered K) (m : Map K V ord) (key : K) (value : V): Map K V ord =
   let singleton : forall K V -> Map K V ord = singleton K V ord;
   let tie : forall K V (Map K V ord) (Map K V ord) -> (Map K V ord) = tie K V ord;
-  (case m) (\_ => Map K V ord)
+  (case m) (λ _ => Map K V ord)
     (singleton key value)
-    (\tKey tValue left right => (case (compareOrdered K ord key tKey)) (\_ => Map K V ord)
+    (λ tKey tValue left right => (case (compareOrdered K ord key tKey)) (λ _ => Map K V ord)
         (tie key tValue (put K V ord left key value) right)
         (tie key value left right)
         (tie key tValue left (put K V ord right key value))
@@ -77,10 +77,10 @@ def put (0 K V: Type) (ord : Ordered K) (m : Map K V ord) (key : K) (value : V):
 
 
 def lookup (0 K V: Type) (ord : Ordered K) (m : Map K V ord) (key : K): Maybe V
-  = (case m) (\_ => Maybe V)
+  = (case m) (λ _ => Maybe V)
         (none V)
-        (\fKey value left right =>
-            (case (compareOrdered K ord key fKey)) (\_ => Maybe V)
+        (λ fKey value left right =>
+            (case (compareOrdered K ord key fKey)) (λ _ => Maybe V)
                 (lookup K V ord left key)
                 (just V value)
                 (lookup K V ord right key)

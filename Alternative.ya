@@ -1,14 +1,13 @@
-package Alternative
-  with Applicative (Applicative)
-  with Applicative as Applicative
-  with Functor as Functor
-  with Functor (Functor)
-  with List as List
-  with List (List)
-where
+package Alternative where
 
-{| A structure for choosing between two alternatives
-|}
+open Applicative (Applicative)
+open Applicative as Applicative
+open Functor as Functor
+open Functor (Functor)
+open List as List
+open List (List)
+
+// A structure for choosing between two alternatives
 def Alternative (F: ∀ Type -> Type) : Type =
   @self ∀
   (0 P: ∀ (Alternative F) -> Type)
@@ -36,8 +35,7 @@ def pure (F : ∀ Type -> Type) (impl : Alternative F) (A : Type) (a : A): F A =
 def functor (0 F: ∀ Type -> Type) (impl : Alternative F): Functor F
   = Applicative.functor F (applicative F impl)
 
-{| Empty alternative
-|}
+// Empty alternative
 def empty (0 F: ∀ Type -> Type) (impl : Alternative F) (A : Type): F A
   = (case impl) (\_ => F A)
       (\_ emptyF _ => emptyF A)
@@ -47,8 +45,7 @@ def option (0 F : ∀ Type -> Type) (impl : Alternative F)
   (case impl) (\_ => F A)
       (\_ _ optionF => optionF A p q)
 
-{| One or more
-|}
+// One or more
 def some (F: ∀ Type -> Type) (impl : Alternative F) (A : Type) (f : F A): F (List A) =
   let many_f : F (List A) = option F impl (List A)
     (some F impl A f)
@@ -61,8 +58,7 @@ def some (F: ∀ Type -> Type) (impl : Alternative F) (A : Type) (f : F A): F (L
       many_f
   )
 
-{| Zero or more
-|}
+// Zero or more
 def many (F: ∀ Type -> Type) (impl : Alternative F) (A : Type) (f : F A): F (List A) =
   let some_f : F (List A) = 
   (Applicative.applicate F (applicative F impl) (List A) (List A)

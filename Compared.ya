@@ -1,6 +1,6 @@
-package Compared
-    with Bool
-where
+package Compared where
+
+open Bool
 
 def Compared : Type =
   @self ∀
@@ -10,15 +10,15 @@ def Compared : Type =
   (& gtn : P (data λ P l e g => g))
   -> P self
 
-def ltn : Compared = data \P l e g => l
-def eql : Compared = data \P l e g => e
-def gtn : Compared = data \P l e g => g
+def ltn : Compared = data λ P l e g => l
+def eql : Compared = data λ P l e g => e
+def gtn : Compared = data λ P l e g => g
 
 def equals (a b : Compared): Bool
-  = (case a) (\_ => Bool)
-        ((case b) (\_ => Bool) true false false)
-        ((case b) (\_ => Bool) false true false)
-        ((case b) (\_ => Bool) false false true)
+  = (case a) (λ _ => Bool)
+        ((case b) (λ _ => Bool) true false false)
+        ((case b) (λ _ => Bool) false true false)
+        ((case b) (λ _ => Bool) false false true)
 
 def Ordered (A : Type) : Type =
   @self ∀
@@ -30,8 +30,8 @@ def newOrdered (0 A : Type) (compare : ∀ (a b : A) -> Compared): Ordered A
   = data λ P n => n compare
 
 def compareOrdered (0 A : Type) (impl : Ordered A) (a b : A): Compared
-  = (case impl) (\_ => Compared)
-        (\compare => compare a b)
+  = (case impl) (λ _ => Compared)
+        (λ compare => compare a b)
 
 def isLessThan (0 A : Type) (impl : Ordered A) (a b : A): Bool
   = equals (compareOrdered A impl a b) ltn

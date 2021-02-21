@@ -1,17 +1,15 @@
-package Introit
-  with Empty
-  with Pair as Pair
-  with Unit as Unit
-  with Function
-  with Equal
-  with BitString as BitString
-  with Bool
-  with Function
-  with List   as List
-  with Matrix as Matrix
-  with Vector as Vector
-  with Monad
-  with Show
-where
+package Introit where
+open Empty
+open Pair as Pair
+open Unit as Unit
+open Function
+open Equal
+open BitString as BitString
+open Bool
+open Function
+open List   as List
+open Matrix as Matrix
+open Vector as Vector
+open Monad
 
 
