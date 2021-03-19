@@ -2,7 +2,7 @@ package Bool where
 
 def Bool : Type =
   @self ∀
-  (0 P     : ∀ Bool -> Type)
+  (0 P     : ∀ (Bool) -> Type)
   (& true  : P (data λ P t f => t))
   (& false : P (data λ P t f => f))
   -> P self

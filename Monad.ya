@@ -9,7 +9,7 @@ def Monad (M: ∀ Type -> Type) : Type =
     -> P (data λ P n => n bind pure)
   ) -> P self
 
-def new (0 M: ∀ Type -> Type) (bind: ∀ (A : Type) (B: Type) (M A) (fun: ∀ A -> (M B)) -> M B)
+def new (0 M: ∀ Type -> Type) (bind: ∀ (A : Type) (B: Type) (_: M A) (fun: ∀ A -> (M B)) -> M B)
         (pure: ∀ (A : Type) (a: A) -> M A)
         : Monad M
   = data λ P n => n bind pure
