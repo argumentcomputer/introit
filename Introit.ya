@@ -1,4 +1,5 @@
 package Introit where
+
 open Empty
 open Pair as Pair
 open Unit as Unit

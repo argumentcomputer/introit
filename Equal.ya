@@ -11,7 +11,7 @@ def refl (0 A: Type) (a : A) : Equal A a a = data λ P refl => refl
 
 // if a ~ b then b ~ a
 def sym (0 A: Type) (a b: A) (e: Equal A a b) : Equal A b a
-  = (case e) (λ b e => Equal A b a) (refl A a)
+  = (case e) (λ b _ => Equal A b a) (refl A a)
 
 // ∀ a, b, c if a ~ b and b ~ c then a ~ c
 def trans (0 A: Type) (a b c: A) (ab: Equal A a b) (bc: Equal A b c): Equal A a c

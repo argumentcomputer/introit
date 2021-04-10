@@ -2,11 +2,11 @@ package Function where
 
 def Function (A: Type) (B: ∀ A -> Type): Type = ∀ (x: A) -> B x
 
-def const (0 A B: Type) (x: A) (y: B): A = x
+def const (0 A: Type) (0 B: Type) (x: A) (y: B): A = x
 
 def id (0 A: Type) (x: A): A = x
 
-def compose (0 A B C: Type) (g: ∀ B -> C) (f: ∀ A -> B): ∀ A -> C
+def compose (0 A: Type) (0 B: Type) (0 C: Type) (g: ∀ B -> C) (f: ∀ A -> B): ∀ A -> C
   = λ x => g (f x)
 
 def call (0 A: Type) (0 B: ∀ A -> Type) (x: A) (f: ∀ (a:A) -> B a) : B x

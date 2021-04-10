@@ -6,7 +6,7 @@ def Pair (A : Type) (B : Type) : Type
   (& new : ∀ (a : A) (b : B) -> (P (data λ P n => n a b)))
   -> P self
 
-def new (0 A : Type) (0 B : Type) (a : A) (b : B) : Pair A B
+def new (0 A B: Type) (a : A) (b : B) : Pair A B
   = data λ P n => n a b
 
 def curry (0 A B C: Type) (f: ∀ (Pair A B) -> C) (x: A) (y: B): C
