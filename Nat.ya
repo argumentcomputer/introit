@@ -1,14 +1,15 @@
-package Nat where
+package Nat
+  import Either
+  import Pair (Pair)
+  import Pair as Pair
+  import Bool as Bool
+  import Bool (Bool, if, and, or)
+  import Compared as Compared
+  import Compared (Compared, Ordered, newOrdered)
+  import Equal (Equal)
+  import Equal as Equal
+where
 
-open Either
-open Pair (Pair)
-open Pair as Pair
-open Bool as Bool
-open Bool (Bool, if, and, or)
-open Compared as Compared
-open Compared (Compared, Ordered, newOrdered)
-open Equal (Equal)
-open Equal as Equal
 
 def Nat : Type =
   @self ∀
@@ -33,15 +34,15 @@ def mul (a b : Nat): Nat
         zero
         (λ pred => add b (mul pred b))
 
-def from_natural (n : #Natural): Nat
-  = (case n) (λ x => Nat)
-        zero
-        (λ pred => succ (from_natural pred))
+//def from_nat_prim (n : #Nat): Nat
+//  = (case n) (λ x => Nat)
+//        zero
+//        (λ pred => succ (from_nat_prim pred))
 
-def to_natural (n : Nat): #Natural
-  = (case n) (λ x => #Natural)
-        0d0
-        (λ pred => #suc (to_natural pred))
+//def to_nat_prim (n : Nat): #Nat
+//  = (case n) (λ x => #Nat)
+//        0d0
+//        (λ pred => #Nat.suc (to_nat_prim pred))
 
 def Addable (A: Type) : Type =
   @self forall
@@ -57,8 +58,8 @@ def newAddable (0 A: Type) (add: forall (a b: A) -> A): Addable A
 def natAddable: Addable Nat
   = newAddable Nat add
 
-def naturalAddable: Addable #Natural
-  = newAddable #Natural #add
+//def naturalAddable: Addable #Nat
+//  = newAddable #Nat #Nat.add
 
 def addAddables (0 A: Type) (impl: Addable A) (x y: A): A
   = (case impl) (λ _ => A)
@@ -74,17 +75,18 @@ def sub (n : Nat) (m : Nat): Either Nat Nat
                 (right Nat Nat (succ m_pred))
                 (λ n_pred => sub n_pred m_pred))
 
-// Division with remainder
-def divMod (n : Nat) (m : Nat): Pair Nat Nat =
-  letrec fun : (forall Nat Nat Nat -> Pair Nat Nat) =
-    (λ n m d => (case (sub n m)) (λ _ => Pair Nat Nat)
-        (λ r => fun r m (succ d))
-        (λ r => Pair.new Nat Nat d n)
-    );
-  fun n m zero
+// Todo: letrec
+//// Division with remainder
+//def divMod (n : Nat) (m : Nat): Pair Nat Nat =
+//  letrec fun : (forall Nat Nat Nat -> Pair Nat Nat) =
+//    (λ n m d => (case (sub n m)) (λ _ => Pair Nat Nat)
+//        (λ r => fun r m (succ d))
+//        (λ r => Pair.new Nat Nat d n)
+//    );
+//  fun n m zero
 
-// Modulo division
-def mod (n m : Nat): Nat = Pair.snd Nat Nat (divMod n m)
+//// Modulo division
+//def mod (n m : Nat): Nat = Pair.snd Nat Nat (divMod n m)
 
 // Compare two Nat returns a Compared
 def compare (a b : Nat): Compared
@@ -95,19 +97,20 @@ def compare (a b : Nat): Compared
             (λ b_pred => compare a_pred b_pred)
         )
 
-def compareNatural (a b : #Natural): Compared
-  = (case a) (λ _ => Compared)
-        ((case b) (λ _ => Compared) Compared.eql (λ _ => Compared.ltn))
-        (λ a_pred => (case b) (λ _ => Compared)
-            Compared.gtn
-            (λ b_pred => compareNatural a_pred b_pred)
-        )
+// Todo: case-prim
+//def compareNatPrim (a b : #Nat): Compared
+//  = (case a) (λ _ => Compared)
+//        ((case b) (λ _ => Compared) Compared.eql (λ _ => Compared.ltn))
+//        (λ a_pred => (case b) (λ _ => Compared)
+//            Compared.gtn
+//            (λ b_pred => compareNatPrim a_pred b_pred)
+//        )
 
 def orderedNat: Ordered Nat
   = newOrdered Nat compare
 
-def orderedNatural: Ordered #Natural
-  = newOrdered #Natural compareNatural
+//def orderedNatPrim: Ordered #Nat
+//  = newOrdered #Nat compareNatPrim
 
 // Greater than a > b
 def gtn (a b : Nat): Bool
@@ -117,10 +120,11 @@ def gtn (a b : Nat): Bool
 def ltn (a b : Nat): Bool
   = Compared.equals (compare a b) Compared.ltn
 
-// Less than or equal a <= b
-def lte (a b : Nat): Bool
-  = let c : Compared = compare a b;
-  or (Compared.equals c Compared.ltn) (Compared.equals c Compared.gtn)
+// Todo: let typecheck
+//// Less than or equal a <= b
+//def lte (a b : Nat): Bool
+//  = let c : Compared = compare a b;
+//  or (Compared.equals c Compared.ltn) (Compared.equals c Compared.gtn)
 
 // Equals a = b
 def eql (a b : Nat): Bool

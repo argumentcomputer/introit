@@ -1,7 +1,5 @@
 package Either where
 
-open Monad
-open Monad as Monad
 
 def Either (A: Type) (B: Type) : Type =
    @self ∀
@@ -25,8 +23,3 @@ def bindLeft (A : Type) (B: Type) (C: Type) (e: Either A B) (fun: forall A -> (E
         fun
         (right C B)
 
-def monadRight (A : Type) : Monad (Either A)
-  = Monad.new (Either A) (bindRight A) (right A)
-
-def monadLeft (B : Type) : Monad (λ A => Either A B)
-  = Monad.new (λ A => Either A B) (λ A => bindLeft A B) (λ A => left A B)

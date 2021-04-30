@@ -1,4 +1,7 @@
-package Monad where
+package Monad
+  import Either as Either
+  import Either (Either)
+where
 
 def Monad (M: ∀ Type -> Type) : Type =
   @self ∀
@@ -21,3 +24,11 @@ def bind (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (B: Type) (m: M A) 
 def pure (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (a : A): M A =
   (case impl) (λ _ => M A)
     (λ bind pure => pure A a)
+
+
+def EitherRight (A : Type) : Monad (Either A)
+  = new (Either A) (Either.bindRight A) (Either.right A)
+
+// segfaults
+//def EitherLeft (B : Type) : Monad (λ A => Either A B)
+//  = new (λ A => Either A B) (λ A => Either.bindLeft A B) (λ A => Either.left A B)

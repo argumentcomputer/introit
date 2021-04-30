@@ -1,16 +1,16 @@
-package Introit where
-
-open Empty
-open Pair as Pair
-open Unit as Unit
-open Function
-open Equal
-open BitString as BitString
-open Bool
-open Function
-open List   as List
-open Matrix as Matrix
-open Vector as Vector
-open Monad
+package Introit 
+  import Empty
+  import Pair as Pair
+  import Unit as Unit
+  import Function
+  import Equal
+  import BitString as BitString
+  import Bool
+  import Function
+//  import List   as List
+//  import Matrix as Matrix
+//  import Vector as Vector
+//  import Monad
+where
 
 

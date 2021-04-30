@@ -1,6 +1,7 @@
-package Compared where
+package Compared
+  import Bool
+where
 
-open Bool
 
 def Compared : Type =
   @self ∀

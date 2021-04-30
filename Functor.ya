@@ -1,4 +1,7 @@
-package Functor where
+package Functor
+  import List
+
+where
 
 def Functor (F: ∀ Type -> Type) : Type =
   @self ∀
@@ -15,3 +18,6 @@ def new (0 F: ∀ Type -> Type) (map: ∀ (A : Type) (B: Type) (fun: ∀ A -> B)
 def map (0 F: ∀ Type -> Type) (impl : Functor F) (A : Type) (B : Type) (fun : ∀ A -> B) (f : F A): F B =
   (case impl) (λ _ => F B)
     (λ m => m A B fun f)
+
+def functor : Functor List
+ = Functor.new List map
