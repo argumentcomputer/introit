@@ -7,3 +7,5 @@ def Unit : Type =
   -> P self
 
 def new : Unit = data λ P u => u
+
+

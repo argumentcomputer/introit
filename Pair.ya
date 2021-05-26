@@ -1,4 +1,6 @@
-package Pair where
+package Pair
+  import Functor as Functor
+where
 
 def Pair (A : Type) (B : Type) : Type
   = @self ∀
@@ -21,6 +23,9 @@ def fst (A B : Type) (p : Pair A B): A
 def snd (A B : Type) (p : Pair A B): B
   = (case p) (λ _ => B) (λ a b => b)
 
-def map (A B C : Type) (f : ∀ A B -> C) (p : Pair A B): C
-  = (case p) (λ _ => C) f
+def map (A B C : Type) (f : ∀ B -> C) (p : Pair A B): Pair A C
+  = (case p) (λ _ => Pair A C) (λ x y => new A C x (f y))
 
+
+def functor (A: Type) : Functor.Functor (Pair A)
+  = Functor.new (Pair A) (map A)

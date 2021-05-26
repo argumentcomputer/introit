@@ -1,0 +1,11 @@
+package Eq
+  import Bool
+where
+
+def Eq (A : Type) : Type =
+  @self ∀
+  (0 P : ∀ (Eq A) -> Type)
+  (& new : ∀ (eq: ∀ (a b : A) -> Bool) -> P (data λ P n => n eq))
+  -> P self
+
+def new (0 A : Type) (eq : ∀ (a b: A) -> Bool): Eq A = data λ P n => n eq

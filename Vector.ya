@@ -1,82 +1,71 @@
-package Vector where
-
-open Nat (Nat, zero, succ, pred, Addable, newAddable)
-open Nat as Nat
-open Maybe (Maybe, none, just)
-open Maybe as Maybe
-open Unit (Unit)
-open Unit as Unit
-open Pair (Pair)
-open Pair as Pair
+package Vector 
+  import Nat (Nat, zero, succ, pred, Addable, newAddable)
+  import Nat as Nat
+  import Maybe (Maybe, none, just)
+  import Maybe as Maybe
+  import Unit (Unit)
+  import Unit as Unit
+  import Pair (Pair)
+  import Pair as Pair
+where
 
 def Vector (A: Type) (k: Nat): Type =
   @self ∀
   (0 P : ∀ (k: Nat) (Vector A k) -> Type)
   (& nil : P zero (data λ P n c => n))
-  (& cons: ∀ (0 k: Nat) (x: A) (xs: Vector A k) -> P (succ k) (data λ P n c => c k x xs))
+  (& cons: ∀
+    (0 k: Nat) (x: A) (xs: Vector A k) -> P (succ k) (data λ P n c => c k x xs))
   -> P k self
 
-def nil (0 A: Type) : Vector A zero
-  = data λ P n c => n
+def nil (0 A: Type) : Vector A zero = data λ P n c => n
 
 def cons (0 A: Type) (0 k: Nat) (x: A) (xs: Vector A k): Vector A (succ k)
   = data λ P n c => c k x xs
-
-def fill (0 A: Type) (n: Nat) (a: A): Vector A n
-  = (case n) (λ  x => (Vector A x))
-       (nil A)
-       (λ  pred => cons A pred a (fill A pred a))
-
-def extract (0 A: Type) (0 size: Nat) (xs: Vector A (succ size)): Pair A (Vector A size)
-  = (case xs)
-      (λ k _ => (case k) (λ _ => Type) Unit (λ pred => Pair A (Vector A pred)))
-      Unit.new
-      (λ k y ys => Pair.new A (Vector A k) y ys)
-
-def add (0 A : Type) (impl : Addable A) (0 size : Nat) (as bs: Vector A size): Vector A size
-  = (case impl) (λ _ => Vector A size)
-        (λ add_a =>
-            (case as) (λ k _ => forall (Vector A k) -> Vector A k)
-                (λ bs => bs)
-                (λ k a as bs => (case (extract A k bs))
-                       (λ _ => Vector A (Nat.succ k))
-                       (λ b bs => cons A k (add_a a b) (add A impl k as bs)))
-                bs)
 
 def head (0 A : Type) (0 size : Nat) (a : Vector A size): Maybe A
   = (case a) (λ _ _ => Maybe A)
         (none A)
         (λ _ head tail => just A head)
 
-def tail (0 A : Type) (0 size : Nat) (a : Vector A size): Vector A (pred size)
-  = (case a) (λ k _ => Vector A (pred k))
-        (nil A)
-        (λ _ head tail => tail)
+//def tail (0 A : Type) (0 size : Nat) (a : Vector A size): Vector A (pred size)
+//  = (case a) (λ k _ => Vector A (pred k))
+//        (nil A)
+//        (λ _ head tail => tail)
 
-def concat (0 A : Type) (0 sizeA sizeB : Nat) (a : Vector A sizeA) (b : Vector A sizeB): Vector A (Nat.add sizeA sizeB)
- = (case a) (λ sizeA _ => Vector A (Nat.add sizeA sizeB))
-       b
-       (λ sizeA head tail => cons A (Nat.add sizeA sizeB) head (concat A sizeA sizeB tail b))
+//def fill (0 A: Type) (n: Nat) (a: A): Vector A n
+//  = (case n) (λ x => (Vector A x))
+//      (nil A)
+//      (λ p => cons A p a (fill A p a))
 
-def at (A : Type) (0 size : Nat) (vec : Vector A size) (idx : Nat): Maybe A
-  = (case idx) (λ _ => Maybe A)
-        (head A size vec)
-        (λ pred => at A size vec pred)
-
-def map (0 A B: Type) (0 size: Nat) (f: ∀ A -> B) (vec: Vector A size): Vector B size
-  = (case vec) (λ k _ => Vector B k)
-        (nil B)
-        (λ size x xs => cons B size (f x) (map A B size f xs))
-
-def foldr (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
-  = (case vec) (λ _ _ => B)
-        b
-        (λ size head tail => f head (foldr A B size f b tail))
-
-def foldl (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
-  = (case vec) (λ _ _ => B)
-        b
-        (λ size head tail => (foldl A B size f (f head b) tail))
-
-def deriveAddable (0 A: Type) (impl: Addable A) (0 size: Nat): Addable (Vector A size)
-  = newAddable (Vector A size) (add A impl size)
+//def extract (0 A: Type) (0 size: Nat) (xs: Vector A (succ size)): Pair A (Vector A size)
+//  = (case xs)
+//      (λ k _ => (case k) (λ _ => Type) Unit (λ pred => Pair A (Vector A pred)))
+//      Unit.new
+//      (λ k y ys => Pair.new A (Vector A k) y ys)
+//
+//
+//
+//def concat (0 A : Type) (0 sizeA sizeB : Nat) (a : Vector A sizeA) (b : Vector A sizeB): Vector A (Nat.add sizeA sizeB)
+// = (case a) (λ sizeA _ => Vector A (Nat.add sizeA sizeB))
+//       b
+//       (λ sizeA head tail => cons A (Nat.add sizeA sizeB) head (concat A sizeA sizeB tail b))
+//
+//def at (A : Type) (0 size : Nat) (vec : Vector A size) (idx : Nat): Maybe A
+//  = (case idx) (λ _ => Maybe A)
+//        (head A size vec)
+//        (λ pred => at A size vec pred)
+//
+//def map (0 A B: Type) (0 size: Nat) (f: ∀ A -> B) (vec: Vector A size): Vector B size
+//  = (case vec) (λ k _ => Vector B k)
+//        (nil B)
+//        (λ size x xs => cons B size (f x) (map A B size f xs))
+//
+//def foldr (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
+//  = (case vec) (λ _ _ => B)
+//        b
+//        (λ size head tail => f head (foldr A B size f b tail))
+//
+//def foldl (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
+//  = (case vec) (λ _ _ => B)
+//        b
+//        (λ size head tail => (foldl A B size f (f head b) tail))

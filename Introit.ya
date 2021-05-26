@@ -1,16 +1,17 @@
-package Introit 
-  import Empty
-  import Pair as Pair
+package Introit
+  import Empty as Empty
+  import Function
   import Unit as Unit
-  import Function
-  import Equal
-  import BitString as BitString
-  import Bool
-  import Function
-//  import List   as List
-//  import Matrix as Matrix
-//  import Vector as Vector
-//  import Monad
+  import Functor as Functor
+  import Monad as Monad
+  import Pair as Pair
+  import Ord as Ord
+  import Eq as Eq
+  import Equal as Equal
+  import Bool as Bool
+  import Nat as Nat
+  import List as List
+  import Vector as Vector
 where
 
 

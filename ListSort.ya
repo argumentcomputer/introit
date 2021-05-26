@@ -1,78 +1,78 @@
-package ListSort where
-
-open List (List, cons, singleton, nil)
-open Compared (Compared, Ordered, compareOrdered)
-
-def merge (0 A : Type) (ord : Ordered A) (as : List A) (bs : List A): List A =
-  let cmp : ∀ A A -> Compared = compareOrdered A ord;
-  (case as) (λ _ => List A)
-      (bs)
-      (λ a ass => (case bs) (λ _ => List A)
-             as
-             (λ b bss => (case (cmp a b)) (λ _ => List A)
-               (cons A a (merge A ord ass bs))
-               (cons A a (merge A ord ass bs))
-               (cons A b (merge A ord as bss))
-             )
-      )
-
-def mergePairs (0 A : Type) (ord : Ordered A) (xs : List (List A)) : List (List A) =
-     (case xs) (λ _ => List (List A))
-     (xs)
-     (λ a as =>
-      (case as) (λ _ => List (List A))
-          (xs)
-          (λ b _ => cons (List A) (merge A ord a b) (mergePairs A ord as))
-     )
-
-def mergeAll (0 A : Type) (ord : Ordered A) (xs : List (List A)): List A =
-     let mAllRec : List A = mergeAll A ord (mergePairs A ord xs);
-     (case xs) (λ _ => List A)
-        (mAllRec)
-        (λ x xs =>
-            (case xs) (λ _ => List A)
-                x
-                (λ _ _ => mAllRec)
-        )
-
-// Split the list into ascending or descending sequences
-def sequences (0 A : Type) (ord : Ordered A) (l: List A): (List (List A)) =
-  letrec cmp : ∀ A A -> Compared = compareOrdered A ord;
-  letrec descending : ∀ (A) (List A) (List A) -> List (List A) =
-  (λ a as bs =>
-    let seq : List (List A) = cons (List A) (cons A a as) (sequences A ord bs);
-    (case bs) (λ _ => List (List A))
-        (seq)
-        (λ b bs => (case (cmp a b)) (λ _ => List (List A))
-           (seq)
-           (seq)
-           (descending b (cons A a as) bs))
-  );
-  letrec ascending : ∀ (A) (∀ (List A) -> List A) (List A) -> List (List A) =
-  (λ a as bs =>
-     let cmp : ∀ A A -> Compared = compareOrdered A ord;
-     let seq : List (List A) = cons (List A) (as (singleton A a)) (sequences A ord bs);
-     (case bs) (λ _ => List (List A))
-       (seq)
-       (λ b bs => (case (cmp a b)) (λ _ => List (List A))
-         (ascending b (λ ys => (as (cons A a ys))) bs)
-         (ascending b (λ ys => (as (cons A a ys))) bs)
-         (seq)
-       )
-  );
-  (case l) (λ _ => List (List A))
-    (singleton (List A) l)
-    (λ a lTail =>
-        (case lTail) (λ _ => List (List A))
-            (singleton (List A) l)
-            (λ b xs =>
-                (case (cmp a b)) (λ _ => List (List A))
-                    (ascending b (cons A a) xs) -- ltn
-                    (ascending b (cons A a) xs) -- eql
-                    (descending b (singleton A a) xs) -- gtn
-            )
-    )
-
-// Sort a list with merge sort
-def mergeSort (0 A : Type) (ord : Ordered A) (list : List A): List A =
-  mergeAll A ord (sequences A ord list)
+//package ListSort where
+//
+//open List (List, cons, singleton, nil)
+//open Compared (Compared, Ordered, compareOrdered)
+//
+//def merge (0 A : Type) (ord : Ordered A) (as : List A) (bs : List A): List A =
+//  let cmp : ∀ A A -> Compared = compareOrdered A ord;
+//  (case as) (λ _ => List A)
+//      (bs)
+//      (λ a ass => (case bs) (λ _ => List A)
+//             as
+//             (λ b bss => (case (cmp a b)) (λ _ => List A)
+//               (cons A a (merge A ord ass bs))
+//               (cons A a (merge A ord ass bs))
+//               (cons A b (merge A ord as bss))
+//             )
+//      )
+//
+//def mergePairs (0 A : Type) (ord : Ordered A) (xs : List (List A)) : List (List A) =
+//     (case xs) (λ _ => List (List A))
+//     (xs)
+//     (λ a as =>
+//      (case as) (λ _ => List (List A))
+//          (xs)
+//          (λ b _ => cons (List A) (merge A ord a b) (mergePairs A ord as))
+//     )
+//
+//def mergeAll (0 A : Type) (ord : Ordered A) (xs : List (List A)): List A =
+//     let mAllRec : List A = mergeAll A ord (mergePairs A ord xs);
+//     (case xs) (λ _ => List A)
+//        (mAllRec)
+//        (λ x xs =>
+//            (case xs) (λ _ => List A)
+//                x
+//                (λ _ _ => mAllRec)
+//        )
+//
+//// Split the list into ascending or descending sequences
+//def sequences (0 A : Type) (ord : Ordered A) (l: List A): (List (List A)) =
+//  letrec cmp : ∀ A A -> Compared = compareOrdered A ord;
+//  letrec descending : ∀ (A) (List A) (List A) -> List (List A) =
+//  (λ a as bs =>
+//    let seq : List (List A) = cons (List A) (cons A a as) (sequences A ord bs);
+//    (case bs) (λ _ => List (List A))
+//        (seq)
+//        (λ b bs => (case (cmp a b)) (λ _ => List (List A))
+//           (seq)
+//           (seq)
+//           (descending b (cons A a as) bs))
+//  );
+//  letrec ascending : ∀ (A) (∀ (List A) -> List A) (List A) -> List (List A) =
+//  (λ a as bs =>
+//     let cmp : ∀ A A -> Compared = compareOrdered A ord;
+//     let seq : List (List A) = cons (List A) (as (singleton A a)) (sequences A ord bs);
+//     (case bs) (λ _ => List (List A))
+//       (seq)
+//       (λ b bs => (case (cmp a b)) (λ _ => List (List A))
+//         (ascending b (λ ys => (as (cons A a ys))) bs)
+//         (ascending b (λ ys => (as (cons A a ys))) bs)
+//         (seq)
+//       )
+//  );
+//  (case l) (λ _ => List (List A))
+//    (singleton (List A) l)
+//    (λ a lTail =>
+//        (case lTail) (λ _ => List (List A))
+//            (singleton (List A) l)
+//            (λ b xs =>
+//                (case (cmp a b)) (λ _ => List (List A))
+//                    (ascending b (cons A a) xs) -- ltn
+//                    (ascending b (cons A a) xs) -- eql
+//                    (descending b (singleton A a) xs) -- gtn
+//            )
+//    )
+//
+//// Sort a list with merge sort
+//def mergeSort (0 A : Type) (ord : Ordered A) (list : List A): List A =
+//  mergeAll A ord (sequences A ord list)

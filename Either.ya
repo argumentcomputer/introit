@@ -3,9 +3,9 @@ package Either where
 
 def Either (A: Type) (B: Type) : Type =
    @self ∀
-   (P   : ∀ (Either A B) -> Type)
-   (& left : ∀ (x: A) -> P (data λ P l r => l x))
-   (& right : ∀ (x: B) -> P (data λ P l r => r x))
+   (P: ∀ (Either A B) -> Type)
+   (& left: ∀ (x: A) -> P (data λ P l r => l x))
+   (& right: ∀ (x: B) -> P (data λ P l r => r x))
    -> P self
 
 def left (A: Type) (B: Type) (x: A) : Either A B = data λ P l r => l x
@@ -23,3 +23,9 @@ def bindLeft (A : Type) (B: Type) (C: Type) (e: Either A B) (fun: forall A -> (E
         fun
         (right C B)
 
+
+//def EitherRight (A : Type) : Monad (Either A)
+//  = new (Either A) (Either.bindRight A) (Either.right A)
+//
+//def EitherLeft (B : Type) : Monad (λ A => Either A B)
+//  = new (λ A => Either A B) (λ A => Either.bindLeft A B) (λ A => Either.left A B)

@@ -1,8 +1,8 @@
-package List 
+package List
   import Maybe (Maybe, just, none)
   import Nat as Nat
   import Nat (Nat)
-  import Compared
+  import Ord
 where
 
 
@@ -61,6 +61,3 @@ def foldl (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
 
 def flatMap (0 A : Type) (0 B: Type) (fun: forall A -> (List B)) (l: List A): List B
   = flatten B (map A (List B) fun l)
-
-//def monad : Monad List
-//  = Monad.new List (λ A B l f => flatMap A B f l) singleton

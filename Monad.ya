@@ -1,7 +1,4 @@
-package Monad
-  import Either as Either
-  import Either (Either)
-where
+package Monad where
 
 def Monad (M: ∀ Type -> Type) : Type =
   @self ∀
@@ -12,23 +9,24 @@ def Monad (M: ∀ Type -> Type) : Type =
     -> P (data λ P n => n bind pure)
   ) -> P self
 
-def new (0 M: ∀ Type -> Type) (bind: ∀ (A : Type) (B: Type) (_: M A) (fun: ∀ A -> (M B)) -> M B)
-        (pure: ∀ (A : Type) (a: A) -> M A)
-        : Monad M
+def new
+  (0 M: ∀ Type -> Type)
+  (bind: ∀ (A : Type) (B: Type) (_: M A) (fun: ∀ A -> (M B)) -> M B)
+  (pure: ∀ (A : Type) (a: A) -> M A)
+  : Monad M
   = data λ P n => n bind pure
 
-def bind (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (B: Type) (m: M A) (fun: ∀ A -> (M B)): M B =
-  (case impl) (λ _ => M B)
-    (λ bind _ => bind A B m fun)
+def bind
+  (0 M: ∀ Type -> Type)
+  (impl: Monad M)
+  (A: Type)
+  (B: Type)
+  (m: M A)
+  (fun: ∀ A -> (M B))
+  : M B
+  = (case impl) (λ _ => M B) (λ bind _ => bind A B m fun)
 
-def pure (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (a : A): M A =
-  (case impl) (λ _ => M A)
-    (λ bind pure => pure A a)
+def pure (0 M: ∀ Type -> Type) (impl: Monad M) (A : Type) (a : A): M A =
+  (case impl) (λ _ => M A) (λ bind pure => pure A a)
 
 
-def EitherRight (A : Type) : Monad (Either A)
-  = new (Either A) (Either.bindRight A) (Either.right A)
-
-// segfaults
-//def EitherLeft (B : Type) : Monad (λ A => Either A B)
-//  = new (λ A => Either A B) (λ A => Either.bindLeft A B) (λ A => Either.left A B)
