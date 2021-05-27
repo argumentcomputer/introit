@@ -1,4 +1,6 @@
-package Pair where
+package Pair
+  import Functor as Functor
+where
 
 def Pair (A : Type) (B : Type) : Type
   = @self ∀
@@ -6,21 +8,24 @@ def Pair (A : Type) (B : Type) : Type
   (& new : ∀ (a : A) (b : B) -> (P (data λ P n => n a b)))
   -> P self
 
-def new (0 A : Type) (0 B : Type) (a : A) (b : B) : Pair A B
+def new (0 A B: Type) (a : A) (b : B) : Pair A B
   = data λ P n => n a b
 
 def curry (0 A B C: Type) (f: ∀ (Pair A B) -> C) (x: A) (y: B): C
   = f (new A B x y)
 
 def uncurry (0 A B C: Type) (f: ∀ A B -> C) (ab: Pair A B): C
-  = (case ab) (\_ => C) (λ a b => f a b)
+  = (case ab) (λ _ => C) (λ a b => f a b)
 
 def fst (A B : Type) (p : Pair A B): A
-  = (case p) (\_ => A) (λ a b => a)
+  = (case p) (λ _ => A) (λ a b => a)
 
 def snd (A B : Type) (p : Pair A B): B
-  = (case p) (\_ => B) (λ a b => b)
+  = (case p) (λ _ => B) (λ a b => b)
 
-def map (A B C : Type) (f : ∀ A B -> C) (p : Pair A B): C
-  = (case p) (\_ => C) f
+def map (A B C : Type) (f : ∀ B -> C) (p : Pair A B): Pair A C
+  = (case p) (λ _ => Pair A C) (λ x y => new A C x (f y))
 
+
+def functor (A: Type) : Functor.Functor (Pair A)
+  = Functor.new (Pair A) (map A)

@@ -1,5 +1,4 @@
-package Monad
-where
+package Monad where
 
 def Monad (M: ∀ Type -> Type) : Type =
   @self ∀
@@ -7,18 +6,27 @@ def Monad (M: ∀ Type -> Type) : Type =
   (& new: ∀
     (bind: ∀ (A : Type) (B: Type) (m: M A) (fun: ∀ A -> (M B)) -> M B)
     (pure: ∀ (A : Type) (a: A) -> M A)
-    -> P (data \P n => n bind pure)
+    -> P (data λ P n => n bind pure)
   ) -> P self
 
-def new (0 M: ∀ Type -> Type) (bind: ∀ (A : Type) (B: Type) (M A) (fun: ∀ A -> (M B)) -> M B)
-        (pure: ∀ (A : Type) (a: A) -> M A)
-        : Monad M
-  = data \P n => n bind pure
+def new
+  (0 M: ∀ Type -> Type)
+  (bind: ∀ (A : Type) (B: Type) (_: M A) (fun: ∀ A -> (M B)) -> M B)
+  (pure: ∀ (A : Type) (a: A) -> M A)
+  : Monad M
+  = data λ P n => n bind pure
 
-def bind (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (B: Type) (m: M A) (fun: ∀ A -> (M B)): M B =
-  (case impl) (\_ => M B)
-    (\bind _ => bind A B m fun)
+def bind
+  (0 M: ∀ Type -> Type)
+  (impl: Monad M)
+  (A: Type)
+  (B: Type)
+  (m: M A)
+  (fun: ∀ A -> (M B))
+  : M B
+  = (case impl) (λ _ => M B) (λ bind _ => bind A B m fun)
 
-def pure (0 M: ∀ Type -> Type) (impl : Monad M) (A : Type) (a : A): M A =
-  (case impl) (\_ => M A)
-    (\bind pure => pure A a)
+def pure (0 M: ∀ Type -> Type) (impl: Monad M) (A : Type) (a : A): M A =
+  (case impl) (λ _ => M A) (λ bind pure => pure A a)
+
+

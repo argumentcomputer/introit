@@ -1,127 +1,39 @@
 package Nat
-  with Either
-  with Pair (Pair)
-  with Pair as Pair
-  with Bool (Bool, if, and, or)
-  with Bool as Bool
-  with Compared as Compared
-  with Compared (Compared, Ordered, newOrdered)
-  with Equal (Equal)
-  with Equal as Equal
+  import Bool as Bool
+  import Bool (Bool)
+  import Is as Is
+  import Is (Is)
+  import Maybe as Maybe
+  import Maybe (Maybe)
 where
 
-def Nat : Type =
-  @self ∀
-  (0 P : ∀ Nat -> Type)
-  (& zero : (P (data λ P z s => z)))
-  (& succ : ∀ (pred : Nat) -> (P (data λ P z s => s pred)))
-  -> P self
+def Nat: Type = #Nat
 
-def zero: Nat = data λ P z s => z
+def zero: Nat = 0
+def succ: ∀ Nat -> Nat = #Nat.suc
 
-def succ (x: Nat): Nat = data λ P z s => s x
+def pred: ∀ Nat -> Nat = #Nat.pre
+def eql: ∀ (x y: Nat) -> Bool = #Nat.eql
+def lte: ∀ (x y: Nat) -> Bool = #Nat.lte
+def lth: ∀ (x y: Nat) -> Bool = #Nat.lth
+def gte: ∀ (x y: Nat) -> Bool = #Nat.gte
+def gth: ∀ (x y: Nat) -> Bool = #Nat.gth
 
-def pred (x: Nat): Nat = (case x) (λ _ => Nat) zero (λ p => p)
+def add: ∀ (x y: Nat) -> Nat = #Nat.add
+def mul: ∀ (x y: Nat) -> Nat = #Nat.mul
 
-def add (a b: Nat): Nat
-  = (case a) (\x => Nat)
-        b
-        (\pred => succ (add pred b))
+def neq (x y: Nat): Bool = Bool.not (eql x y)
 
-def mul (a b : Nat): Nat
-  = (case a) (\x => Nat)
-        zero
-        (\pred => add b (mul pred b))
+def div (x y: Nat) (0 e: Is (neq y 0)): Nat = #Nat.div x y
 
-def from_natural (n : #Natural): Nat
-  = (case n) (\x => Nat)
-        zero
-        (\pred => succ (from_natural pred))
+def divChecked (x y: Nat): Maybe Nat =
+  (case y) (λ _ => Maybe Nat)
+    (Maybe.none Nat)
+    (λ _ => Maybe.just Nat (#Nat.div x y))
 
-def to_natural (n : Nat): #Natural
-  = (case n) (\x => #Natural)
-        0
-        (\pred => #Natural.succ (to_natural pred))
+def mod (x y: Nat) (0 e: Is (neq y 0)): Nat = #Nat.mod x y
 
-def Addable (A: Type) : Type =
-  @self forall
-  (0 P: forall (Addable A) -> Type)
-  (newAddable: forall
-    (add: forall (a b: A) -> A)
-    -> P (data \P n => n add)
-  ) -> P self
-
-def newAddable (0 A: Type) (add: forall (a b: A) -> A): Addable A
-  = data \P n => n add
-
-def natAddable: Addable Nat
-  = newAddable Nat add
-
-def naturalAddable: Addable #Natural
-  = newAddable #Natural #Natural.add
-
-def addAddables (0 A: Type) (impl: Addable A) (x y: A): A
-  = (case impl) (\_ => A)
-        (\add_a => add_a x y)
-
--- Subtraction of Nat (n - m)
--- The sign is encoded in Either; right is minus left is plus.
-def sub (n : Nat) (m : Nat): Either Nat Nat
-  = (case m) (\_ => Either Nat Nat)
-        (left Nat Nat n)
-        (\m_pred =>
-            (case n) (\_ => Either Nat Nat)
-                (right Nat Nat (succ m_pred))
-                (\n_pred => sub n_pred m_pred))
-
--- Division with remainder
-def divMod (n : Nat) (m : Nat): Pair Nat Nat =
-  letrec fun : (forall Nat Nat Nat -> Pair Nat Nat) =
-    (\n m d => (case (sub n m)) (\_ => Pair Nat Nat)
-        (\r => fun r m (succ d))
-        (\r => Pair.new Nat Nat d n)
-    );
-  fun n m zero
-
--- Modulo division
-def mod (n m : Nat): Nat = Pair.snd Nat Nat (divMod n m)
-
--- Compare two Nat returns a Compared
-def compare (a b : Nat): Compared
-  = (case a) (\_ => Compared)
-        ((case b) (\_ => Compared) Compared.eql (\_ => Compared.ltn))
-        (\a_pred => (case b) (\_ => Compared)
-            Compared.gtn
-            (\b_pred => compare a_pred b_pred)
-        )
-
-def compareNatural (a b : #Natural): Compared
-  = (case a) (\_ => Compared)
-        ((case b) (\_ => Compared) Compared.eql (\_ => Compared.ltn))
-        (\a_pred => (case b) (\_ => Compared)
-            Compared.gtn
-            (\b_pred => compareNatural a_pred b_pred)
-        )
-
-def orderedNat: Ordered Nat
-  = newOrdered Nat compare
-
-def orderedNatural: Ordered #Natural
-  = newOrdered #Natural compareNatural
-
--- Greater than a > b
-def gtn (a b : Nat): Bool
-  = Compared.equals (compare a b) Compared.gtn
-
--- Less than a < b
-def ltn (a b : Nat): Bool
-  = Compared.equals (compare a b) Compared.ltn
-
--- Less than or equal a <= b
-def lte (a b : Nat): Bool
-  = let c : Compared = compare a b;
-  or (Compared.equals c Compared.ltn) (Compared.equals c Compared.gtn)
-
--- Equals a = b
-def eql (a b : Nat): Bool
-  = Compared.equals (compare a b) Compared.eql
+def modChecked (x y: Nat): Maybe Nat =
+  (case y) (λ _ => Maybe Nat)
+    (Maybe.none Nat)
+    (λ _ => Maybe.just Nat (#Nat.mod x y))

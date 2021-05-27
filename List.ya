@@ -1,72 +1,63 @@
 package List
-  with Functor (Functor)
-  with Functor as Functor
-  with Maybe (Maybe, just, none)
-  with Monad (Monad)
-  with Monad as Monad
-  with Nat as Nat
-  with Nat (Nat)
-  with Compared
+  import Maybe (Maybe, just, none)
+  import Nat as Nat
+  import Nat (Nat)
+  import Ord
 where
+
 
 def List (A: Type): Type =
   @self forall
   (0 P: forall (List A) -> Type)
-  (& nil : P (data \P n c => n))
-  (& cons : forall (head : A) (tail : List A) -> P (data \P n c => c head tail))
+  (& nil : P (data λ P n c => n))
+  (& cons : forall (head : A) (tail : List A) -> P (data λ P n c => c head tail))
   -> P self
 
-def nil (0 A : Type) : List A = data \P n c => n
-def cons (0 A : Type) (head : A) (tail : List A) : List A = data \P n c => c head tail
+def nil (0 A : Type) : List A = data λ P n c => n
+def cons (0 A : Type) (head : A) (tail : List A) : List A = data λ P n c => c head tail
 
 def head (0 A : Type) (a : List A): Maybe A
-  = (case a) (\_ => Maybe A)
+  = (case a) (λ _ => Maybe A)
         (none A)
-        (\head tail => just A head)
+        (λ head tail => just A head)
 
 def tail (0 A : Type) (a : List A): List A
-  = (case a) (\_ => List A)
+  = (case a) (λ _ => List A)
         (nil A)
-        (\head tail => tail)
+        (λ head tail => tail)
 
 def concat (0 A : Type) (a b : List A): List A
-  = (case a) (\_ => List A)
+  = (case a) (λ _ => List A)
         b
-        (\head tail => cons A head (concat A tail b))
+        (λ head tail => cons A head (concat A tail b))
 
 def at (A : Type) (list : List A) (idx : Nat): Maybe A
-  = (case idx) (\_ => Maybe A)
+  = (case idx) (λ _ => Maybe A)
         (head A list)
-        (\pred => at A list pred)
+        (λ pred => at A list pred)
 
 def flatten (0 A : Type) (list : List (List A)): List A
-  = (case list) (\_ => List A)
+  = (case list) (λ _ => List A)
         (nil A)
-        (\head tail => concat A head (flatten A tail))
+        (λ head tail => concat A head (flatten A tail))
 
 def singleton (0 A : Type) (a : A): List A
   = cons A a (nil A)
 
 def map (0 A : Type) (0 B : Type) (f: forall A -> B) (list : List A): List B
-  = (case list) (\_ => List B)
+  = (case list) (λ _ => List B)
         (nil B)
-        (\head tail => cons B (f head) (map A B f tail))
+        (λ head tail => cons B (f head) (map A B f tail))
 
 def foldr (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
-  = (case list) (\_ => B)
+  = (case list) (λ _ => B)
         b
-        (\head tail => f head (foldr A B f b tail))
+        (λ head tail => f head (foldr A B f b tail))
 
 def foldl (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
-  = (case list) (\_ => B)
+  = (case list) (λ _ => B)
         b
-        (\head tail => (foldl A B f (f head b) tail))
+        (λ head tail => (foldl A B f (f head b) tail))
 
 def flatMap (0 A : Type) (0 B: Type) (fun: forall A -> (List B)) (l: List A): List B
   = flatten B (map A (List B) fun l)
-
-def functor : Functor List
-  = Functor.new List map
-
-def monad : Monad List
-  = Monad.new List (\A B l f => flatMap A B f l) singleton

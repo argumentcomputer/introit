@@ -1,17 +1,17 @@
 package Introit
-  with Empty
-  with Pair as Pair
-  with Unit as Unit
-  with Function
-  with Equal
-  with BitString as BitString
-  with Bool
-  with Function
-  with List   as List
-  with Matrix as Matrix
-  with Vector as Vector
-  with Monad
-  with Show
+  import Empty as Empty
+  import Function
+  import Unit as Unit
+  import Functor as Functor
+  import Monad as Monad
+  import Pair as Pair
+  import Ord as Ord
+  import Eq as Eq
+  import Equal as Equal
+  import Bool as Bool
+  import Nat as Nat
+  import List as List
+  import Vector as Vector
 where
 
 

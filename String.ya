@@ -1,26 +1,26 @@
-package String
-  with Bool (Bool, if, true, false)
-  with Bool as Bool
-where
-
-def i64Eq (a b : #I64): Bool =
-  (case (#I64.eq a b)) (\_ => Bool)
-  	(Bool.true)
-	(\_ _ => Bool.false)
-
-
-def charEq (a b : #Char): Bool =
-  i64Eq (#Char.ord a) (#Char.ord b)
-
-
-def in (c : #Char) (s : #String): Bool =
-  (case s) (\_ => Bool)
-    (false)
-    (\a tail =>
-      if Bool (charEq a c)
-        true
-        (in c tail)
-    )
-
-def isDigit (c : #Char): Bool =
-  in c "0123456789"
+//package String
+//  with Bool (Bool, if, true, false)
+//  with Bool as Bool
+//where
+//
+//def i64Eq (a b : #I64): Bool =
+//  (case (#I64.eq a b)) (\_ => Bool)
+//  	(Bool.true)
+//	(\_ _ => Bool.false)
+//
+//
+//def charEq (a b : #Char): Bool =
+//  i64Eq (#Char.ord a) (#Char.ord b)
+//
+//
+//def in (c : #Char) (s : #String): Bool =
+//  (case s) (\_ => Bool)
+//    (false)
+//    (\a tail =>
+//      if Bool (charEq a c)
+//        true
+//        (in c tail)
+//    )
+//
+//def isDigit (c : #Char): Bool =
+//  in c "0123456789"

@@ -1,33 +1,32 @@
-{| Basic Matrix functions
-|}
-package Matrix
-  with Nat (Addable, Nat)
-  with Nat as Nat
-  with Vector as Vector
-  with Vector (Vector, nil, cons)
-where
-
-def Matrix (A: Type) (rows: Nat) (cols: Nat): Type =
-  @self ∀
-  (0 P : ∀ (rows: Nat) (cols: Nat) (Matrix A rows cols) -> Type)
-  (& new: ∀ (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)) -> P rows cols (data λ P n => n rows cols vec))
-  -> P rows cols self
-
-def new (0 A: Type) (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)): Matrix A rows cols
-  = data λ P n => n rows cols vec
-
-def fill (0 A: Type) (rows: Nat) (cols : Nat) (a: A) : Matrix A rows cols =
-    new A rows cols (Vector.fill (Vector A cols) rows (Vector.fill A cols a))
-
-def getRows (0 A: Type) (rows: Nat) (cols: Nat) (matrix: Matrix A rows cols): Vector (Vector A cols) rows
-  = (case matrix) (\r c m => Vector (Vector A c) r)
-        (\r c vec => vec)
-
-def vec_vec_addable (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat): Addable (Vector (Vector A cols) rows)
-  = Vector.deriveAddable (Vector A cols) (Vector.deriveAddable A impl cols) rows
-
-def add (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat) (x y : Matrix A rows cols): Matrix A rows cols
-  = new A rows cols (Vector.add (Vector A cols) (Vector.deriveAddable A impl cols) rows (getRows A rows cols x) (getRows A rows cols y))
-
-def deriveAddable (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat): Addable (Matrix A rows cols)
-  = Nat.newAddable (Matrix A rows cols) (add A impl rows cols)
+//// Basic Matrix functions
+//package Matrix where
+//
+//open Nat (Addable, Nat)
+//open Nat as Nat
+//open Vector as Vector
+//open Vector (Vector, nil, cons)
+//
+//def Matrix (A: Type) (rows: Nat) (cols: Nat): Type =
+//  @self ∀
+//  (0 P : ∀ (rows: Nat) (cols: Nat) (Matrix A rows cols) -> Type)
+//  (& new: ∀ (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)) -> P rows cols (data λ P n => n rows cols vec))
+//  -> P rows cols self
+//
+//def new (0 A: Type) (rows: Nat) (cols: Nat) (vec: (Vector (Vector A cols) rows)): Matrix A rows cols
+//  = data λ P n => n rows cols vec
+//
+//def fill (0 A: Type) (rows: Nat) (cols : Nat) (a: A) : Matrix A rows cols =
+//    new A rows cols (Vector.fill (Vector A cols) rows (Vector.fill A cols a))
+//
+//def getRows (0 A: Type) (rows: Nat) (cols: Nat) (matrix: Matrix A rows cols): Vector (Vector A cols) rows
+//  = (case matrix) (λ r c m => Vector (Vector A c) r)
+//        (λ r c vec => vec)
+//
+//def vec_vec_addable (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat): Addable (Vector (Vector A cols) rows)
+//  = Vector.deriveAddable (Vector A cols) (Vector.deriveAddable A impl cols) rows
+//
+//def add (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat) (x y : Matrix A rows cols): Matrix A rows cols
+//  = new A rows cols (Vector.add (Vector A cols) (Vector.deriveAddable A impl cols) rows (getRows A rows cols x) (getRows A rows cols y))
+//
+//def deriveAddable (0 A: Type) (impl: Addable A) (rows: Nat) (cols : Nat): Addable (Matrix A rows cols)
+//  = Nat.newAddable (Matrix A rows cols) (add A impl rows cols)
