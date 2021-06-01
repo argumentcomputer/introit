@@ -10,6 +10,10 @@ package Introit
   import Equal as Equal
   import Bool as Bool
   import Nat as Nat
+  import U8 as U8
+  import U16 as U16
+  import U32 as U32
+  import U64 as U64
   import List as List
   import Vector as Vector
 where

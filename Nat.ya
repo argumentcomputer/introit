@@ -29,11 +29,11 @@ def div (x y: Nat) (0 e: Is (neq y 0)): Nat = #Nat.div x y
 def divChecked (x y: Nat): Maybe Nat =
   (case y) (λ _ => Maybe Nat)
     (Maybe.none Nat)
-    (λ _ => Maybe.just Nat (#Nat.div x y))
+    (λ _ => Maybe.some Nat (#Nat.div x y))
 
 def mod (x y: Nat) (0 e: Is (neq y 0)): Nat = #Nat.mod x y
 
 def modChecked (x y: Nat): Maybe Nat =
   (case y) (λ _ => Maybe Nat)
     (Maybe.none Nat)
-    (λ _ => Maybe.just Nat (#Nat.mod x y))
+    (λ _ => Maybe.some Nat (#Nat.mod x y))

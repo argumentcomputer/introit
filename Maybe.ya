@@ -6,11 +6,11 @@ def Maybe (A: Type) : Type =
    @self ∀
    (0 P   : ∀ (Maybe A) -> Type)
    (& none : P (data λ P n j => n))
-   (& just : ∀ (x: A) -> P (data λ P n j => j x))
+   (& some : ∀ (x: A) -> P (data λ P n j => j x))
    -> P self
 
 def none (0 A: Type) : Maybe A = data λ P n j => n
-def just (0 A: Type) (x: A) : Maybe A = data λ P n j => j x
+def some (0 A: Type) (x: A) : Maybe A = data λ P n j => j x
 
 def bind (0 A : Type) (0 B: Type) (m: Maybe A) (fun: forall A -> (Maybe B)): Maybe B
   = (case m)

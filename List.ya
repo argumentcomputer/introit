@@ -1,5 +1,5 @@
 package List
-  import Maybe (Maybe, just, none)
+  import Maybe (Maybe, some, none)
   import Nat as Nat
   import Nat (Nat)
   import Ord
@@ -19,7 +19,7 @@ def cons (0 A : Type) (head : A) (tail : List A) : List A = data λ P n c => c h
 def head (0 A : Type) (a : List A): Maybe A
   = (case a) (λ _ => Maybe A)
         (none A)
-        (λ head tail => just A head)
+        (λ head tail => some A head)
 
 def tail (0 A : Type) (a : List A): List A
   = (case a) (λ _ => List A)

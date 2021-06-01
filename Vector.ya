@@ -1,7 +1,7 @@
-package Vector 
-  import Nat (Nat, zero, succ, pred, Addable, newAddable)
+package Vector
+  import Nat (Nat, zero, succ, pred)
   import Nat as Nat
-  import Maybe (Maybe, none, just)
+  import Maybe (Maybe, none, some)
   import Maybe as Maybe
   import Unit (Unit)
   import Unit as Unit
@@ -25,7 +25,7 @@ def cons (0 A: Type) (0 k: Nat) (x: A) (xs: Vector A k): Vector A (succ k)
 def head (0 A : Type) (0 size : Nat) (a : Vector A size): Maybe A
   = (case a) (λ _ _ => Maybe A)
         (none A)
-        (λ _ head tail => just A head)
+        (λ _ head tail => some A head)
 
 //def tail (0 A : Type) (0 size : Nat) (a : Vector A size): Vector A (pred size)
 //  = (case a) (λ k _ => Vector A (pred k))
