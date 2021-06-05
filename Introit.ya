@@ -18,6 +18,8 @@ package Introit
   import I16 as I16
   import I32 as I32
   import I64 as I64
+  import Text as Text
+  import Char as Char
   import List as List
   import Vector as Vector
 where
