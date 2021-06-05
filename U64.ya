@@ -118,3 +118,6 @@ def toI64 (x: U64): Maybe #I64 =
 
 def toI64Safe (x: U64) (0 e: Is (lte x (#I64.to_U64 #I64.max))): #I64
   = #U64.to_I64 x
+
+def toNat: ∀ (x: U64) -> #Nat = #U64.to_Nat
+def toInt: ∀ (x: U64) -> #Int = #U64.to_Int

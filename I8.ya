@@ -1,0 +1,125 @@
+package I8
+  import Bool (Bool)
+  import Bool as Bool
+  import Is (Is)
+  import Is as Is
+  import Pair (Pair)
+  import Pair as Pair
+  import Maybe (Maybe)
+  import Maybe as Maybe
+  import U32 (U32)
+where
+
+def I8: Type = #I8
+
+def MAX: I8 = #I8.max
+def MIN: I8 = #I8.min
+
+def abs: ∀ (x: I8) -> #U8 = #I8.abs
+def sgn: ∀ (x: I8) -> Bool = #I8.sgn
+
+def eql: ∀ (x y: I8) -> Bool = #I8.eql
+def lte: ∀ (x y: I8) -> Bool = #I8.lte
+def lth: ∀ (x y: I8) -> Bool = #I8.lth
+def gte: ∀ (x y: I8) -> Bool = #I8.gte
+def gth: ∀ (x y: I8) -> Bool = #I8.gth
+def and: ∀ (x y: I8) -> Bool = #I8.and
+def xor: ∀ (x y: I8) -> Bool = #I8.xor
+def or: ∀ (x y: I8) -> Bool = #I8.or
+def neq (x y: I8): Bool = Bool.not (eql x y)
+
+def add: ∀ (x y: I8) -> I8 = #I8.add
+
+def SafeAdd (x y: I8): Bool =
+  Bool.not
+    (Bool.and
+      (Bool.eql (sgn x) (sgn y))
+      (Bool.neq (sgn x) (sgn (#I8.add x y)))
+    )
+
+def addSafe (x y: I8) (0 e: Is (SafeAdd x y)): I8 = #I8.add x y
+
+def sub: ∀ (x y: I8) -> I8 = #I8.sub
+
+def SafeSub (x y: I8): Bool =
+  Bool.not
+    (Bool.and
+      (Bool.eql (sgn x) (Bool.not (sgn y)))
+      (Bool.neq (sgn x) (sgn (#I8.sub x y)))
+    )
+
+def subSafe (x y: I8) (0 e: Is (lte y x)): I8 = #I8.sub x y
+
+def mul: ∀ (x y: I8) -> I8 = #I8.mul
+
+def SafeMul (x y: I8): Bool =
+  Bool.or (eql x +0i8)
+    ((case (eql y +0i8)) (λ _ => Bool)
+       Bool.true
+       (eql (#I8.div (#I8.mul x y) y) x)
+    )
+
+def mulSafe (x y: I8) (0 e: Is (SafeMul x y)): I8 = #I8.mul x y
+
+def div (x y: I8): Maybe I8 =
+  (case (neq y +0i8)) (λ _ => Maybe I8)
+    (Maybe.some I8 (#I8.div x y))
+    (Maybe.none I8)
+
+def divSafe (x y: I8) (0 e: Is (neq y +0i8)): I8 = #I8.div x y
+
+def mod (x y: I8): Maybe I8 =
+  (case (neq y +0i8)) (λ _ => Maybe I8)
+    (Maybe.some I8 (#I8.mod x y))
+    (Maybe.none I8)
+
+def modSafe (x y: I8) (0 e: Is (neq y +0i8)): I8 = #I8.mod x y
+
+def pow: ∀ (x: I8) (y: U32) -> I8 = #I8.pow
+def shl: ∀ (x: U32) (y: I8) -> I8 = #I8.shl
+def shr: ∀ (x: U32) (y: I8) -> I8 = #I8.shr
+def rol: ∀ (x: U32) (y: I8) -> I8 = #I8.rol
+def ror: ∀ (x: U32) (y: I8) -> I8 = #I8.ror
+
+def countZeros: ∀ (x: I8) -> U32 = #I8.count_zeros
+def countOnes: ∀ (x: I8) -> U32 = #I8.count_ones
+
+def toU8 (x: I8): Maybe #U8 =
+  (case (sgn x)) (λ _ => Maybe #U8)
+    (Maybe.some #U8 (#I8.to_U8 x))
+    (Maybe.none #U8)
+
+def toU8Safe (x: I8) (0 e: Is (sgn x)): #U8 = #I8.to_U8 x
+
+def toU16 (x: I8): Maybe #U16 =
+  (case (sgn x)) (λ _ => Maybe #U16)
+    (Maybe.some #U16 (#I8.to_U16 x))
+    (Maybe.none #U16)
+
+def toU16Safe (x: I8) (0 e: Is (sgn x)): #U16 = #I8.to_U16 x
+
+def toU32 (x: I8): Maybe #U32 =
+  (case (sgn x)) (λ _ => Maybe #U32)
+    (Maybe.some #U32 (#I8.to_U32 x))
+    (Maybe.none #U32)
+
+def toU32Safe (x: I8) (0 e: Is (sgn x)): #U32 = #I8.to_U32 x
+
+def toU64 (x: I8): Maybe #U64 =
+  (case (sgn x)) (λ _ => Maybe #U64)
+    (Maybe.some #U64 (#I8.to_U64 x))
+    (Maybe.none #U64)
+
+def toU64Safe (x: I8) (0 e: Is (sgn x)): #U64 = #I8.to_U64 x
+
+def toNat (x: I8): Maybe #Nat =
+  (case (sgn x)) (λ _ => Maybe #Nat)
+    (Maybe.some #Nat (#I8.to_Nat x))
+    (Maybe.none #Nat)
+
+def toNatSafe (x: I8) (0 e: Is (sgn x)): #Nat = #I8.to_Nat x
+
+def toI16: ∀ (x: I8) -> #I16 = #I8.to_I16
+def toI32: ∀ (x: I8) -> #I32 = #I8.to_I32
+def toI64: ∀ (x: I8) -> #I64 = #I8.to_I64
+def toInt: ∀ (x: I8) -> #Int = #I8.to_Int

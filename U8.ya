@@ -78,3 +78,6 @@ def toI8Safe (x: U8) (0 e: Is (lte x (#I8.to_U8 #I8.max))): #I8
 def toI16: ∀ (x: U8) -> #I16 = #U8.to_I16
 def toI32: ∀ (x: U8) -> #I32 = #U8.to_I32
 def toI64: ∀ (x: U8) -> #I64 = #U8.to_I64
+
+def toNat: ∀ (x: U8) -> #Nat = #U8.to_Nat
+def toInt: ∀ (x: U8) -> #Int = #U8.to_Int

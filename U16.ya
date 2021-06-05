@@ -92,3 +92,6 @@ def toI16Safe (x: U32) (0 e: Is (lte x (#I16.to_U32 #I16.max))): #I16
 
 def toI32: ∀ (x: U16) -> #I32 = #U16.to_I32
 def toI64: ∀ (x: U16) -> #I64 = #U16.to_I64
+
+def toNat: ∀ (x: U16) -> #Nat = #U16.to_Nat
+def toInt: ∀ (x: U16) -> #Int = #U16.to_Int
