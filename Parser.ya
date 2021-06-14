@@ -1,190 +1,80 @@
 // This package is an adaptation of the Haskell Megaparsec library found at
 // https://hackage.haskell.org/package/megaparsec
 package Parser
-  import Bool as Bool
+  import Unit as Unit
+  import Unit (Unit)
   import Either as Either
   import Either (Either)
+  import Char as Char
+  import Char (Char)
   import List as List
   import List (List)
   import Maybe as Maybe
   import Maybe (Maybe)
-  import Text as Text
-  import Text (Text)
   import Nat as Nat
   import Nat (Nat)
+  import Text as Text
   import Text (Text)
+  import Parsec.State as Parsec.State
+  import Parsec.Reply as Parsec.Reply
+  import Parsec.Error as Parsec.Error
+  import Parsec.Error (Item)
+  import Parsec as Parsec
+  import Parsec (Parsec)
 where
 
-// #Parser Errors
+def Parser (A: Type): Type = Parsec Unit Unit A
 
-// Items are possible things at a given offset in the input
-// a parser might expect to see, or alternatively might *not* expect to see:
-// + tokens or characters such as "a", "b", "&", "ϝ", "\ACK"
-// + labels or tags that can be attached to parsers, such as "an ascii char"
-// + the end of the input stream
-def Item: Type =
-  @self ∀
-  (0 P: ∀ Item -> Type)
-  (& tokens: ∀ (tokens: Text) -> P (data λ P t l e => t tokens))
-  (& label:  ∀ (label : Text) -> P (data λ P t l e => l label))
-  (& eof: P (data λ P t l e => e))
-  -> P self
+def State: Type = Parsec.State.State Unit Unit
+def Error: Type = Parsec.Error.Error Unit
+def Reply (A: Type): Type = Parsec.Reply.Reply Unit Unit A
 
-def Item.tokens (tokens: Text): Item = data λ P t l e => t tokens
-def Item.label (label: Text): Item = data λ P t l e => l label
-def Item.eof: Item = data λ P t l e => e
+def State.new (pos: Nat) (txt: Text) (errs: List Error): State 
+  = Parsec.State.new Unit Unit pos txt errs Unit.new
 
-// A Fancy error is where the parser author preempts the internal error system
-// and instead returns a custom failure message or a value of custom type E
-def Fancy (E: Type): Type =
-  @self ∀
-  (0 P: ∀ (Fancy E) -> Type)
-  (& fail: ∀ (msg: Text) -> P (data λ P f c => f msg))
-  (& custom: ∀ (err: E) -> P (data λ P f c => c err))
-  -> P self
+def State.init (txt: Text): State = Parsec.State.initial Unit Unit txt Unit.new
 
-def Fancy.fail (E: Type) (msg: Text): Fancy E = data λ P f c => f msg
-def Fancy.custom (E: Type) (err: E): Fancy E = data λ P f c => c err
+def run (A: Type) (parser: Parser A) (state: State): Reply A
+  = Parsec.run Unit Unit A parser state
 
-// A parser error can be either
-// + a trivial error containing
-//   * the offset at which the error occured
-//   * possibly an unexpected Item which triggered the error at that offset
-//   * a list of expected Items at that offset
-// + a user specified custom error containing
-//  * the offset at which the error occured
-//  * a list of Fancy error messages at that offset
-def Error (E: Type): Type =
-  @self ∀
-  (0 P: ∀ (Error E) -> Type)
-  (& trivial: ∀ (pos: Nat) (unexpected: Maybe Item) (expected: List Item)
-    -> P (data λ P t f => t pos unexpected expected)
-  )
-  (& fancy: ∀ (pos: Nat) (messages: List (Fancy E))
-    -> P (data λ P t f => f pos messages)
-  )
-  -> P self
+def parse (A: Type) (parser: Parser A) (txt: Text): Either Error A
+  = Parsec.parse Unit Unit A parser (State.init txt)
 
-def Error.trivial (E: Type)
-  (pos: Nat)
-  (unexpected: Maybe Item)
-  (expected: List Item)
-  : Error E
-  = data λ P t f => t pos unexpected expected
+def Parsed (A: Type) (reply: Reply A): Type =
+  (case reply) (λ _ => Type)
+  (λ _ _ => A)
+  (λ _ _ => Error)
+  (λ _ _ => A)
+  (λ _ _ => Error)
 
-def Error.fancy (E: Type) (pos: Nat) (messages: List (Fancy E)): Error E
-  = data λ P t f => f pos messages
+def parsed (A: Type) (parser: Parser A) (txt: Text)
+  : Parsed A (run A parser (State.init txt))
+  = (case (run A parser (State.init txt))) (λ reply => Parsed A reply)
+    (λ _ x => x)
+    (λ _ e => e)
+    (λ _ x => x)
+    (λ _ e => e)
 
-// A parser state contains:
-// + the remaining string input to parse
-// + the offset of the remaining input relative to the initial input
-// + a list of errors we've accumulated at the current offset
-// + a custom state value
-def State (S E: Type): Type =
-  @self ∀
-  (0 P: ∀ (State S E) -> Type)
-  (& new: ∀ (pos: Nat) (txt: Text) (errs: List (Error E)) (state: S)
-    -> P (data λ P n => n pos txt errs state)
-  )
-  -> P self
+def pure (A: Type) (a: A): Parser A = Parsec.pure Unit Unit A a
 
-def State.new
-  (S E: Type)
-  (pos: Nat)
-  (txt: Text)
-  (errs: List (Error E))
-  (state: S)
-  : State S E
-  = data λ P n => n pos txt errs state
+def bind (A B: Type) (p: Parser A) (f: ∀ A -> Parser B): Parser B = 
+  Parsec.bind Unit Unit A B p f
 
-// an initial state starts at offset 0 and with no errors
-def State.initial (S E: Type) (txt: Text) (state: S): State S E
-  = State.new S E 0 txt (List.nil (Error E)) state
+def ap (A B: Type) (pf: Parser (∀ A -> B)) (pa: Parser A): Parser B =
+  Parsec.ap Unit Unit A B pf pa
 
-//def State.compare (S E: Type) (x y: State S E): State S E
-//  = (case x) (λ _ => State S E) (λ x_pos _ _ _ =>
-//      (case y) (λ _ => State S E) (λ y_pos _ _ _ =>
-//        (case (Nat.lte x_pos y_pos)) (λ _ => State S E) x y
-//      )
-//    )
+def state: Parser State = Parsec.state Unit Unit
 
-// A Reply over custom state S, custom error E and return value A can be:
-// + eok when the parser returns an A value and input was not consumed
-// + eer when the parser throws an E error and input was not consumed
-// + cok when the parser returns an A value and input was consumed
-// + cer when the parser throws an E error and input was consumed
-def Reply (S E A: Type): Type =
-  @self ∀
-  (0 P: ∀ (Reply S E A) -> Type)
-  (& eok: ∀ (state: State S E) (val: A)
-    -> P (data λ P eok eer cok cer => eok state val)
-  )
-  (& eer: ∀ (state: State S E) (err: Error E)
-    -> P (data λ P eok eer cok cer => eer state err)
-  )
-  (& cok: ∀ (state: State S E) (val: A)
-    -> P (data λ P eok eer cok cer => cok state val)
-  )
-  (& cer: ∀ (state: State S E) (err: Error E)
-    -> P (data λ P eok eer cok cer => cer state err)
-  )
-  -> P self
+def token (A: Type) (f: ∀ Char -> Maybe A) (exps: List Item): Parser A
+  = Parsec.token Unit Unit A f exps
 
-def Reply.eok (S E A: Type) (state: State S E) (val: A): Reply S E A
-  = data λ P eok eer cok cer => eok state val
+def anyChar: Parser Char = Parsec.anyChar Unit Unit
 
-def Reply.eer (S E A: Type) (state: State S E) (err: Error E): Reply S E A
-  = data λ P eok eer cok cer => eer state err
+def char (c: Char): Parser Char = Parsec.char Unit Unit c
 
-def Reply.cok (S E A: Type) (state: State S E) (val: A): Reply S E A
-  = data λ P eok eer cok cer => cok state val
+def optional (A: Type) (p: Parser A): Parser (Maybe A)
+  = Parsec.optional Unit Unit A p
 
-def Reply.cer (S E A: Type) (state: State S E) (err: Error E): Reply S E A
-  = data λ P eok eer cok cer => cer state err
+def many (A: Type) (p: Parser A): Parser (List A) = Parsec.many Unit Unit A p
 
-def Reply.toEither (S E A: Type) (reply: Reply S E A): Either (Error E) A
-  = (case reply) (λ _ => Either (Error E) A)
-    (λ s a => Either.right (Error E) A a)
-    (λ s e => Either.left (Error E) A e)
-    (λ s a => Either.right (Error E) A a)
-    (λ s e => Either.left (Error E) A e)
-
-// A parser is a continuation:
-// For custom State type S, custom Error type E, and return type A,
-// For all possible continuation types B (i.e. all possible parser compositions)
-// We take a Parsec.State with custom state and errors
-// and run one of four possible continuation functions on it
-// - (eok) processes a state and a  value when no input was consumed
-// - (eer) processes a state and an error when no input was consumed
-// - (cok) processes a state and a  value when input was consumed
-// - (cer) processes a state and an error when input was consumed
-def Parser (S E A: Type): Type =
-  ∀ (B: Type)
-    (state: State S E)
-    (∀ (State S E) A -> B)
-    (∀ (State S E) (Error E) -> B)
-    (∀ (State S E) A -> B)
-    (∀ (State S E) (Error E) -> B)
-  -> B
-
-def run (S E A: Type) (parser: Parser S E A) (state: State S E): Reply S E A
-  = parser (Reply S E A) state
-    (Reply.eok S E A)
-    (Reply.eer S E A)
-    (Reply.cok S E A)
-    (Reply.cer S E A)
-
-def pure (S E A: Type) (a: A): Parser S E A = λ _ s eok _ _ _ => eok s a
-
-def bind (S E A B: Type) (p: Parser S E A) (f: ∀ A -> Parser S E B)
-  : Parser S E B
-  = λ x s1 eok eer cok cer => p x s1
-    (λ s2 a => f a x s2 (λ s3 b => eok s3 b) eer (λ s3 b => cok s3 b) cer)
-    eer
-    (λ s2 a => f a x s2 (λ s3 b => cok s3 b) cer (λ s3 b => cok s3 b) cer)
-    cer
-
-def state (S E A: Type): Parser S E (State S E) =
-  λ x s1 eok eer cok cer => eok s1 s1
-
-
+def take (err: Text) (n: Nat): Parser Text = Parsec.take Unit Unit err n

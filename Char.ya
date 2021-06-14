@@ -11,6 +11,12 @@ def Char: Type = #Char
 def fromU32: ∀ U32 -> Char = #Char.from_U32
 def toU32: ∀ Char -> U32 = #Char.to_U32
 
+def eql: ∀ (x y: Char) -> Bool = #Char.eql
+def lte: ∀ (x y: Char) -> Bool = #Char.lte
+def lth: ∀ (x y: Char) -> Bool = #Char.lth
+def gte: ∀ (x y: Char) -> Bool = #Char.gte
+def gth: ∀ (x y: Char) -> Bool = #Char.gth
+
 def isAlphabetic: ∀ Char -> Bool = #Char.is_alphabetic
 def isAlphanumeric: ∀ Char -> Bool = #Char.is_alphanumeric
 

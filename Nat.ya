@@ -5,6 +5,7 @@ package Nat
   import Is (Is)
   import Maybe as Maybe
   import Maybe (Maybe)
+  import Ord as Ord
 where
 
 def Nat: Type = #Nat
@@ -37,3 +38,8 @@ def modChecked (x y: Nat): Maybe Nat =
   (case y) (λ _ => Maybe Nat)
     (Maybe.none Nat)
     (λ _ => Maybe.some Nat (#Nat.mod x y))
+
+def cmp (x y: Nat): Ord.Ordering =
+  (case (lth x y)) (λ _ => Ord.Ordering)
+    Ord.lt
+    ((case (eql x y)) (λ _ => Ord.Ordering) Ord.eq Ord.gt)

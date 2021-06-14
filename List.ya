@@ -16,6 +16,8 @@ def List (A: Type): Type =
 def nil (0 A : Type) : List A = data λ P n c => n
 def cons (0 A : Type) (head : A) (tail : List A) : List A = data λ P n c => c head tail
 
+def single (0 A: Type) (x: A): List A = cons A x (nil A)
+
 def head (0 A : Type) (a : List A): Maybe A
   = (case a) (λ _ => Maybe A)
         (none A)

@@ -1,0 +1,42 @@
+package State
+  import Text as Text
+  import Text (Text)
+  import Nat as Nat
+  import Nat (Nat)
+  import List as List
+  import List
+  import Parsec.Error
+where
+
+// A parser state contains:
+// + the remaining string input to parse
+// + the offset of the remaining input relative to the initial input
+// + a list of errors we've accumulated at the current offset
+// + a custom state value
+def State (S E: Type): Type =
+  @self ∀
+  (0 P: ∀ (State S E) -> Type)
+  (& new: ∀ (pos: Nat) (txt: Text) (errs: List (Error E)) (state: S)
+    -> P (data λ P n => n pos txt errs state)
+  )
+  -> P self
+
+def new
+  (S E: Type)
+  (pos: Nat)
+  (txt: Text)
+  (errs: List (Error E))
+  (state: S)
+  : State S E
+  = data λ P n => n pos txt errs state
+
+// an initial state starts at offset 0 and with no errors
+def initial (S E: Type) (txt: Text) (state: S): State S E
+  = new S E 0 txt (List.nil (Error E)) state
+
+def longestMatch (S E: Type) (x y: State S E): State S E
+  = (case x) (λ _ => State S E) (λ x_pos _ _ _ =>
+      (case y) (λ _ => State S E) (λ y_pos _ _ _ =>
+        (case (Nat.lte x_pos y_pos)) (λ _ => State S E) x y
+      )
+    )

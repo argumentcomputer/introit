@@ -3,6 +3,8 @@ package Text
   import Bool as Bool
   import Is (Is)
   import Is as Is
+  import Pair (Pair)
+  import Pair as Pair
   import Char (Char)
   import Char as Char
   import Nat (Nat)
@@ -12,11 +14,12 @@ package Text
   import U8 (U8)
 where
 
-
 def Text: Type = #Text
 
 def nil: Text = ""
 def cons: ∀ Char Text -> Text = #Text.cons
+
+def single (c: Char): Text = cons c nil
 
 def lenChars: ∀ Text -> Nat = #Text.len_chars
 def lenBytes: ∀ Text -> Nat = #Text.len_bytes
@@ -28,6 +31,9 @@ def remove: ∀ Nat Nat Text -> Text = #Text.remove
 
 def take: ∀ Nat Text -> Text = #Text.take
 def drop: ∀ Nat Text -> Text = #Text.drop
+
+def split (n: Nat) (txt: Text): Pair Text Text =
+  Pair.new Text Text (take n txt) (drop n txt)
 
 def eql: ∀ Text Text -> Bool = #Text.eql
 def lte: ∀ Text Text -> Bool = #Text.lte
