@@ -5,10 +5,12 @@ package introit
   import pair
   import maybe
   import list
+  import eq
   import ord
   import equal
   import bool
   import nat
+  import either
   //import Functor as Functor
   //import Monad as Monad
   //import Eq as Eq
