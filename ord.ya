@@ -1,0 +1,38 @@
+package ord
+  import bool
+where
+
+type Ordering {
+  LT,
+  EQ,
+  GT,
+}
+
+type Ord (A: Type) {
+  New (cmp: ∀ (a b : A) -> Ordering)
+}
+
+def Ord.compare (0 A : Type) (ord: Ord A) (a b : A): Ordering
+  = (case ord) (λ _ => Ordering) (λ cmp => cmp a b)
+
+def Ordering.eql (a b: Ordering): Bool
+  = (case a) (λ _ => Bool)
+      ((case b) (λ _ => Bool) Bool.True Bool.False Bool.False)
+      ((case b) (λ _ => Bool) Bool.False Bool.True Bool.False)
+      ((case b) (λ _ => Bool) Bool.False Bool.False Bool.True)
+
+def Ord.lth (0 A: Type) (ord: Ord A) (a b: A): Bool
+  = Ordering.eql (Ord.compare A ord a b) Ordering.LT
+
+def Ord.eql (0 A: Type) (ord: Ord A) (a b: A): Bool
+  = Ordering.eql (Ord.compare A ord a b) Ordering.EQ
+
+def Ord.gth (0 A: Type) (ord: Ord A) (a b: A): Bool
+  = Ordering.eql (Ord.compare A ord a b) Ordering.GT
+
+def Ord.lte (0 A: Type) (ord: Ord A) (a b: A): Bool
+  = Bool.or (Ord.eql A ord a b) (Ord.lth A ord a b)
+
+def Ord.gte (0 A: Type) (ord: Ord A) (a b: A): Bool
+  = Bool.or (Ord.eql A ord a b) (Ord.gth A ord a b)
+

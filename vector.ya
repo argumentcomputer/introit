@@ -1,0 +1,8 @@
+package vector where
+
+type Vector (A: Type): ∀ #Nat -> Type {
+  Nil : Vector A 0,
+  Cons (0 k: #Nat) (x: A) (xs: Vector A k): Vector A (#Nat.suc k),
+}
+
+

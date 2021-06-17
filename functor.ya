@@ -24,3 +24,5 @@ def map
   : F B
   = (case impl) (λ _ => F B) (λ m => m A B fun f)
 
+//def functor (A: Type) : Functor.Functor (Pair A)
+//  = Functor.new (Pair A) (map A)

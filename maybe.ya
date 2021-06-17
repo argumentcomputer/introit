@@ -1,0 +1,14 @@
+package maybe where
+
+type Maybe (A: Type) {
+  None,
+  Some A,
+}
+
+def Maybe.map (0 A B: Type) (m: Maybe A) (f: ∀ A -> B): Maybe B
+  = (case m) (λ m => Maybe B) (Maybe.None B) (λ x => Maybe.Some B (f x))
+
+def Maybe.bind (0 A B: Type) (m: Maybe A) (f: ∀ A -> (Maybe B)): Maybe B
+  = (case m) (λ m => Maybe B) (Maybe.None B) f
+
+

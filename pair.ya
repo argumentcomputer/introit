@@ -1,0 +1,21 @@
+package pair where
+
+type Pair (A B: Type) {
+  New (fst: A) (snd: B)
+}
+
+def Pair.curry (0 A B C: Type) (f: ∀ (Pair A B) -> C) (x: A) (y: B): C
+  = f (Pair.New A B x y)
+
+def Pair.uncurry (0 A B C: Type) (f: ∀ A B -> C) (ab: Pair A B): C
+  = (case ab) (λ _ => C) (λ a b => f a b)
+
+def Pair.fst (0 A B : Type) (p : Pair A B): A
+  = (case p) (λ _ => A) (λ a b => a)
+
+def Pair.snd (0 A B : Type) (p : Pair A B): B
+  = (case p) (λ _ => B) (λ a b => b)
+
+def Pair.map (0 A B C : Type) (f : ∀ B -> C) (p : Pair A B): Pair A C
+  = (case p) (λ _ => Pair A C) (λ x y => Pair.New A C x (f y))
+
