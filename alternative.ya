@@ -1,0 +1,46 @@
+package alternative
+  import applicative
+  import list
+where
+
+type Alternative (F: ∀ Type -> Type) {
+  New
+    (empty: ∀ (A: Type) -> F A)
+    (option: ∀ (A: Type) (p q: F A) -> F A),
+}
+
+// Empty alternative
+def Alternative.empty (0 F: ∀ Type -> Type) (impl: Alternative F) (A: Type): F A
+  = (case impl) (λ _ => F A) (λ emptyF _ => emptyF A)
+
+def Alternative.option
+  (0 F: ∀ Type -> Type) (impl: Alternative F) (A: Type) (p q: F A)
+  : F A
+  = (case impl) (λ _ => F A) (λ _ optionF => optionF A p q)
+
+//// One or more
+//def some
+//  (F: ∀ Type -> Type) (impl: Alternative F) (A: Type) (f: F A)
+//  : F (List A)
+//  =
+//  let many_f: F (List A) =
+//    option F impl (List A) (some F impl A f) (pure F impl (List A) (List.nil A));
+//  (Applicative.applicate F (applicative F impl) (List A) (List A)
+//      (Functor.map F (functor F impl) A (∀ (List A) -> List A)
+//        (List.cons A)
+//        f
+//      )
+//      many_f
+//  )
+//
+//// Zero or more
+//def many (F: ∀ Type -> Type) (impl : Alternative F) (A : Type) (f : F A): F (List A) =
+//  let some_f : F (List A) = 
+//  (Applicative.applicate F (applicative F impl) (List A) (List A)
+//    (Functor.map F (functor F impl) A (∀ (List A) -> List A)
+//      (List.cons A)
+//      f
+//    )
+//    (many F impl A f)
+//  );
+//  option F impl (List A) some_f (pure F impl (List A) (List.nil A))

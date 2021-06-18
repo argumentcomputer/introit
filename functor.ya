@@ -1,0 +1,18 @@
+package functor where
+
+type Functor (F: ∀ Type -> Type) {
+  New (map: ∀ (A B: Type) (f: ∀ A -> B) (f: F A) -> F B)
+}
+
+def Functor.map
+  (0 F: ∀ Type -> Type)
+  (impl: Functor F)
+  (A: Type)
+  (B: Type)
+  (fun: ∀ A -> B)
+  (f : F A)
+  : F B
+  = (case impl) (λ _ => F B) (λ m => m A B fun f)
+
+//def functor (A: Type) : Functor.Functor (Pair A)
+//  = Functor.new (Pair A) (map A)

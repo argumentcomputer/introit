@@ -1,0 +1,154 @@
+package i64
+  import bool
+  import is
+  import pair
+  import maybe
+  import u32
+where
+
+def I64: Type = #I64
+
+def I64.MAX: I64 = #I64.max
+def I64.MIN: I64 = #I64.min
+
+def I64.abs: ∀ (x: I64) -> #U64 = #I64.abs
+def I64.sgn: ∀ (x: I64) -> Bool = #I64.sgn
+
+def I64.eql: ∀ (x y: I64) -> Bool = #I64.eql
+def I64.lte: ∀ (x y: I64) -> Bool = #I64.lte
+def I64.lth: ∀ (x y: I64) -> Bool = #I64.lth
+def I64.gte: ∀ (x y: I64) -> Bool = #I64.gte
+def I64.gth: ∀ (x y: I64) -> Bool = #I64.gth
+def I64.and: ∀ (x y: I64) -> Bool = #I64.and
+def I64.xor: ∀ (x y: I64) -> Bool = #I64.xor
+def I64.or: ∀ (x y: I64) -> Bool = #I64.or
+def I64.neq (x y: I64): Bool = Bool.not (I64.eql x y)
+
+def I64.add: ∀ (x y: I64) -> I64 = #I64.add
+
+def I64.SafeAdd (x y: I64): Bool =
+  Bool.not
+    (Bool.and
+      (Bool.eql (I64.sgn x) (I64.sgn y))
+      (Bool.neq (I64.sgn x) (I64.sgn (#I64.add x y)))
+    )
+
+def I64.addSafe (x y: I64) (0 e: Is (I64.SafeAdd x y)): I64 = #I64.add x y
+
+def I64.sub: ∀ (x y: I64) -> I64 = #I64.sub
+
+def I64.SafeSub (x y: I64): Bool =
+  Bool.not
+    (Bool.and
+      (Bool.eql (I64.sgn x) (Bool.not (I64.sgn y)))
+      (Bool.neq (I64.sgn x) (I64.sgn (#I64.sub x y)))
+    )
+
+def I64.subSafe (x y: I64) (0 e: Is (I64.lte y x)): I64 = #I64.sub x y
+
+def I64.mul: ∀ (x y: I64) -> I64 = #I64.mul
+
+def I64.SafeMul (x y: I64): Bool =
+  Bool.or (I64.eql x +0i64)
+    ((case (I64.eql y +0i64)) (λ _ => Bool)
+       Bool.True
+       (I64.eql (#I64.div (#I64.mul x y) y) x)
+    )
+
+def I64.mulSafe (x y: I64) (0 e: Is (I64.SafeMul x y)): I64 = #I64.mul x y
+
+def I64.div (x y: I64): Maybe I64 =
+  (case (I64.neq y +0i64)) (λ _ => Maybe I64)
+    (Maybe.Some I64 (#I64.div x y))
+    (Maybe.None I64)
+
+def I64.divSafe (x y: I64) (0 e: Is (I64.neq y +0i64)): I64 = #I64.div x y
+
+def I64.mod (x y: I64): Maybe I64 =
+  (case (I64.neq y +0i64)) (λ _ => Maybe I64)
+    (Maybe.Some I64 (#I64.mod x y))
+    (Maybe.None I64)
+
+def I64.modSafe (x y: I64) (0 e: Is (I64.neq y +0i8)): I64 = #I64.mod x y
+
+def I64.pow: ∀ (x: I64) (y: U32) -> I64 = #I64.pow
+def I64.shl: ∀ (x: U32) (y: I64) -> I64 = #I64.shl
+def I64.shr: ∀ (x: U32) (y: I64) -> I64 = #I64.shr
+def I64.rol: ∀ (x: U32) (y: I64) -> I64 = #I64.rol
+def I64.ror: ∀ (x: U32) (y: I64) -> I64 = #I64.ror
+
+def I64.countZeros: ∀ (x: I64) -> U32 = #I64.count_zeros
+def I64.countOnes: ∀ (x: I64) -> U32 = #I64.count_ones
+
+def I64.SafeToU8 (x: I64): Bool = Bool.and (I64.sgn x) (I64.lte x (#U8.to_I64 #U8.max))
+
+def I64.toU8 (x: I64): Maybe #U8 =
+  (case (I64.SafeToU8 x)) (λ _ => Maybe #U8)
+    (Maybe.Some #U8 (#I64.to_U8 x))
+    (Maybe.None #U8)
+
+def I64.toU8Safe (x: I64) (0 e: Is (I64.SafeToU8 x)): #U8 = #I64.to_U8 x
+
+def I64.SafeToU16 (x: I64): Bool
+  = Bool.and (I64.sgn x) (I64.lte x (#U16.to_I64 #U16.max))
+
+def I64.toU16 (x: I64): Maybe #U16 =
+  (case (I64.SafeToU16 x)) (λ _ => Maybe #U16)
+    (Maybe.Some #U16 (#I64.to_U16 x))
+    (Maybe.None #U16)
+
+def I64.toU16Safe (x: I64) (0 e: Is (I64.SafeToU16 x)): #U16 = #I64.to_U16 x
+
+
+def I64.toU32 (x: I64): Maybe #U32 =
+  (case (I64.sgn x)) (λ _ => Maybe #U32)
+    (Maybe.Some #U32 (#I64.to_U32 x))
+    (Maybe.None #U32)
+
+def I64.toU32Safe (x: I64) (0 e: Is (I64.sgn x)): #U32 = #I64.to_U32 x
+
+def I64.toU64 (x: I64): Maybe #U64 =
+  (case (I64.sgn x)) (λ _ => Maybe #U64)
+    (Maybe.Some #U64 (#I64.to_U64 x))
+    (Maybe.None #U64)
+
+def I64.toU64Safe (x: I64) (0 e: Is (I64.sgn x)): #U64 = #I64.to_U64 x
+
+def I64.toNat (x: I64): Maybe #Nat =
+  (case (I64.sgn x)) (λ _ => Maybe #Nat)
+    (Maybe.Some #Nat (#I64.to_Nat x))
+    (Maybe.None #Nat)
+
+def I64.toNatSafe (x: I64) (0 e: Is (I64.sgn x)): #Nat = #I64.to_Nat x
+
+def I64.SafeToI8 (x: I64): Bool =
+  Bool.or (I64.gte x (#I8.to_I64 #I8.min)) (I64.lte x (#I8.to_I64 #I8.max))
+
+def I64.toI8 (x: I64): Maybe #I8 =
+  (case (I64.SafeToI8 x)) (λ _ => Maybe #I8)
+    (Maybe.Some #I8 (#I64.to_I8 x))
+    (Maybe.None #I8)
+
+def I64.toI8Safe (x: I64) (0 e: Is (I64.SafeToI8 x)): #I8 = #I64.to_I8 x
+
+def I64.SafeToI16 (x: I64): Bool =
+  Bool.or (I64.gte x (#I16.to_I64 #I16.min)) (I64.lte x (#I16.to_I64 #I16.max))
+
+def I64.toI16 (x: I64): Maybe #I16 =
+  (case (I64.SafeToI16 x)) (λ _ => Maybe #I16)
+    (Maybe.Some #I16 (#I64.to_I16 x))
+    (Maybe.None #I16)
+
+def I64.toI16Safe (x: I64) (0 e: Is (I64.SafeToI16 x)): #I16 = #I64.to_I16 x
+
+def I64.SafeToI32 (x: I64): Bool =
+  Bool.or (I64.gte x (#I32.to_I64 #I32.min)) (I64.lte x (#I32.to_I64 #I32.max))
+
+def I64.toI32 (x: I64): Maybe #I32 =
+  (case (I64.SafeToI32 x)) (λ _ => Maybe #I32)
+    (Maybe.Some #I32 (#I64.to_I32 x))
+    (Maybe.None #I32)
+
+def I64.toI32Safe (x: I64) (0 e: Is (I64.SafeToI32 x)): #I32 = #I64.to_I32 x
+
+def I64.toInt: ∀ (x: I64) -> #Int = #I64.to_Int

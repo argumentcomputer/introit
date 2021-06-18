@@ -1,0 +1,50 @@
+package list
+  import maybe
+where
+
+type List (A: Type) {
+  Nil,
+  Cons A (List A),
+}
+
+def List.single (0 A: Type) (x: A): List A = List.Cons A x (List.Nil A)
+
+def List.head (0 A: Type) (a: List A): Maybe A
+  = (case a) (λ _ => Maybe A) (Maybe.None A) (λ x _ => Maybe.Some A x)
+
+def List.tail (0 A: Type) (a : List A): List A
+  = (case a) (λ _ => List A)(List.Nil A) (λ _ xs => xs)
+
+def List.concat (0 A: Type) (a b: List A): List A
+  = (case a) (λ _ => List A) b (λ x xs => List.Cons A x (List.concat A xs b))
+
+//def List.at (A: Type) (xs: List A) (idx : Nat): Maybe A
+//  = (case idx) (λ _ => Maybe A)
+//        (head A list)
+//        (λ pred => at A list pred)
+
+//def flatten (0 A : Type) (list : List (List A)): List A
+//  = (case list) (λ _ => List A)
+//        (nil A)
+//        (λ head tail => concat A head (flatten A tail))
+//
+//def singleton (0 A : Type) (a : A): List A
+//  = cons A a (nil A)
+//
+//def map (0 A : Type) (0 B : Type) (f: forall A -> B) (list : List A): List B
+//  = (case list) (λ _ => List B)
+//        (nil B)
+//        (λ head tail => cons B (f head) (map A B f tail))
+//
+//def foldr (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
+//  = (case list) (λ _ => B)
+//        b
+//        (λ head tail => f head (foldr A B f b tail))
+//
+//def foldl (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
+//  = (case list) (λ _ => B)
+//        b
+//        (λ head tail => (foldl A B f (f head b) tail))
+//
+//def flatMap (0 A : Type) (0 B: Type) (fun: forall A -> (List B)) (l: List A): List B
+//  = flatten B (map A (List B) fun l)

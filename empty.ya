@@ -1,0 +1,5 @@
+package empty where
+
+type Empty { }
+
+def absurd (A: Type) (x: Empty): A = (case x) (λ _ => A)

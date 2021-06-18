@@ -1,0 +1,31 @@
+package function where
+
+def Proposition (0 A: Type): Type = ∀ A -> Type
+
+def Function (0 A B: Type): Type = ∀ A -> B
+def DependentFunction (0 A: Type) (0 B: Proposition A): Type = ∀ (x: A) -> B x
+
+def Function.const (0 A B: Type) (x: A) (y: B): A = x
+def DependentFunction.const (0 A: Type) (B: Proposition A) (x: A) (y: B x): A 
+  = x
+
+def Function.id (0 A: Type) (x: A): A = x
+
+def Function.compose (0 A B C: Type) (g: Function B C) (f: Function A B)
+  : Function A C
+  = λ x => g (f x)
+
+def DependentFunction.compose
+  (0 A: Type)
+  (0 B: Proposition A)
+  (0 C: ∀ (a: A) (B a) -> Type)
+  (x: A)
+  (f: DependentFunction A B)
+  (g: ∀ (b: B x) -> C x (f x))
+  : C x (f x)
+  = g (f x)
+
+def Function.call (0 A B: Type) (x: A) (f: Function A B): B = f x
+def DependentFunction.call
+  (0 A: Type) (0 B: Proposition A) (x: A) (f: DependentFunction A B): B x = f x
+

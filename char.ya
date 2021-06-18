@@ -1,0 +1,43 @@
+package char
+  import bool
+  import is
+  import u32
+where
+
+def Char: Type = #Char
+
+def Char.fromU32: ∀ U32 -> Char = #Char.from_U32
+def Char.toU32: ∀ Char -> U32 = #Char.to_U32
+
+def Char.eql: ∀ (x y: Char) -> Bool = #Char.eql
+def Char.lte: ∀ (x y: Char) -> Bool = #Char.lte
+def Char.lth: ∀ (x y: Char) -> Bool = #Char.lth
+def Char.gte: ∀ (x y: Char) -> Bool = #Char.gte
+def Char.gth: ∀ (x y: Char) -> Bool = #Char.gth
+
+def Char.isAlphabetic: ∀ Char -> Bool = #Char.is_alphabetic
+def Char.isAlphanumeric: ∀ Char -> Bool = #Char.is_alphanumeric
+
+def Char.isAscii: ∀ Char -> Bool = #Char.is_ascii_alphabetic
+def Char.isAsciiAlphabetic: ∀ Char -> Bool = #Char.is_ascii_alphanumeric
+def Char.isAsciiControl: ∀ Char -> Bool = #Char.is_ascii_control
+
+def Char.isAsciiDigit: ∀ #Char -> #Bool = #Char.is_ascii_digit
+def Char.isAsciiGraphic: ∀ #Char -> #Bool = #Char.is_ascii_graphic
+def Char.isAsciiHexDigit: ∀ #Char -> #Bool = #Char.is_ascii_hexdigit
+def Char.isAsciiLowerCase: ∀ #Char -> #Bool = #Char.is_ascii_lowercase
+def Char.isAsciiPunctuation: ∀ #Char -> #Bool = #Char.is_ascii_punctuation
+def Char.isAsciiUpperCase: ∀ #Char -> #Bool = #Char.is_ascii_uppercase
+def Char.isAsciiWhitespace: ∀ #Char -> #Bool = #Char.is_ascii_whitespace
+def Char.isControl: ∀ #Char -> #Bool = #Char.is_control
+def Char.isDigit: ∀ #Char -> #Bool = #Char.is_digit
+def Char.isLowercase: ∀ #Char -> #Bool = #Char.is_lowercase
+def Char.isNumeric: ∀ #Char -> #Bool = #Char.is_numeric
+def Char.isUppercase: ∀ #Char -> #Bool = #Char.is_uppercase
+def Char.isWhitespace: ∀ #Char -> #Bool = #Char.is_whitespace
+def Char.lenUTF8: ∀ #Char -> #Nat = #Char.len_utf8
+def Char.lenUTF16: ∀ #Char -> #Nat = #Char.len_utf16
+def Char.toAsciiLowercase: ∀ #Char -> #Bool = #Char.to_ascii_lowercase
+def Char.toAsciiUppercase: ∀ #Char -> #Bool = #Char.to_ascii_uppercase
+def Char.toLowercase: ∀ #Char -> #Bool = #Char.to_lowercase
+def Char.toUppercase: ∀ #Char -> #Bool = #Char.to_uppercase

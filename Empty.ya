@@ -1,8 +1,0 @@
-package Empty where
-
-def Empty : Type =
-  @self ∀
-  (0 P : ∀ Empty -> Type) ->
-  P self
-
-def absurd (A: Type) (x: Empty): A = (case x) (λ _ => A)

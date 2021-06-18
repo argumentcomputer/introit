@@ -1,0 +1,3 @@
+package bits where
+
+def Bits: Type = #Bits

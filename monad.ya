@@ -1,0 +1,51 @@
+package monad where
+
+type Monad (M: ∀ Type -> Type) {
+  New
+    (pure: ∀ (A: Type) A -> M A)
+    (bind: ∀ (A B: Type) (M A) (∀ A -> (M B)) -> M B),
+}
+
+def bind
+  (0 M: ∀ Type -> Type)
+  (impl: Monad M)
+  (A: Type)
+  (B: Type)
+  (m: M A)
+  (f: ∀ A -> (M B))
+  : M B
+  = (case impl) (λ _ => M B) (λ  _ bind => bind A B m f)
+
+def pure (0 M: ∀ Type -> Type) (impl: Monad M) (A: Type) (a: A): M A =
+  (case impl) (λ _ => M A) (λ pure _ => pure A a)
+
+
+//// A monoid monad with identity and a binary operation
+//def MonadPlus (M: ∀ Type -> Type) : Type =
+//  @self ∀
+//  (0 P: ∀ (MonadPlus M) -> Type)
+//  (& new: ∀
+//    (monad : Monad M)
+//    (mzero : ∀ (A : Type) -> M A)
+//    (mplus : ∀ (A : Type) (p q : M A) -> M A)
+//    -> P (data λ P n => n monad mzero mplus)
+//  ) -> P self
+//
+//def new (0 M: ∀ Type -> Type)
+//        (monad : Monad M)
+//        (mzero : ∀ (A : Type) -> M A)
+//        (mplus : ∀ (A : Type) (p q : M A) -> M A)
+//        : MonadPlus M
+//  = data λ P n => n monad mzero mplus
+//
+//def monad (0 M: ∀ Type -> Type) (impl : MonadPlus M): Monad M
+//  = (case impl) (λ _ => Monad M)
+//      (λ monad _ _ => monad)
+//
+//def mzero (0 M: ∀ Type -> Type) (impl : MonadPlus M): ∀ (A : Type) -> M A
+//  = (case impl) (λ _ => ∀ (A : Type) -> M A)
+//      (λ _ mzero _ => mzero)
+//
+//def mplus (0 M: ∀ Type -> Type) (impl : MonadPlus M): ∀ (A : Type) (p q : M A) -> M A
+//  = (case impl) (λ _ => ∀ (A : Type) (p q : M A) -> M A)
+//      (λ _ _ mplus => mplus)

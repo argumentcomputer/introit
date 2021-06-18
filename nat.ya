@@ -1,0 +1,42 @@
+package nat
+  import bool
+  import maybe
+  import is
+  import ord
+where
+
+def Nat: Type = #Nat
+
+def Nat.Z: Nat = 0
+def Nat.S: ∀ Nat -> Nat = #Nat.suc
+
+def Nat.pred: ∀ Nat -> Nat = #Nat.pre
+def Nat.eql: ∀ (x y: Nat) -> Bool = #Nat.eql
+def Nat.lte: ∀ (x y: Nat) -> Bool = #Nat.lte
+def Nat.lth: ∀ (x y: Nat) -> Bool = #Nat.lth
+def Nat.gte: ∀ (x y: Nat) -> Bool = #Nat.gte
+def Nat.gth: ∀ (x y: Nat) -> Bool = #Nat.gth
+
+def Nat.add: ∀ (x y: Nat) -> Nat = #Nat.add
+def Nat.mul: ∀ (x y: Nat) -> Nat = #Nat.mul
+
+def Nat.neq (x y: Nat): Bool = Bool.not (Nat.eql x y)
+
+def Nat.div (x y: Nat) (0 e: Is (Nat.neq y 0)): Nat = #Nat.div x y
+
+def Nat.divChecked (x y: Nat): Maybe Nat =
+  (case y) (λ _ => Maybe Nat)
+    (Maybe.None Nat)
+    (λ _ => Maybe.Some Nat (#Nat.div x y))
+
+def Nat.mod (x y: Nat) (0 e: Is (Nat.neq y 0)): Nat = #Nat.mod x y
+
+def Nat.modChecked (x y: Nat): Maybe Nat =
+  (case y) (λ _ => Maybe Nat)
+    (Maybe.None Nat)
+    (λ _ => Maybe.Some Nat (#Nat.mod x y))
+
+def Nat.compare (x y: Nat): Ordering =
+  (case (Nat.lth x y)) (λ _ => Ordering)
+  Ordering.LT
+  ((case (Nat.eql x y)) (λ _ => Ordering) Ordering.EQ Ordering.GT)

@@ -1,0 +1,79 @@
+package u8
+  import bool
+  import is
+  import pair
+  import maybe
+  import u32
+where
+
+def U8: Type = #U8
+
+def U8.MAX: U8 = #U8.max
+def U8.MIN: U8 = #U8.min
+
+def U8.eql: ∀ (x y: U8) -> Bool = #U8.eql
+def U8.lte: ∀ (x y: U8) -> Bool = #U8.lte
+def U8.lth: ∀ (x y: U8) -> Bool = #U8.lth
+def U8.gte: ∀ (x y: U8) -> Bool = #U8.gte
+def U8.gth: ∀ (x y: U8) -> Bool = #U8.gth
+def U8.and: ∀ (x y: U8) -> Bool = #U8.and
+def U8.xor: ∀ (x y: U8) -> Bool = #U8.xor
+def U8.or: ∀ (x y: U8) -> Bool = #U8.or
+def U8.neq (x y: U8): Bool = Bool.not (U8.eql x y)
+
+def U8.add: ∀ (x y: U8) -> U8 = #U8.add
+def U8.addSafe (x y: U8) (0 e: Is (U8.gte (#U8.add x y) x)): U8 = #U8.add x y
+
+def U8.sub: ∀ (x y: U8) -> U8 = #U8.sub
+def U8.subSafe (x y: U8) (0 e: Is (U8.lte y x)): U8 = #U8.sub x y
+
+def U8.mul: ∀ (x y: U8) -> U8 = #U8.mul
+
+def U8.SafeMul (x y: U8): Bool =
+  (case (U8.eql x 0u8)) (λ _ => Bool)
+    Bool.True
+    (U8.eql (#U8.div (#U8.mul x y) x) y)
+
+def U8.mulSafe (x y: U8) (0 e: Is (U8.SafeMul x y)): U8 = #U8.mul x y
+
+def U8.div (x y: U8): Maybe U8 =
+  (case (U8.neq y 0u8)) (λ _ => Maybe U8)
+    (Maybe.Some U8 (#U8.div x y))
+    (Maybe.None U8)
+
+def U8.divSafe (x y: U8) (0 e: Is (U8.neq y 0)): U8 = #U8.div x y
+
+def U8.mod (x y: U8): Maybe U8 =
+  (case (U8.neq y 0u8)) (λ _ => Maybe U8)
+    (Maybe.Some U8 (#U8.mod x y))
+    (Maybe.None U8)
+
+def U8.modSafe (x y: U8) (0 e: Is (U8.neq y 0)): U8 = #U8.mod x y
+
+def U8.pow: ∀ (x: U8) (y: U32) -> U8 = #U8.pow
+def U8.shl: ∀ (x: U32) (y: U8) -> U8 = #U8.shl
+def U8.shr: ∀ (x: U32) (y: U8) -> U8 = #U8.shr
+def U8.rol: ∀ (x: U32) (y: U8) -> U8 = #U8.rol
+def U8.ror: ∀ (x: U32) (y: U8) -> U8 = #U8.ror
+
+def U8.countZeros: ∀ (x: U8) -> U32 = #U8.count_zeros
+def U8.countOnes: ∀ (x: U8) -> U32 = #U8.count_ones
+
+def U8.toU16: ∀ (x: U8) -> #U16 = #U8.to_U16
+def U8.toU32: ∀ (x: U8) -> #U32 = #U8.to_U32
+def U8.toU64: ∀ (x: U8) -> #U64 = #U8.to_U64
+
+def U8.toI8 (x: U8): Maybe #I8 =
+  (case (U8.lte x (#I8.to_U8 #I8.max))) (λ _ => Maybe #I8)
+    (Maybe.Some #I8 (#U8.to_I8 x))
+    (Maybe.None #I8)
+
+def U8.toI8Safe (x: U8) (0 e: Is (U8.lte x (#I8.to_U8 #I8.max))): #I8
+  = #U8.to_I8 x
+
+def U8.toI16: ∀ (x: U8) -> #I16 = #U8.to_I16
+def U8.toI32: ∀ (x: U8) -> #I32 = #U8.to_I32
+def U8.toI64: ∀ (x: U8) -> #I64 = #U8.to_I64
+
+def U8.toNat: ∀ (x: U8) -> #Nat = #U8.to_Nat
+def U8.toInt: ∀ (x: U8) -> #Int = #U8.to_Int

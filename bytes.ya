@@ -1,0 +1,3 @@
+package bytes where
+
+def Bytes: Type = #Bytes

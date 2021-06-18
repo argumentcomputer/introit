@@ -1,0 +1,27 @@
+package boolean where
+
+
+type Boolean {
+  True,
+  False,
+}
+
+def Boolean.and (a: Boolean) (b: Boolean): Boolean =
+  (case a) (λ _ => Boolean)
+  ((case b) (λ _ => Boolean) Boolean.True Boolean.False)
+  Boolean.False
+
+def Boolean.or (a: Boolean) (b: Boolean): Boolean =
+  (case a) (λ _ => Boolean)
+  Boolean.True
+  ((case b) (λ _ => Boolean) Boolean.True Boolean.False)
+
+def Boolean.not (a: Boolean): Boolean =
+  (case a) (λ _ => Boolean) Boolean.False Boolean.True
+
+def Boolean.xor (a: Boolean) (b: Boolean): Boolean =
+  (case a) (λ _ => Boolean) (Boolean.not b) b
+
+def Boolean.if (A : Type) (bool : Boolean) (a1: A) (a2: A) : A
+  = (case bool) (λ _ => A) a1 a2
+

@@ -1,0 +1,92 @@
+package map
+  import pair
+  import ord
+  import nat
+  import list
+  import maybe
+  import bool
+where
+
+// type Map (K V: Type) (O: Ord K): Type
+// | Tip: Map K V O
+// | Bin Nat K V (Map K V ord) (Map K V ord): Map K V O
+
+type Map (K V: Type) (O: Ord K) {
+  Tip,
+  Bin (size: Nat) (key: K) (val: V) (left: Map K V O) (right: Map K V O),
+}
+
+def Map.single (0 K V: Type) (O: Ord K) (k: K) (v: V): Map K V O
+  = Map.Bin K V O 1 k v (Map.Tip K V O) (Map.Tip K V O)
+
+def Map.null (0 K V: Type) (O: Ord K) (m: Map K V O) : Bool
+  = (case m) (λ _ => Bool) (Bool.True) (λ _ _ _ _ _ => Bool.False)
+
+def Map.size (0 K V: Type) (O: Ord K) (m: Map K V O) : Nat
+  = (case m) (λ _ => Nat) 0 (λ size _ _ _ _ => size)
+
+def lookup (0 K V: Type) (ord: Ord K) (key: K) (m: Map K V ord): Maybe V
+  =
+  letrec go (k: K) (m: Map K V ord): Maybe V = (case m) (λ _ => Maybe V)
+    (Maybe.None V)
+    (λ _ kx x l r => (case (Ord.compare K ord k kx)) (λ _ => Maybe V)
+      (go k l)
+      (Maybe.Some V x)
+      (go k r)
+    );
+  go key m
+
+def member (0 K V: Type) (ord: Ord K) (key: K) (m: Map K V ord): Bool
+  =
+  letrec go (k: K) (m: Map K V ord): Bool = (case m) (λ _ => Bool)
+    (Bool.False)
+    (λ _ kx _ l r => (case (Ord.compare K ord k kx)) (λ _ => Bool)
+      (go k l)
+      (Bool.True)
+      (go k r)
+    );
+  go key m
+
+//def Map.put (0 K V: Type) (ord: Ord K) (m: Map K V ord) (key: K) (val: V)
+//  : Map K V ord
+//  = (case m) (λ _ => Map K V ord) (Map.single K V ord key val)
+//    (λ tKey tVal lft rgt =>
+//      (case (Ord.compare K ord key tKey)) (λ _ => Map K V ord)
+//        (Map.Bin K V ord key tVal (put K V ord lft key val) rgt)
+//        (Map.Bin K V ord key val lft rgt)
+//        (Map.Bin K V ord key tVal lft (put K V ord rgt key val))
+//    )
+
+//
+//def fromList (K V: Type) (ord: Ord K) (xs : List (Pair K V)): Map K V ord
+//  = (case xs) (λ _ => Map K V ord)
+//  (empty K V ord)
+//  (λ x xs =>
+//    let xKey: K = Pair.fst K V x;
+//    let xVal: V = Pair.snd K V x;
+//    (case xs) (λ _ => Map K V ordering)
+//    (singleton K V ord xKey xVal)
+//    (λ y ys =>
+//      let yKey: K = Pair.fst K V y;
+//      let yVal: V = Pair.snd K V y;
+//      (case (Ord.compare K ord xKey yKey)) (λ _ => Map K V ord)
+//        (tie K V ord key val (fromList K V ord xs) empty)
+//        (tie K V ord key val (fromList K V ord ys) empty)
+//        (tie K V ord key val empty (fromList K V ord xs))
+//    )
+//  )
+
+//def toList (0 K V: Type) (ordering : Ordered K) (map : Map K V ordering): List (Pair K V)
+//  = (case map) (λ _ => List (Pair K V))
+//        (List.nil (Pair K V))
+//        (λ key value left right =>
+//            List.cons (Pair K V) (Pair.new K V key value)
+//                (List.concat (Pair K V) (toList K V ordering left) (toList K V ordering right))
+//        )
+//
+//def mapMap (K V BK BV : Type) (ord : Ordered K) (ordB : Ordered BK) (f : ∀ (Pair K V) -> (Pair BK BV)) (map : Map K V ord): Map BK BV ordB
+//  =
+//  let l : List (Pair K V) = toList K V ord map;
+//  fromList BK BV ordB (List.map (Pair K V) (Pair BK BV) f l)
+//
+//

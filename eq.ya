@@ -1,0 +1,8 @@
+package eq
+  import bool
+where
+
+type Eq (A: Type) {
+  New (eq: ∀ (a b: A) -> Bool),
+}
+

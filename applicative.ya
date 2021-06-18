@@ -1,0 +1,8 @@
+package applicative where
+
+type Applicative (F: ∀ Type -> Type) {
+  New
+    (pure: ∀ (A: Type) A -> F A)
+    (bind: ∀ (A B: Type) (F (∀ A -> B)) (F A) -> F B),
+}
+

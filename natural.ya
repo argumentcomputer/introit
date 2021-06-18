@@ -1,0 +1,45 @@
+package natural
+  import nat
+where
+
+type Natural {
+  Z,
+  S Natural,
+}
+
+def Natural.pred (x: Natural): Natural
+  = (case x) (λ _ => Natural) Natural.Z (λ p => p)
+
+def Natural.fromNat (n: Nat): Natural
+  = (case n) (λ _ => Natural)
+    Natural.Z
+    (λ pre => Natural.S (Natural.fromNat pre))
+
+def Natural.toNat (n: Natural): Nat
+  = (case n) (λ x => Nat) 0 (λ pre => Nat.S (Natural.toNat pre))
+
+def add (a b: Natural): Natural
+  = (case a) (λ _ => Natural) b (λ pred => Natural.S (add pred b))
+
+def mul (a b: Natural): Natural
+  = (case a) (λ _ => Natural) Natural.Z (λ pred => add b (mul pred b))
+
+
+def sub (n m: Natural): Natural
+  = (case m) (λ _ => Natural)
+    n (λ x => (case n) (λ _ => Natural) Natural.Z (λ y => sub x y))
+
+//def divMod_go (n m d: Nat): Pair Nat Nat =
+//  (case (sub n m)) (λ _ => Pair Nat Nat)
+//  (Pair.new Nat Nat d n)
+//  (λ p => (divMod_go (succ p) m (succ d)))
+//
+//def divMod (n m: Nat): Pair Nat Nat = divMod_go n m zero
+//
+//def div (n m : Nat): Nat = Pair.fst Nat Nat (divMod n m)
+//def mod (n m : Nat): Nat = Pair.snd Nat Nat (divMod n m)
+//
+//def compare (a b: Nat): Ordering
+//  = (case a) (λ _ => Ordering)
+//      ((case b) (λ _ => Ordering) Ord.eq (λ _ => Ord.lt))
+//      (λ ap => (case b) (λ _ => Ordering) Ord.gt (λ bp => compare ap bp))

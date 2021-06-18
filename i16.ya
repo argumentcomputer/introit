@@ -1,0 +1,132 @@
+package i16
+  import bool
+  import is
+  import pair
+  import maybe
+  import u32
+where
+
+def I16: Type = #I16
+
+def I16.MAX: I16 = #I16.max
+def I16.MIN: I16 = #I16.min
+
+def I16.abs: ∀ (x: I16) -> #U16 = #I16.abs
+def I16.sgn: ∀ (x: I16) -> Bool = #I16.sgn
+
+def I16.eql: ∀ (x y: I16) -> Bool = #I16.eql
+def I16.lte: ∀ (x y: I16) -> Bool = #I16.lte
+def I16.lth: ∀ (x y: I16) -> Bool = #I16.lth
+def I16.gte: ∀ (x y: I16) -> Bool = #I16.gte
+def I16.gth: ∀ (x y: I16) -> Bool = #I16.gth
+def I16.and: ∀ (x y: I16) -> Bool = #I16.and
+def I16.xor: ∀ (x y: I16) -> Bool = #I16.xor
+def I16.or: ∀ (x y: I16) -> Bool = #I16.or
+def I16.neq (x y: I16): Bool = Bool.not (I16.eql x y)
+
+def I16.add: ∀ (x y: I16) -> I16 = #I16.add
+
+def I16.SafeAdd (x y: I16): Bool =
+  Bool.not
+    (Bool.and
+      (Bool.eql (I16.sgn x) (I16.sgn y))
+      (Bool.neq (I16.sgn x) (I16.sgn (#I16.add x y)))
+    )
+
+def I16.addSafe (x y: I16) (0 e: Is (I16.SafeAdd x y)): I16 = #I16.add x y
+
+def I16.sub: ∀ (x y: I16) -> I16 = #I16.sub
+
+def I16.SafeSub (x y: I16): Bool =
+  Bool.not
+    (Bool.and
+      (Bool.eql (I16.sgn x) (Bool.not (I16.sgn y)))
+      (Bool.neq (I16.sgn x) (I16.sgn (#I16.sub x y)))
+    )
+
+def I16.subSafe (x y: I16) (0 e: Is (I16.lte y x)): I16 = #I16.sub x y
+
+def I16.mul: ∀ (x y: I16) -> I16 = #I16.mul
+
+def I16.SafeMul (x y: I16): Bool =
+  Bool.or (I16.eql x +0i16)
+    ((case (I16.eql y +0i16)) (λ _ => Bool)
+       Bool.True
+       (I16.eql (#I16.div (#I16.mul x y) y) x)
+    )
+
+def I16.mulSafe (x y: I16) (0 e: Is (I16.SafeMul x y)): I16 = #I16.mul x y
+
+def I16.div (x y: I16): Maybe I16 =
+  (case (I16.neq y +0i16)) (λ _ => Maybe I16)
+    (Maybe.Some I16 (#I16.div x y))
+    (Maybe.None I16)
+
+def I16.divSafe (x y: I16) (0 e: Is (I16.neq y +0i16)): I16 = #I16.div x y
+
+def I16.mod (x y: I16): Maybe I16 =
+  (case (I16.neq y +0i16)) (λ _ => Maybe I16)
+    (Maybe.Some I16 (#I16.mod x y))
+    (Maybe.None I16)
+
+def I16.modSafe (x y: I16) (0 e: Is (I16.neq y +0i8)): I16 = #I16.mod x y
+
+def I16.pow: ∀ (x: I16) (y: U32) -> I16 = #I16.pow
+def I16.shl: ∀ (x: U32) (y: I16) -> I16 = #I16.shl
+def I16.shr: ∀ (x: U32) (y: I16) -> I16 = #I16.shr
+def I16.rol: ∀ (x: U32) (y: I16) -> I16 = #I16.rol
+def I16.ror: ∀ (x: U32) (y: I16) -> I16 = #I16.ror
+
+def I16.countZeros: ∀ (x: I16) -> U32 = #I16.count_zeros
+def I16.countOnes: ∀ (x: I16) -> U32 = #I16.count_ones
+
+def I16.SafeToU8 (x: I16): Bool = Bool.and (I16.sgn x) (I16.lte x (#U8.to_I16 #U8.max))
+
+def I16.toU8 (x: I16): Maybe #U8 =
+  (case (I16.SafeToU8 x)) (λ _ => Maybe #U8)
+    (Maybe.Some #U8 (#I16.to_U8 x))
+    (Maybe.None #U8)
+
+def I16.toU8Safe (x: I16) (0 e: Is (I16.SafeToU8 x)): #U8 = #I16.to_U8 x
+
+def I16.toU16 (x: I16): Maybe #U16 =
+  (case (I16.sgn x)) (λ _ => Maybe #U16)
+    (Maybe.Some #U16 (#I16.to_U16 x))
+    (Maybe.None #U16)
+
+def I16.toU16Safe (x: I16) (0 e: Is (I16.sgn x)): #U16 = #I16.to_U16 x
+
+def I16.toU32 (x: I16): Maybe #U32 =
+  (case (I16.sgn x)) (λ _ => Maybe #U32)
+    (Maybe.Some #U32 (#I16.to_U32 x))
+    (Maybe.None #U32)
+
+def I16.toU32Safe (x: I16) (0 e: Is (I16.sgn x)): #U32 = #I16.to_U32 x
+
+def I16.toU64 (x: I16): Maybe #U64 =
+  (case (I16.sgn x)) (λ _ => Maybe #U64)
+    (Maybe.Some #U64 (#I16.to_U64 x))
+    (Maybe.None #U64)
+
+def I16.toU64Safe (x: I16) (0 e: Is (I16.sgn x)): #U64 = #I16.to_U64 x
+
+def I16.toNat (x: I16): Maybe #Nat =
+  (case (I16.sgn x)) (λ _ => Maybe #Nat)
+    (Maybe.Some #Nat (#I16.to_Nat x))
+    (Maybe.None #Nat)
+
+def I16.toNatSafe (x: I16) (0 e: Is (I16.sgn x)): #Nat = #I16.to_Nat x
+
+def I16.SafeToI8 (x: I16): Bool =
+  Bool.or (I16.gte x (#I8.to_I16 #I8.min)) (I16.lte x (#I8.to_I16 #I8.max))
+
+def I16.toI8 (x: I16): Maybe #I8 =
+  (case (I16.SafeToI8 x)) (λ _ => Maybe #I8)
+    (Maybe.Some #I8 (#I16.to_I8 x))
+    (Maybe.None #I8)
+
+def I16.toI8Safe (x: I16) (0 e: Is (I16.SafeToI8 x)): #I8 = #I16.to_I8 x
+
+def I16.toI32: ∀ (x: I16) -> #I32 = #I16.to_I32
+def I16.toI64: ∀ (x: I16) -> #I64 = #I16.to_I64
+def I16.toInt: ∀ (x: I16) -> #Int = #I16.to_Int

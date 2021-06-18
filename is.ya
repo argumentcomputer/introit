@@ -1,0 +1,10 @@
+package is
+  import equal
+  import bool
+where
+
+def Is (a: Bool): Type = Equal Bool Bool.True a
+def is: Is(Bool.True)       = Equal.Refl Bool Bool.True
+
+def Isnt (a: Bool): Type = Equal Bool Bool.False a
+def isnt: Isnt(Bool.False) = Equal.Refl Bool Bool.False

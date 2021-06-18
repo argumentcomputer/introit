@@ -1,0 +1,126 @@
+package text
+  import bool
+  import is
+  import pair
+  import char
+  import nat
+  import maybe
+  import u8
+where
+
+def Text: Type = #Text
+
+def Text.nil: Text = ""
+def Text.cons: ∀ Char Text -> Text = #Text.cons
+
+def Text.single (c: Char): Text = Text.cons c Text.nil
+
+def Text.lenChars: ∀ Text -> Nat = #Text.len_chars
+def Text.lenBytes: ∀ Text -> Nat = #Text.len_bytes
+def Text.lenLines: ∀ Text -> Nat = #Text.len_lines
+
+def Text.append: ∀ Text Text -> Text = #Text.append
+def Text.insert: ∀ Nat Text Text -> Text = #Text.insert
+def Text.remove: ∀ Nat Nat Text -> Text = #Text.remove
+
+def Text.take: ∀ Nat Text -> Text = #Text.take
+def Text.drop: ∀ Nat Text -> Text = #Text.drop
+
+def Text.split (n: Nat) (txt: Text): Pair Text Text =
+  Pair.New Text Text (Text.take n txt) (Text.drop n txt)
+
+def Text.eql: ∀ Text Text -> Bool = #Text.eql
+def Text.lte: ∀ Text Text -> Bool = #Text.lte
+def Text.lth: ∀ Text Text -> Bool = #Text.lth
+def Text.gte: ∀ Text Text -> Bool = #Text.gte
+def Text.gth: ∀ Text Text -> Bool = #Text.gth
+
+def Text.neq (x y: Text): Bool = Bool.not (Text.eql x y)
+
+def Text.char (idx: Nat) (txt: Text): Maybe Char =
+  (case (Nat.lth idx (Text.lenChars txt))) (λ _ => Maybe Char)
+    (Maybe.Some Char (#Text.char idx txt))
+    (Maybe.None Char)
+
+def Text.charSafe
+  (idx: Nat) (txt: Text) (0 e: Is (Nat.lth idx (Text.lenChars txt)))
+  : Char
+  = #Text.char idx txt
+
+def Text.byte (idx: Nat) (txt: Text): Maybe U8 =
+  (case (Nat.lth idx (Text.lenBytes txt))) (λ _ => Maybe U8)
+    (Maybe.Some U8 (#Text.byte idx txt))
+    (Maybe.None U8)
+
+def Text.byteSafe
+  (idx: Nat) (txt: Text) (0 e: Is (Nat.lth idx (Text.lenBytes txt)))
+  : U8
+  = #Text.byte idx txt
+
+def Text.line (idx: Nat) (txt: Text): Maybe Text =
+  (case (Nat.lth idx (Text.lenLines txt))) (λ _ => Maybe Text)
+    (Maybe.Some Text (#Text.line idx txt))
+    (Maybe.None Text)
+
+def Text.lineSafe
+  (idx: Nat) (txt: Text) (0 e: Is (Nat.lth idx (Text.lenLines txt))): Text
+  = #Text.line idx txt
+
+def Text.charAtByte (idx: Nat) (txt: Text): Maybe Nat =
+  (case (Nat.lth idx (Text.lenBytes txt))) (λ _ => Maybe Nat)
+    (Maybe.Some Nat (#Text.char_at_byte idx txt))
+    (Maybe.None Nat)
+
+def Text.charAtByteSafe
+  (idx: Nat) (txt: Text) (0 e: Is (Nat.lth idx (Text.lenBytes txt)))
+  : Nat
+  = #Text.char_at_byte idx txt
+
+def Text.byteAtChar (idx: Nat) (txt: Text): Maybe Nat =
+  (case (Nat.lth idx (Text.lenChars txt))) (λ _ => Maybe Nat)
+    (Maybe.Some Nat (#Text.byte_at_char idx txt))
+    (Maybe.None Nat)
+
+def Text.byteAtCharSafe 
+  (i: Nat) (x: Text) (0 e: Is (Nat.lth i (Text.lenChars x)))
+  : Nat
+  = #Text.byte_at_char i x
+
+def Text.lineAtChar (idx: Nat) (txt: Text): Maybe Nat =
+  (case (Nat.lth idx (Text.lenChars txt))) (λ _ => Maybe Nat)
+    (Maybe.Some Nat (#Text.line_at_char idx txt))
+    (Maybe.None Nat)
+
+def Text.lineAtCharSafe
+  (i: Nat) (x: Text) (0 e: Is (Nat.lth i (Text.lenChars x)))
+  : Nat
+  = #Text.line_at_char i x
+
+def Text.lineAtByte (idx: Nat) (txt: Text): Maybe Nat =
+  (case (Nat.lth idx (Text.lenBytes txt))) (λ _ => Maybe Nat)
+    (Maybe.Some Nat (#Text.line_at_byte idx txt))
+    (Maybe.None Nat)
+
+def Text.lineAtByteSafe
+  (i: Nat) (x: Text) (0 e: Is (Nat.lth i (Text.lenBytes x))): Nat
+  = #Text.line_at_byte i x
+
+def Text.lineStartChar (idx: Nat) (txt: Text): Maybe Nat =
+  (case (Nat.lth idx (Text.lenLines txt))) (λ _ => Maybe Nat)
+    (Maybe.Some Nat (#Text.line_start_char idx txt))
+    (Maybe.None Nat)
+
+def Text.lineStartCharSafe
+  (i: Nat) (x: Text) (0 e: Is (Nat.lth i (Text.lenLines x)))
+  : Nat
+  = #Text.line_start_char i x
+
+def Text.lineStartByte (idx: Nat) (txt: Text): Maybe Nat =
+  (case (Nat.lth idx (Text.lenLines txt))) (λ _ => Maybe Nat)
+    (Maybe.Some Nat (#Text.line_start_byte idx txt))
+    (Maybe.None Nat)
+
+def Text.lineStartByteSafe
+  (i: Nat) (x: Text) (0 e: Is (Nat.lth i (Text.lenLines x)))
+  : Nat
+  = #Text.line_start_byte i x
