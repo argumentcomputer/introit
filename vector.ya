@@ -3,6 +3,8 @@ package vector
   import maybe
   import unit
   import pair
+  import equal
+  import empty
 where
 
 
@@ -11,8 +13,11 @@ type Vector (A: Type): ∀ (ω k: Natural) -> Type {
    Cons (0 k: Natural) (x: A) (xs: Vector A k): Vector A (Natural.S k),
 }
 
-def Vector.head (0 A: Type) (0 k: Natural) (a : Vector A k): Maybe A
-  = (case a) (λ _ _ => Maybe A) (Maybe.None A) (λ _ x xs => Maybe.Some A x)
+def Vector.head (0 A: Type) (k: Natural) (a : Vector A (Natural.S k)): A
+  = ((case a) (λ k' self => ∀ (Equal Natural (Natural.S k) k') -> A)
+    (λ e => Empty.absurd A (Natural.Z_isnt_S k e))
+    (λ k x xs e => x))
+    (Equal.Refl Natural (Natural.S k))
 
 def Vector.tail (0 A: Type) (0 k: Natural) (a : Vector A k)
   : Vector A (Natural.pred k)

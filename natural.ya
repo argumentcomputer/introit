@@ -1,11 +1,20 @@
 package natural
   import nat
+  import empty
+  import equal
+  import unit
 where
 
 type Natural {
   Z,
   S Natural,
 }
+
+def Natural.Z_isnt_S (n: Natural) (e: Equal Natural (Natural.S n) Natural.Z)
+  : Empty
+  = Equal.rewrite Natural (Natural.S n) Natural.Z e
+    (λ k => (case k) (λ _ => Type) Empty (λ _ => Unit))
+    Unit.New
 
 def Natural.pred (x: Natural): Natural
   = (case x) (λ _ => Natural) Natural.Z (λ p => p)
