@@ -1,0 +1,18 @@
+package b_tree where
+
+type BTree (A: Type) {
+  Leaf,
+  Node A (BTree A) (BTree A),
+}
+
+//def fromList (A : Type) (ordering : Ordered A) (list : List A): BinaryTree A
+//  = (case list) (λ _ => BinaryTree A)
+//        (empty A)
+//        (λ head tail =>
+//            (case tail) (λ _ => BinaryTree A)
+//                (leaf A head)
+//                (λ next _ => if (BinaryTree A) (isLessThanOrEqual A ordering head next)
+//                    (node A head (fromList A ordering tail) (empty A))
+//                    (node A head (empty A) (fromList A ordering tail))
+//                )
+//        )

@@ -1,42 +1,25 @@
-package Show where
+package show 
+  import text
+where
 
-open Function
-open Nat
-open List (List)
-open List as List
-open Vector as Vector
-open Vector (Vector)
-open Map (Map)
-open Map as Map
-open Bool
-open Maybe (Maybe)
-open Maybe as Maybe
+type Show (A: Type) {
+  New (show: ∀ A -> Text)
+}
 
-def Show (A: Type) : Type =
-  @self forall
-  (0 P: forall (Show A) -> Type)
-  (& newShow: forall
-    (show: forall (a: A) -> #Text)
-    -> P (data λ P n => n show)
-  ) -> P self
+//def show (0 A: Type) (impl: Show A) (x: A): #Text
+//  = (case impl) (λ _ => #Text)
+//        (λ show_a => show_a x)
 
-def newShow (0 A: Type) (show: forall (a: A) -> #Text): Show A
-  = data λ P n => n show
-
-def show (0 A: Type) (impl: Show A) (x: A): #Text
-  = (case impl) (λ _ => #Text)
-        (λ show_a => show_a x)
-
-def stringShow: Show #Text
-  = newShow #Text (λ s => #cat "\"" (#cat s "\""))
-
-def base64 : List #Char =
-    (List.cons #Char '0' (List.cons #Char '1' (List.cons #Char '2' (List.cons #Char '3' (List.cons #Char '4' (List.cons #Char '5'
-    (List.cons #Char '6' (List.cons #Char '7' (List.cons #Char '8' (List.cons #Char '9' (List.cons #Char 'A' (List.cons #Char 'B'
-    (List.cons #Char 'C' (List.cons #Char 'D' (List.cons #Char 'E' (List.cons #Char 'F' (List.cons #Char 'G' (List.cons #Char 'H'
-    (List.cons #Char 'I' (List.cons #Char 'J' (List.cons #Char 'K' (List.cons #Char 'L' (List.cons #Char 'M' (List.cons #Char 'N'
-    (List.nil #Char)))))))))))))))))))))))))
-
+//def stringShow: Show #Text
+//  = newShow #Text (λ s => #cat "\"" (#cat s "\""))
+//
+//def base64 : List #Char =
+//    (List.cons #Char '0' (List.cons #Char '1' (List.cons #Char '2' (List.cons #Char '3' (List.cons #Char '4' (List.cons #Char '5'
+//    (List.cons #Char '6' (List.cons #Char '7' (List.cons #Char '8' (List.cons #Char '9' (List.cons #Char 'A' (List.cons #Char 'B'
+//    (List.cons #Char 'C' (List.cons #Char 'D' (List.cons #Char 'E' (List.cons #Char 'F' (List.cons #Char 'G' (List.cons #Char 'H'
+//    (List.cons #Char 'I' (List.cons #Char 'J' (List.cons #Char 'K' (List.cons #Char 'L' (List.cons #Char 'M' (List.cons #Char 'N'
+//    (List.nil #Char)))))))))))))))))))))))))
+//
 //    (List.cons #Char 'O' (List.cons #Char 'P' (List.cons #Char 'Q' (List.cons #Char 'R' (List.cons #Char 'S' (List.cons #Char 'T'
 //    (List.cons #Char 'U' (List.cons #Char 'V' (List.cons #Char 'W' (List.cons #Char 'X' (List.cons #Char 'Y' (List.cons #Char 'Z'
 //    (List.cons #Char 'a' (List.cons #Char 'b' (List.cons #Char 'c' (List.cons #Char 'd' (List.cons #Char 'e' (List.cons #Char 'f'

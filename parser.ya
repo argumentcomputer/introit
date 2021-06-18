@@ -1,0 +1,71 @@
+// This package is an adaptation of the Haskell Megaparsec library found at
+// https://hackage.haskell.org/package/megaparsec
+package parser
+  import unit
+  import either
+  import maybe
+  import char
+  import list
+  import nat
+  import text
+  import parsec
+  import parsec.state as Parsec
+  import parsec.error as Parsec
+  import parsec.reply as Parsec
+where
+
+def Parser (A: Type): Type = Parsec Unit Unit A
+
+def State: Type = Parsec.State Unit Unit
+def Error: Type = Parsec.Error Unit
+def Reply (A: Type): Type = Parsec.Reply Unit Unit A
+
+def State.new (pos: Nat) (txt: Text) (errs: List Error): State 
+  = Parsec.State.New Unit Unit pos txt errs Unit.New
+
+def State.init (txt: Text): State = Parsec.State.initial Unit Unit txt Unit.New
+
+def Parser.run (A: Type) (parser: Parser A) (state: State): Reply A
+  = Parsec.run Unit Unit A parser state
+
+def Parser.parse (A: Type) (parser: Parser A) (txt: Text): Either Error A
+  = Parsec.parse Unit Unit A parser (State.init txt)
+
+def Parsed (A: Type) (reply: Reply A): Type =
+  (case reply) (λ _ => Type)
+  (λ _ _ => A)
+  (λ _ _ => Error)
+  (λ _ _ => A)
+  (λ _ _ => Error)
+
+def Parser.parsed (A: Type) (parser: Parser A) (txt: Text)
+  : Parsed A (Parser.run A parser (State.init txt))
+  = (case (Parser.run A parser (State.init txt))) (λ reply => Parsed A reply)
+    (λ _ x => x)
+    (λ _ e => e)
+    (λ _ x => x)
+    (λ _ e => e)
+
+def Parser.pure (A: Type) (a: A): Parser A = Parsec.pure Unit Unit A a
+
+def Parser.bind (A B: Type) (p: Parser A) (f: ∀ A -> Parser B): Parser B = 
+  Parsec.bind Unit Unit A B p f
+
+def Parser.ap (A B: Type) (pf: Parser (∀ A -> B)) (pa: Parser A): Parser B =
+  Parsec.ap Unit Unit A B pf pa
+
+def Parser.state: Parser State = Parsec.state Unit Unit
+
+def Parser.token (A: Type) (f: ∀ Char -> Maybe A) (exps: List Parsec.Item): Parser A
+  = Parsec.token Unit Unit A f exps
+
+def Parser.anyChar: Parser Char = Parsec.anyChar Unit Unit
+
+def Parser.char (c: Char): Parser Char = Parsec.char Unit Unit c
+
+def Parser.optional (A: Type) (p: Parser A): Parser (Maybe A)
+  = Parsec.optional Unit Unit A p
+
+def Parser.many (A: Type) (p: Parser A): Parser (List A) = Parsec.many Unit Unit A p
+
+def Parser.take (err: Text) (n: Nat): Parser Text = Parsec.take Unit Unit err n
