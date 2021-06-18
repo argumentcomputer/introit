@@ -1,6 +1,6 @@
 package equal where
 
-type Equal (A: Type) (a: A): ∀ (b: A) -> Type {
+type Equal (A: Type) (a: A): ∀ (ω b: A) -> Type {
   Refl: Equal A a a
 }
 
@@ -17,6 +17,10 @@ def Equal.trans (0 A: Type) (a b c: A) (ab: Equal A a b) (bc: Equal A b c)
 def Equal.cong (0 A B: Type) (a b: A) (f: ∀ A -> B) (e: Equal A a b)
   : Equal B (f a) (f b)
   = (case e) (λ b' _ => Equal B (f a) (f b')) (Equal.Refl B (f a))
+
+def Equal.rewrite (A: Type) (a b: A) (e: Equal A a b) (P: ∀ A -> Type) (x: P a)
+  : P b
+  = (case e) (λ b e => P b) x
 
 //def Equal.cast
 //  (0 A: Type) (0 a b: A) (0 P: ∀ A -> Type) (e: Equal A a b) (x: P a)
