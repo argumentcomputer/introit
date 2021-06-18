@@ -1,0 +1,28 @@
+package bitstring where
+
+type BitString {
+  BE,
+  B0 (pred: BitString),
+  B1 (pred: BitString),
+}
+
+def BitString.concat (x: BitString) (y: BitString) : BitString =
+  (case x) (λ _ => BitString)
+    y
+    (λ xs => BitString.B0 (BitString.concat xs y))
+    (λ xs => BitString.B1 (BitString.concat xs y))
+
+def BitString.inc (a: BitString): BitString
+  = (case a) (λ _ => BitString)
+    (BitString.B1 BitString.BE)
+    (λ xs => BitString.B1 xs)
+    (λ xs => BitString.B0 (BitString.inc xs))
+
+def BitString.add (x: BitString) (y: BitString): BitString =
+  (case y) (λ _ => BitString) x
+    (λ ys => (case x) (λ _ => BitString) y
+      (λ xs => BitString.B0 (BitString.add xs ys))
+      (λ xs => BitString.B1 (BitString.add xs ys)))
+    (λ ys => (case x) (λ _ => BitString) y
+      (λ xs => BitString.B1 (BitString.add xs ys))
+      (λ xs => BitString.B0 (BitString.add (BitString.inc xs) ys)))

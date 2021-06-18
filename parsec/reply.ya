@@ -1,0 +1,24 @@
+package reply
+  import either
+  import parsec.error
+  import parsec.state
+where
+
+// A Reply over custom state S, custom error E and return value A can be:
+// + eok when the parser returns an A value and input was not consumed
+// + eer when the parser throws an E error and input was not consumed
+// + cok when the parser returns an A value and input was consumed
+// + cer when the parser throws an E error and input was consumed
+type Reply (S E A: Type) {
+  EOK (state: State S E) (val: A) : Reply S E A,
+  EER (state: State S E) (err: Error E),
+  COK (state: State S E) (val: A),
+  CER (state: State S E) (err: Error E),
+}
+
+def Reply.toEither (S E A: Type) (reply: Reply S E A): Either (Error E) A
+  = (case reply) (λ _ => Either (Error E) A)
+    (λ s a => Either.Right (Error E) A a)
+    (λ s e => Either.Left (Error E) A e)
+    (λ s a => Either.Right (Error E) A a)
+    (λ s e => Either.Left (Error E) A e)

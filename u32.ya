@@ -27,81 +27,81 @@ def U32.addSafe (x y: U32) (0 e: Is (U32.gte (#U32.add x y) x)): U32
 def U32.sub: ∀ (x y: U32) -> U32 = #U32.sub
 def U32.subSafe (x y: U32) (0 e: Is (U32.lte y x)): U32 = #U32.sub x y
 
-//def mul: ∀ (x y: U32) -> U32 = #U32.mul
-//
-//def SafeMul (x y: U32): Bool =
-//  (case (eql x 0u32)) (λ _ => Bool)
-//    Bool.true
-//    (eql (#U32.div (#U32.mul x y) x) y)
-//
-//def mulSafe (x y: U32) (0 e: Is (SafeMul x y)): U32 = #U32.mul x y
-//
-//def div (x y: U32): Maybe U32 =
-//  (case (neq y 0u32)) (λ _ => Maybe U32)
-//    (Maybe.some U32 (#U32.div x y))
-//    (Maybe.none U32)
-//
-//def divSafe (x y: U32) (0 e: Is (neq y 0)): U32 = #U32.div x y
-//
-//def mod (x y: U32): Maybe U32 =
-//  (case (neq y 0u32)) (λ _ => Maybe U32)
-//    (Maybe.some U32 (#U32.mod x y))
-//    (Maybe.none U32)
-//
-//def modSafe (x y: U32) (0 e: Is (neq y 0)): U32 = #U32.mod x y
-//
-//def pow: ∀ (x y: U32) -> U32 = #U32.pow
-//def shl: ∀ (x y: U32) -> U32 = #U32.shl
-//def shr: ∀ (x y: U32) -> U32 = #U32.shr
-//def rol: ∀ (x y: U32) -> U32 = #U32.rol
-//def ror: ∀ (x y: U32) -> U32 = #U32.ror
-//
-//def countZeros: ∀ (x: U32) -> U32 = #U32.count_zeros
-//def countOnes: ∀ (x: U32) -> U32 = #U32.count_ones
-//
-//def toU8 (x: U32): Maybe #U8 =
-//  (case (lte x (#U8.to_U32 #U8.max))) (λ _ => Maybe #U8)
-//    (Maybe.some #U8 (#U32.to_U8 x))
-//    (Maybe.none #U8)
-//
-//def toU8Safe (x: U32) (0 e: Is (lte x (#U8.to_U32 #U8.max))): #U8
-//  = #U32.to_U8 x
-//
-//def toU16 (x: U32): Maybe #U16 =
-//  (case (lte x (#U16.to_U32 #U16.max))) (λ _ => Maybe #U16)
-//    (Maybe.some #U16 (#U32.to_U16 x))
-//    (Maybe.none #U16)
-//
-//def toU16Safe (x: U32) (0 e: Is (lte x (#U16.to_U32 #U16.max))): #U16
-//  = #U32.to_U16 x
-//
-//def toU64: ∀ (x: U32) -> #U64 = #U32.to_U64
-//
-//def toI8 (x: U32): Maybe #I8 =
-//  (case (lte x (#I8.to_U32 #I8.max))) (λ _ => Maybe #I8)
-//    (Maybe.some #I8 (#U32.to_I8 x))
-//    (Maybe.none #I8)
-//
-//def toI8Safe (x: U32) (0 e: Is (lte x (#I8.to_U32 #I8.max))): #I8
-//  = #U32.to_I8 x
-//
-//def toI16 (x: U32): Maybe #I16 =
-//  (case (lte x (#I16.to_U32 #I16.max))) (λ _ => Maybe #I16)
-//    (Maybe.some #I16 (#U32.to_I16 x))
-//    (Maybe.none #I16)
-//
-//def toI16Safe (x: U32) (0 e: Is (lte x (#I16.to_U32 #I16.max))): #I16
-//  = #U32.to_I16 x
-//
-//def toI32 (x: U32): Maybe #I32 =
-//  (case (lte x (#I32.to_U32 #I32.max))) (λ _ => Maybe #I32)
-//    (Maybe.some #I32 (#U32.to_I32 x))
-//    (Maybe.none #I32)
-//
-//def toI32Safe (x: U32) (0 e: Is (lte x (#I32.to_U32 #I32.max))): #I32
-//  = #U32.to_I32 x
-//
-//def toI64: ∀ (x: U32) -> #I64 = #U32.to_I64
-//
-//def toNat: ∀ (x: U32) -> #Nat = #U32.to_Nat
-//def toInt: ∀ (x: U32) -> #Int = #U32.to_Int
+def U32.mul: ∀ (x y: U32) -> U32 = #U32.mul
+
+def U32.SafeMul (x y: U32): Bool =
+  (case (U32.eql x 0u32)) (λ _ => Bool)
+    Bool.True
+    (U32.eql (#U32.div (#U32.mul x y) x) y)
+
+def U32.mulSafe (x y: U32) (0 e: Is (U32.SafeMul x y)): U32 = #U32.mul x y
+
+def U32.div (x y: U32): Maybe U32 =
+  (case (U32.neq y 0u32)) (λ _ => Maybe U32)
+    (Maybe.Some U32 (#U32.div x y))
+    (Maybe.None U32)
+
+def U32.divSafe (x y: U32) (0 e: Is (U32.neq y 0)): U32 = #U32.div x y
+
+def U32.mod (x y: U32): Maybe U32 =
+  (case (U32.neq y 0u32)) (λ _ => Maybe U32)
+    (Maybe.Some U32 (#U32.mod x y))
+    (Maybe.None U32)
+
+def U32.modSafe (x y: U32) (0 e: Is (U32.neq y 0)): U32 = #U32.mod x y
+
+def U32.pow: ∀ (x y: U32) -> U32 = #U32.pow
+def U32.shl: ∀ (x y: U32) -> U32 = #U32.shl
+def U32.shr: ∀ (x y: U32) -> U32 = #U32.shr
+def U32.rol: ∀ (x y: U32) -> U32 = #U32.rol
+def U32.ror: ∀ (x y: U32) -> U32 = #U32.ror
+
+def U32.countZeros: ∀ (x: U32) -> U32 = #U32.count_zeros
+def U32.countOnes: ∀ (x: U32) -> U32 = #U32.count_ones
+
+def U32.toU8 (x: U32): Maybe #U8 =
+  (case (U32.lte x (#U8.to_U32 #U8.max))) (λ _ => Maybe #U8)
+    (Maybe.Some #U8 (#U32.to_U8 x))
+    (Maybe.None #U8)
+
+def U32.toU8Safe (x: U32) (0 e: Is (U32.lte x (#U8.to_U32 #U8.max))): #U8
+  = #U32.to_U8 x
+
+def U32.toU16 (x: U32): Maybe #U16 =
+  (case (U32.lte x (#U16.to_U32 #U16.max))) (λ _ => Maybe #U16)
+    (Maybe.Some #U16 (#U32.to_U16 x))
+    (Maybe.None #U16)
+
+def U32.toU16Safe (x: U32) (0 e: Is (U32.lte x (#U16.to_U32 #U16.max))): #U16
+  = #U32.to_U16 x
+
+def U32.toU64: ∀ (x: U32) -> #U64 = #U32.to_U64
+
+def U32.toI8 (x: U32): Maybe #I8 =
+  (case (U32.lte x (#I8.to_U32 #I8.max))) (λ _ => Maybe #I8)
+    (Maybe.Some #I8 (#U32.to_I8 x))
+    (Maybe.None #I8)
+
+def U32.toI8Safe (x: U32) (0 e: Is (U32.lte x (#I8.to_U32 #I8.max))): #I8
+  = #U32.to_I8 x
+
+def U32.toI16 (x: U32): Maybe #I16 =
+  (case (U32.lte x (#I16.to_U32 #I16.max))) (λ _ => Maybe #I16)
+    (Maybe.Some #I16 (#U32.to_I16 x))
+    (Maybe.None #I16)
+
+def U32.toI16Safe (x: U32) (0 e: Is (U32.lte x (#I16.to_U32 #I16.max))): #I16
+  = #U32.to_I16 x
+
+def U32.toI32 (x: U32): Maybe #I32 =
+  (case (U32.lte x (#I32.to_U32 #I32.max))) (λ _ => Maybe #I32)
+    (Maybe.Some #I32 (#U32.to_I32 x))
+    (Maybe.None #I32)
+
+def U32.toI32Safe (x: U32) (0 e: Is (U32.lte x (#I32.to_U32 #I32.max))): #I32
+  = #U32.to_I32 x
+
+def U32.toI64: ∀ (x: U32) -> #I64 = #U32.to_I64
+
+def U32.toNat: ∀ (x: U32) -> #Nat = #U32.to_Nat
+def U32.toInt: ∀ (x: U32) -> #Int = #U32.to_Int

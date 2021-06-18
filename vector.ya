@@ -1,8 +1,59 @@
-package vector where
+package vector
+  import natural
+  import maybe
+  import unit
+  import pair
+where
 
-type Vector (A: Type): ∀ #Nat -> Type {
-  Nil : Vector A 0,
-  Cons (0 k: #Nat) (x: A) (xs: Vector A k): Vector A (#Nat.suc k),
+
+type Vector (A: Type): ∀ (ω k: Natural) -> Type {
+   Nil: Vector A Natural.Z,
+   Cons (0 k: Natural) (x: A) (xs: Vector A k): Vector A (Natural.S k),
 }
 
+def Vector.head (0 A: Type) (0 k: Natural) (a : Vector A k): Maybe A
+  = (case a) (λ _ _ => Maybe A) (Maybe.None A) (λ _ x xs => Maybe.Some A x)
 
+def Vector.tail (0 A: Type) (0 k: Natural) (a : Vector A k)
+  : Vector A (Natural.pred k)
+  = (case a) (λ k _ => Vector A (Natural.pred k))
+    (Vector.Nil A)
+    (λ _ x xs => xs)
+
+def Vector.fill (0 A: Type) (n: Natural) (a: A): Vector A n
+  = (case n) (λ x => (Vector A x))
+    (Vector.Nil A)
+    (λ p => Vector.Cons A p a (Vector.fill A p a))
+
+def Vector.extract (0 A: Type) (0 k: Natural) (xs: Vector A (Natural.S k))
+  : Pair A (Vector A k)
+  = (case xs)
+      (λ k _ => (case k) (λ _ => Type) Unit (λ pred => Pair A (Vector A pred)))
+      Unit.New
+      (λ k y ys => Pair.New A (Vector A k) y ys)
+
+//
+//def concat (0 A : Type) (0 sizeA sizeB : Nat) (a : Vector A sizeA) (b : Vector A sizeB): Vector A (Nat.add sizeA sizeB)
+// = (case a) (λ sizeA _ => Vector A (Nat.add sizeA sizeB))
+//       b
+//       (λ sizeA head tail => cons A (Nat.add sizeA sizeB) head (concat A sizeA sizeB tail b))
+//
+//def at (A : Type) (0 size : Nat) (vec : Vector A size) (idx : Nat): Maybe A
+//  = (case idx) (λ _ => Maybe A)
+//        (head A size vec)
+//        (λ pred => at A size vec pred)
+//
+//def map (0 A B: Type) (0 size: Nat) (f: ∀ A -> B) (vec: Vector A size): Vector B size
+//  = (case vec) (λ k _ => Vector B k)
+//        (nil B)
+//        (λ size x xs => cons B size (f x) (map A B size f xs))
+//
+//def foldr (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
+//  = (case vec) (λ _ _ => B)
+//        b
+//        (λ size head tail => f head (foldr A B size f b tail))
+//
+//def foldl (0 A B : Type) (0 size : Nat) (f: forall A B -> B) (b : B) (vec : Vector A size): B
+//  = (case vec) (λ _ _ => B)
+//        b
+//        (λ size head tail => (foldl A B size f (f head b) tail))

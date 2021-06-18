@@ -1,0 +1,77 @@
+package error
+  import bool
+  import either
+  import list
+  import maybe
+  import text
+  import char
+  import nat
+where
+
+// #Parsec Errors
+
+// Items are possible things at a given offset in the input
+// a parser might expect to see, or alternatively might *not* expect to see:
+// + tokens or characters such as "a", "b", "&", "ϝ", "\ACK"
+// + labels or tags that can be attached to parsers, such as "an ascii char"
+// + the end of the input stream
+type Item {
+  Tokens Text,
+  Label Text,
+  Eof,
+}
+
+// A Fancy error is where the parser author preempts the internal error system
+// and instead returns a custom failure message or a value of custom type E
+type Fancy (E: Type) {
+  Fail Text,
+  Custom E,
+}
+
+// A parser error can be either
+// + a trivial error containing
+//   * the offset at which the error occured
+//   * possibly an unexpected Item which triggered the error at that offset
+//   * a list of expected Items at that offset
+// + a user specified custom error containing
+//  * the offset at which the error occured
+//  * a list of Fancy error messages at that offset
+type Error (E: Type) {
+  Trivial (pos: Nat) (unexpected: Maybe Item) (expected: List Item),
+  Fancy (pos: Nat) (messages: List (Fancy E)),
+}
+
+// When a parser branches and tries different possible options on its input
+// we need some way to combine the errors that each branch generates.
+// Because branches that consume more input are better than those that do less
+// the errors from farther along the input are more useful.
+// Thus to merge errors we compare positions and throw away the earlier error.
+// If both errors occur at the same place though, we prefer fancy errors.
+// If both errors are fancy at the same place, we merge the messages.
+// If both errors are trivial at the same place, we merge the expected items.
+// (We also try to prefer the presence of an unexpected token over its absence)
+def Error.merge (E: Type) (x y: Error E): Error E = 
+  (case x) (λ _ => Error E)
+  (λ x_pos x_unx x_exp => (case y) (λ _ => Error E) 
+    (λ y_pos y_unx y_exp =>
+      (case (Nat.compare x_pos y_pos)) (λ _ => Error E)
+        y
+        (Error.Trivial E x_pos x_unx (List.concat Item x_exp y_exp))
+        x
+    )
+    (λ y_pos y_msg => (case (Nat.compare x_pos y_pos)) (λ _ => Error E) y y x)
+  )
+  (λ x_pos x_msg => (case y) (λ _ => Error E) 
+    (λ y_pos y_unx y_exp =>
+      (case (Nat.compare x_pos y_pos)) (λ _ => Error E) y x x)
+    (λ y_pos y_msg => (case (Nat.compare x_pos y_pos)) (λ _ => Error E)
+      y
+      (Error.Fancy E x_pos (List.concat (Fancy E) x_msg y_msg))
+      x
+    )
+  )
+
+
+
+
+

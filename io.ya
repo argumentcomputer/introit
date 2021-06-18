@@ -1,0 +1,17 @@
+package io
+  import unit
+  import text
+where
+
+type IO (A: Type) {
+  Return (x: A),
+  Bind (B: Type) (io: IO B) (f: ∀ B -> IO A),
+  Print (txt: Text) (∀ Unit -> IO A),
+  Read (nxt: ∀ Text -> IO A): IO A,
+}
+
+def IO.read: IO Text
+  = IO.Read Text (λ x => IO.Return Text x)
+
+def IO.print (txt: Text): IO Unit
+  = IO.Print Unit txt (λ _ => IO.Return Unit Unit.New)

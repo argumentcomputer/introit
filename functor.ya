@@ -1,25 +1,15 @@
-package Functor where
+package functor where
 
-def Functor (F: ∀ Type -> Type) : Type =
-  @self ∀
-  (0 P: ∀ (Functor F) -> Type)
-  (& new: ∀
-    (map: ∀ (A : Type) (B: Type) (fun: ∀ A -> B) (f: F A) -> F B)
-    -> P (data λ P n => n map)
-  ) -> P self
+type Functor (F: ∀ Type -> Type) {
+  New (map: ∀ (A B: Type) (f: ∀ A -> B) (f: F A) -> F B)
+}
 
-def new
+def Functor.map
   (0 F: ∀ Type -> Type)
-  (map: ∀ (A : Type) (B: Type) (fun: ∀ A -> B) (F A) -> F B)
-  : Functor F
-  = data λ P n => n map
-
-def map
-  (0 F: ∀ Type -> Type)
-  (impl : Functor F)
-  (A : Type)
-  (B : Type)
-  (fun : ∀ A -> B)
+  (impl: Functor F)
+  (A: Type)
+  (B: Type)
+  (fun: ∀ A -> B)
   (f : F A)
   : F B
   = (case impl) (λ _ => F B) (λ m => m A B fun f)
