@@ -106,16 +106,15 @@
         "utils": "utils_2"
       },
       "locked": {
-        "lastModified": 1625244569,
-        "narHash": "sha256-pTA8h/kl7Fj5vo4pIQsAljzQ6ES+BQssG6HReFXKUhw=",
+        "lastModified": 1625260923,
+        "narHash": "sha256-8q8XWH2JRur3PrmhDSI9DJOXRD1dIIfQ0k1PQSSDAms=",
         "owner": "yatima-inc",
         "repo": "yatima",
-        "rev": "cbee1e8284c3018ff8e85a4e6f75de65cd43c673",
+        "rev": "3758ab4858e837fe3ad79d6ca4061be0a3bd27a7",
         "type": "github"
       },
       "original": {
         "owner": "yatima-inc",
-        "ref": "acs/opts-to-cli",
         "repo": "yatima",
         "type": "github"
       }

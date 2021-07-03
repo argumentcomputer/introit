@@ -2,7 +2,7 @@
   description = "Introit the standard lib of Yatima";
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs";
-  inputs.yatima.url = "github:yatima-inc/yatima/acs/opts-to-cli";
+  inputs.yatima.url = "github:yatima-inc/yatima";
   inputs.utils.url = "github:numtide/flake-utils";
 
   outputs = { self, nixpkgs, utils, yatima }: 
