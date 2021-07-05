@@ -1,0 +1,18 @@
+package json
+  import map
+	import json.parser
+  import text
+  import ord
+  import bool
+where
+
+def TextOrd: Ord Text = Ord.New (λ a b =>
+  Bool.if Ordering (Text.lth a b)
+    Ordering.LT
+    (Bool.if Ordering (Text.eql a b)
+      Ordering.EQ
+      Ordering.GT
+    )
+  )
+
+def JSON: Type = Map Text Text TextOrd
