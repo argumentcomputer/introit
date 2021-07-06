@@ -16,6 +16,9 @@ type Map (K V: Type) (O: Ord K) {
   Bin (size: Nat) (key: K) (val: V) (left: Map K V O) (right: Map K V O),
 }
 
+def Map.empty (0 K V: Type) (O: Ord K): Map K V O 
+  = Map.Tip K V O
+
 def Map.single (0 K V: Type) (O: Ord K) (k: K) (v: V): Map K V O
   = Map.Bin K V O 1 k v (Map.Tip K V O) (Map.Tip K V O)
 
@@ -25,27 +28,168 @@ def Map.null (0 K V: Type) (O: Ord K) (m: Map K V O) : Bool
 def Map.size (0 K V: Type) (O: Ord K) (m: Map K V O) : Nat
   = (case m) (λ _ => Nat) 0 (λ size _ _ _ _ => size)
 
-def lookup (0 K V: Type) (ord: Ord K) (key: K) (m: Map K V ord): Maybe V
+def Map.lookup (0 K V: Type) (O: Ord K) (key: K) (m: Map K V O): Maybe V
   =
-  letrec go (k: K) (m: Map K V ord): Maybe V = (case m) (λ _ => Maybe V)
+  letrec go (k: K) (m: Map K V O): Maybe V = (case m) (λ _ => Maybe V)
     (Maybe.None V)
-    (λ _ kx x l r => (case (Ord.compare K ord k kx)) (λ _ => Maybe V)
+    (λ _ kx x l r => (case (Ord.compare K O k kx)) (λ _ => Maybe V)
       (go k l)
       (Maybe.Some V x)
       (go k r)
     );
   go key m
 
-def member (0 K V: Type) (ord: Ord K) (key: K) (m: Map K V ord): Bool
+def Map.lookupAssoc (0 K V: Type) (O: Ord K) (key: K) (m: Map K V O): Maybe (Pair K V)
   =
-  letrec go (k: K) (m: Map K V ord): Bool = (case m) (λ _ => Bool)
+  letrec go (k: K) (m: Map K V O): Maybe (Pair K V) = (case m) (λ _ => Maybe (Pair K V))
+    (Maybe.None (Pair K V))
+    (λ _ kx x l r => (case (Ord.compare K O k kx)) (λ _ => Maybe (Pair K V))
+      (go k l)
+      (Maybe.Some (Pair K V) (Pair.New K V k x))
+      (go k r)
+    );
+  go key m
+
+def Map.member (0 K V: Type) (O: Ord K) (key: K) (m: Map K V O): Bool
+  =
+  letrec go (k: K) (m: Map K V O): Bool = (case m) (λ _ => Bool)
     (Bool.False)
-    (λ _ kx _ l r => (case (Ord.compare K ord k kx)) (λ _ => Bool)
+    (λ _ kx _ l r => (case (Ord.compare K O k kx)) (λ _ => Bool)
       (go k l)
       (Bool.True)
       (go k r)
     );
   go key m
+
+def Map.notMember (0 K V: Type) (O: Ord K) (key: K) (m: Map K V O): Bool
+  = Bool.not (Map.member K V O key m)
+
+def Map.find (0 K V: Type) (O: Ord K) (default: V) (key: K) (m: Map K V O): V
+  = Maybe.default V (default) (Map.lookup K V O key m)
+
+def Map.balance (0 K V: Type) (O: Ord K) (k: K) (v: V) (left right: Map K V O): Map K V O 
+  = let leftSize: Nat = Map.size K V O left;
+    let rightSize: Nat = Map.size K V O right;
+    let xSize: Nat = Nat.S (Nat.add leftSize rightSize); 
+    let bin (0 K V: Type) (O: Ord K) (k: K) (v: V) (left right: Map K V O): Map K V O 
+      = Map.Bin K V O (Nat.S (Nat.add (Map.size K V O left) (Map.size K V O right))) k v left right;
+    let rotateLeft (0 K V: Type) (O: Ord K) (k: K) (v: V) (left right: Map K V O): Map K V O =  
+      (case right) (λ _ => Map K V O)
+      (Map.empty K V O)
+      (λ _ _ _ ly ry => Bool.if (Map K V O) (Nat.lth (Map.size K V O ly) (Nat.mul 2 (Map.size K V O ry)))
+        ((case right) (λ _ => Map K V O) 
+          (Map.empty K V O)
+          (λ _ k2 v2 left2 right2 => bin K V O k2 v2 (bin K V O k v left left2) right2)
+        )
+        ((case right) (λ _ => Map K V O) 
+          (Map.empty K V O)
+          (λ _ k2 v2 left2 right2 => (case left2) (λ _ => Map K V O)
+            (Map.empty K V O)
+            (λ _ k3 v3 left3 right3 => bin K V O k3 v3 (bin K V O k v left left3) (bin K V O k2 v2 right3 right2))
+          )
+        )
+      );
+    let rotateRight (0 K V: Type) (O: Ord K) (k: K) (v: V) (left right: Map K V O): Map K V O =  
+      (case left) (λ _ => Map K V O)
+      (Map.empty K V O)
+      (λ _ _ _ ly ry => Bool.if (Map K V O) (Nat.lth (Map.size K V O ry) (Nat.mul 2 (Map.size K V O ly)))
+        ((case left) (λ _ => Map K V O) 
+            (Map.empty K V O)
+            (λ _ k2 v2 left2 right2 => bin K V O k2 v2 left2 (bin K V O k v left2 right2)))
+        ((case left) (λ _ => Map K V O) 
+          (Map.empty K V O)
+          (λ _ k2 v2 left2 right2 => (case right2) (λ _ => Map K V O)
+            (Map.empty K V O)
+            (λ _ k3 v3 left3 right3 => bin K V O k3 v3 (bin K V O k2 v2 left2 left3) (bin K V O k v right3 right))
+          )
+        )
+      );
+    Bool.if (Map K V O) (Nat.lte (Nat.add leftSize rightSize) 1) 
+      (Map.Bin K V O xSize k v left right)
+      (Bool.if (Map K V O) (Nat.gte rightSize (Nat.mul 5 leftSize))
+        (rotateLeft K V O k v left right)
+        (Bool.if (Map K V O) (Nat.gte leftSize (Nat.mul 5 rightSize))
+          (rotateRight K V O k v left right)
+          (Map.Bin K V O xSize k v left right)
+        )
+      )
+
+def Map.deleteFindMin (0 K V: Type) (O: Ord K) (m: Map K V O): Maybe (Pair (Pair K V) (Map K V O)) 
+  = (case m) (λ _ => Maybe (Pair (Pair K V) (Map K V O)))
+      (Maybe.None (Pair (Pair K V) (Map K V O)))
+      (λ _ k v l r => (case l) (λ _ => Maybe (Pair (Pair K V) (Map K V O)))
+        (Maybe.Some (Pair (Pair K V) (Map K V O)) (Pair.New (Pair K V) (Map K V O) (Pair.New K V k v) r))
+        (λ _ _ _ _ _ => Maybe.map (Pair (Pair K V) (Map K V O)) (Pair (Pair K V) (Map K V O)) 
+          (λ p => 
+            Pair.map (Pair K V) (Map K V O) (Map K V O) 
+            (λ newLeft => Map.balance K V O k v newLeft r) 
+            p
+          ) 
+          (Map.deleteFindMin K V O l)
+      )) 
+
+def Map.deleteFindMax (0 K V: Type) (O: Ord K) (m: Map K V O): Maybe (Pair (Pair K V) (Map K V O)) 
+  = (case m) (λ _ => Maybe (Pair (Pair K V) (Map K V O)))
+      (Maybe.None (Pair (Pair K V) (Map K V O)))
+      (λ _ k v l r => (case r) (λ _ => Maybe (Pair (Pair K V) (Map K V O)))
+        (Maybe.Some (Pair (Pair K V) (Map K V O))(Pair.New (Pair K V) (Map K V O) (Pair.New K V k v) l))
+         (λ _ _ _ _ _ => Maybe.map (Pair (Pair K V) (Map K V O)) (Pair (Pair K V) (Map K V O)) 
+          (λ p => 
+            Pair.map (Pair K V) (Map K V O) (Map K V O) 
+            (λ newRight => Map.balance K V O k v l newRight) 
+            p
+          ) 
+          (Map.deleteFindMax K V O l)
+      )) 
+
+def Map.glue (0 K V: Type) (O: Ord K) (left right: Map K V O): Map K V O 
+  = (case left) (λ _ => Map K V O) 
+      (right)
+      (λ _ _ _ _ _ => (case right) (λ _ => Map K V O) 
+        (left)
+        (λ _ _ _ _ _ => (Bool.if (Map K V O) (Nat.gth (Map.size K V O left) (Map.size K V O right))
+          ((case (Map.deleteFindMax K V O left)) (λ _ => Map K V O) 
+            (Map.empty K V O)
+            (λ result => 
+              let keyValue: Pair K V = Pair.fst (Pair K V) (Map K V O) result;
+              let newLeft: Map K V O = Pair.snd (Pair K V) (Map K V O) result;
+              let maxKey: K = Pair.fst K V keyValue;
+              let maxValue: V = Pair.snd K V keyValue;
+              Map.balance K V O maxKey maxValue newLeft right)  
+            )
+          ((case (Map.deleteFindMin K V O right)) (λ _ => Map K V O) 
+            (Map.empty K V O)
+            (λ result => 
+              let keyValue: Pair K V = Pair.fst (Pair K V) (Map K V O) result;
+              let newRight: Map K V O = Pair.snd (Pair K V) (Map K V O) result;
+              let minKey: K = Pair.fst K V keyValue;
+              let minValue: V = Pair.snd K V keyValue;
+              Map.balance K V O minKey minValue left newRight)  
+            )
+        )
+      )
+      )
+
+def Map.insert (0 K V: Type) (O: Ord K) (k: K) (v: V) (m: Map K V O): Map K V O 
+  = (case m) (λ _ => Map K V O) 
+      (Map.single K V O k v)
+      (λ s actK actV left right =>
+        (case (Ord.compare K O k actK)) (λ _ => Map K V O) 
+          (Map.balance K V O actK actV (Map.insert K V O k v left) right)
+          (Map.Bin K V O s k v left right)
+          (Map.balance K V O actK actV left (Map.insert K V O k v right))
+      ) 
+
+def Map.delete (0 K V: Type) (O: Ord K) (k: K) (m: Map K V O): Map K V O 
+  = (case m) (λ _ => Map K V O) 
+      (Map.Tip K V O)
+      (λ s actK actV left right  => 
+        (case (Ord.compare K O k actK)) (λ _ => Map K V O)
+          (Map.balance K V O actK actV (Map.delete K V O k left) right)
+          (Map.glue K V O left right)
+          (Map.balance K V O actK actV left (Map.delete K V O k right))
+      )
+
 
 //def Map.put (0 K V: Type) (ord: Ord K) (m: Map K V ord) (key: K) (val: V)
 //  : Map K V ord
