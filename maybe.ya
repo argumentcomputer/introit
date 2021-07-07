@@ -1,12 +1,24 @@
 package maybe 
   import functor
   import monad
+  import bool
 where
 
 type Maybe (A: Type) {
   None,
   Some A,
 }
+
+def Maybe.isNothing (0 A: Type) (m: Maybe A): Bool 
+  = (case m) (λ _ => Bool) (Bool.True) (λ _ => Bool.False)
+
+def Maybe.eq (0 A: Type) (f: forall A A -> Bool) (a b: Maybe A): Bool 
+  = (case a) (λ _ => Bool)
+      (Maybe.isNothing A b)
+      (λ x => (case b) (λ _ => Bool) 
+        (Bool.False)
+        (λ y => f x y)
+      )
 
 def Maybe.map (0 A B: Type) (f: ∀ A -> B) (m: Maybe A): Maybe B
   = (case m) (λ m => Maybe B) (Maybe.None B) (λ x => Maybe.Some B (f x))

@@ -1,0 +1,191 @@
+package dict
+  import pair
+  import ord
+  import nat
+  import list
+  import maybe
+  import bool
+  import text
+where
+
+type Dict (V: Type)  {
+  Tip,
+  Bin (size: Nat) (key: Text) (val: V) (left: Dict V) (right: Dict V),
+}
+
+def Dict.empty (0 V: Type) : Dict V 
+  = Dict.Tip V
+
+def Dict.single (0 V: Type) (k: Text) (v: V): Dict V
+  = Dict.Bin V 1 k v (Dict.Tip V) (Dict.Tip V)
+
+def Dict.null (0 V: Type) (m: Dict V) : Bool
+  = (case m) (λ _ => Bool) (Bool.True) (λ _ _ _ _ _ => Bool.False)
+
+def Dict.size (0 V: Type) (m: Dict V) : Nat
+  = (case m) (λ _ => Nat) 0 (λ size _ _ _ _ => size)
+
+def Dict.lookup (0 V: Type) (key: Text) (m: Dict V): Maybe V
+  =
+  letrec go (k: Text) (m: Dict V): Maybe V = (case m) (λ _ => Maybe V)
+    (Maybe.None V)
+    (λ _ kx x l r => (case (Text.compare k kx)) (λ _ => Maybe V)
+      (go k l)
+      (Maybe.Some V x)
+      (go k r)
+    );
+  go key m
+
+def Dict.lookupAssoc (0 V: Type) (key: Text) (m: Dict V): Maybe (Pair Text V)
+  =
+  letrec go (k: Text) (m: Dict V): Maybe (Pair Text V) = (case m) (λ _ => Maybe (Pair Text V))
+    (Maybe.None (Pair Text V))
+    (λ _ kx x l r => (case (Text.compare k kx)) (λ _ => Maybe (Pair Text V))
+      (go k l)
+      (Maybe.Some (Pair Text V) (Pair.New Text V k x))
+      (go k r)
+    );
+  go key m
+
+def Dict.member (0 V: Type) (key: Text) (m: Dict V): Bool
+  =
+  letrec go (k: Text) (m: Dict V): Bool = (case m) (λ _ => Bool)
+    (Bool.False)
+    (λ _ kx _ l r => (case (Text.compare k kx)) (λ _ => Bool)
+      (go k l)
+      (Bool.True)
+      (go k r)
+    );
+  go key m
+
+def Dict.notMember (0 V: Type) (key: Text) (m: Dict V): Bool
+  = Bool.not (Dict.member V key m)
+
+def Dict.find (0 V: Type) (default: V) (key: Text) (m: Dict V): V
+  = Maybe.default V (default) (Dict.lookup V key m)
+
+def Dict.bin (0 V: Type) (k: Text) (v: V) (left right: Dict V): Dict V 
+  = Dict.Bin V (Nat.S (Nat.add (Dict.size V left) (Dict.size V right))) k v left right
+
+def Dict.rotateLeft (V: Type) (k: Text) (v: V) (left right: Dict V): Dict V =  
+  (case right) (λ _ => Dict V)
+    (Dict.empty V)
+    (λ _ _ _ ly ry => Bool.if (Dict V) (Nat.lth (Dict.size V ly) (Nat.mul 2 (Dict.size V ry)))
+      ((case right) (λ _ => Dict V) 
+        (Dict.empty V)
+        (λ _ k2 v2 left2 right2 => Dict.bin V k2 v2 (Dict.bin V k v left left2) right2)
+      )
+      ((case right) (λ _ => Dict V) 
+        (Dict.empty V)
+        (λ _ k2 v2 left2 right2 => (case left2) (λ _ => Dict V)
+          (Dict.empty V)
+          (λ _ k3 v3 left3 right3 => Dict.bin V k3 v3 (Dict.bin V k v left left3) (Dict.bin V k2 v2 right3 right2))
+        )
+      )
+    )
+
+def Dict.rotateRight (V: Type) (k: Text) (v: V) (left right: Dict V): Dict V =  
+  (case left) (λ _ => Dict V)
+    (Dict.empty V)
+    (λ _ _ _ ly ry => Bool.if (Dict V) (Nat.lth (Dict.size V ry) (Nat.mul 2 (Dict.size V ly)))
+      ((case left) (λ _ => Dict V) 
+        (Dict.empty V)
+        (λ _ k2 v2 left2 right2 => Dict.bin V k2 v2 left2 (Dict.bin V k v left2 right2)))
+      ((case left) (λ _ => Dict V) 
+        (Dict.empty V)
+        (λ _ k2 v2 left2 right2 => (case right2) (λ _ => Dict V)
+          (Dict.empty V)
+          (λ _ k3 v3 left3 right3 => Dict.bin V k3 v3 (Dict.bin V k2 v2 left2 left3) (Dict.bin V k v right3 right))
+        )
+      )
+    )
+
+def Dict.balance (V: Type) (k: Text) (v: V) (left right: Dict V): Dict V 
+  = let leftSize: Nat = Dict.size V left;
+    let rightSize: Nat = Dict.size V right;
+    let xSize: Nat = Nat.S (Nat.add leftSize rightSize); 
+    Bool.if (Dict V) (Nat.lte (Nat.add leftSize rightSize) 1) 
+      (Dict.Bin V xSize k v left right)
+      (Bool.if (Dict V) (Nat.gte rightSize (Nat.mul 5 leftSize))
+        (Dict.rotateLeft V k v left right)
+        (Bool.if (Dict V) (Nat.gte leftSize (Nat.mul 5 rightSize))
+          (Dict.rotateRight V k v left right)
+          (Dict.Bin V xSize k v left right)
+        )
+      )
+
+def Dict.deleteFindMin (V: Type) (m: Dict V): Maybe (Pair (Pair Text V) (Dict V)) 
+  = (case m) (λ _ => Maybe (Pair (Pair Text V) (Dict V)))
+      (Maybe.None (Pair (Pair Text V) (Dict V)))
+      (λ _ k v l r => (case l) (λ _ => Maybe (Pair (Pair Text V) (Dict V)))
+        (Maybe.Some (Pair (Pair Text V) (Dict V)) (Pair.New (Pair Text V) (Dict V) (Pair.New Text V k v) r))
+        (λ _ _ _ _ _ => Maybe.map (Pair (Pair Text V) (Dict V)) (Pair (Pair Text V) (Dict V)) 
+          (λ p => 
+            Pair.map (Pair Text V) (Dict V) (Dict V) 
+            (λ newLeft => Dict.balance V k v newLeft r) 
+            p
+          ) 
+          (Dict.deleteFindMin V l)
+      )) 
+
+def Dict.deleteFindMax (V: Type) (m: Dict V): Maybe (Pair (Pair Text V) (Dict V)) 
+  = (case m) (λ _ => Maybe (Pair (Pair Text V) (Dict V)))
+      (Maybe.None (Pair (Pair Text V) (Dict V)))
+      (λ _ k v l r => (case r) (λ _ => Maybe (Pair (Pair Text V) (Dict V)))
+        (Maybe.Some (Pair (Pair Text V) (Dict V))(Pair.New (Pair Text V) (Dict V) (Pair.New Text V k v) l))
+         (λ _ _ _ _ _ => Maybe.map (Pair (Pair Text V) (Dict V)) (Pair (Pair Text V) (Dict V)) 
+          (λ p => 
+            Pair.map (Pair Text V) (Dict V) (Dict V) 
+            (λ newRight => Dict.balance V k v l newRight) 
+            p
+          ) 
+          (Dict.deleteFindMax V l)
+      )) 
+
+def Dict.glue (V: Type) (left right: Dict V): Dict V 
+  = (case left) (λ _ => Dict V) 
+      (right)
+      (λ _ _ _ _ _ => (case right) (λ _ => Dict V) 
+        (left)
+        (λ _ _ _ _ _ => (Bool.if (Dict V) (Nat.gth (Dict.size V left) (Dict.size V right))
+          ((case (Dict.deleteFindMax V left)) (λ _ => Dict V) 
+            (Dict.empty V)
+            (λ result => 
+              let keyValue: Pair Text V = Pair.fst (Pair Text V) (Dict V) result;
+              let newLeft: Dict V = Pair.snd (Pair Text V) (Dict V) result;
+              let maxKey: Text = Pair.fst Text V keyValue;
+              let maxValue: V = Pair.snd Text V keyValue;
+              Dict.balance V maxKey maxValue newLeft right)  
+            )
+          ((case (Dict.deleteFindMin V right)) (λ _ => Dict V) 
+            (Dict.empty V)
+            (λ result => 
+              let keyValue: Pair Text V = Pair.fst (Pair Text V) (Dict V) result;
+              let newRight: Dict V = Pair.snd (Pair Text V) (Dict V) result;
+              let minKey: Text = Pair.fst Text V keyValue;
+              let minValue: V = Pair.snd Text V keyValue;
+              Dict.balance V minKey minValue left newRight)  
+            )
+        )
+      )
+      )
+
+def Dict.insert (V: Type) (k: Text) (v: V) (m: Dict V): Dict V 
+  = (case m) (λ _ => Dict V) 
+      (Dict.single V k v)
+      (λ s actK actV left right =>
+        (case (Text.compare k actK)) (λ _ => Dict V) 
+          (Dict.balance V actK actV (Dict.insert V k v left) right)
+          (Dict.Bin V s k v left right)
+          (Dict.balance V actK actV left (Dict.insert V k v right))
+      ) 
+
+def Dict.delete (V: Type) (k: Text) (m: Dict V): Dict V 
+  = (case m) (λ _ => Dict V) 
+      (Dict.Tip V)
+      (λ s actK actV left right  => 
+        (case (Text.compare k actK)) (λ _ => Dict V)
+          (Dict.balance V actK actV (Dict.delete V k left) right)
+          (Dict.glue V left right)
+          (Dict.balance V actK actV left (Dict.delete V k right))
+      )
