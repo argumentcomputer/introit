@@ -6,6 +6,7 @@ package text
   import nat
   import maybe
   import u8
+  import ord
 where
 
 def Text: Type = #Text
@@ -34,6 +35,11 @@ def Text.lte: ∀ Text Text -> Bool = #Text.lte
 def Text.lth: ∀ Text Text -> Bool = #Text.lth
 def Text.gte: ∀ Text Text -> Bool = #Text.gte
 def Text.gth: ∀ Text Text -> Bool = #Text.gth
+
+def Text.compare (x y: Text): Ordering =
+  (case (Text.lth x y)) (λ _ => Ordering)
+  Ordering.LT
+  ((case (Text.eql x y)) (λ _ => Ordering) Ordering.EQ Ordering.GT)
 
 def Text.neq (x y: Text): Bool = Bool.not (Text.eql x y)
 

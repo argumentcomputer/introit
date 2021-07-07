@@ -1,5 +1,9 @@
 package list
+  import bool
+  import functor
   import maybe
+  import monad
+  import natural
 where
 
 type List (A: Type) {
@@ -12,39 +16,73 @@ def List.single (0 A: Type) (x: A): List A = List.Cons A x (List.Nil A)
 def List.head (0 A: Type) (a: List A): Maybe A
   = (case a) (λ _ => Maybe A) (Maybe.None A) (λ x _ => Maybe.Some A x)
 
-def List.tail (0 A: Type) (a : List A): List A
-  = (case a) (λ _ => List A)(List.Nil A) (λ _ xs => xs)
+def List.tail (0 A: Type) (a : List A): Maybe (List A)
+  = (case a) (λ _ => Maybe (List A))
+    (Maybe.None (List A) ) 
+    (λ _ xs => Maybe.Some (List A) xs)
 
 def List.concat (0 A: Type) (a b: List A): List A
   = (case a) (λ _ => List A) b (λ x xs => List.Cons A x (List.concat A xs b))
 
-//def List.at (A: Type) (xs: List A) (idx : Nat): Maybe A
-//  = (case idx) (λ _ => Maybe A)
-//        (head A list)
-//        (λ pred => at A list pred)
+def List.replicate (0 A: Type) (x: A): List A = List.Cons A x (List.replicate A x)
 
-//def flatten (0 A : Type) (list : List (List A)): List A
-//  = (case list) (λ _ => List A)
-//        (nil A)
-//        (λ head tail => concat A head (flatten A tail))
-//
-//def singleton (0 A : Type) (a : A): List A
-//  = cons A a (nil A)
-//
-//def map (0 A : Type) (0 B : Type) (f: forall A -> B) (list : List A): List B
-//  = (case list) (λ _ => List B)
-//        (nil B)
-//        (λ head tail => cons B (f head) (map A B f tail))
-//
-//def foldr (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
-//  = (case list) (λ _ => B)
-//        b
-//        (λ head tail => f head (foldr A B f b tail))
-//
-//def foldl (A : Type) (B : Type) (f: forall A B -> B) (b : B) (list : List A): B
-//  = (case list) (λ _ => B)
-//        b
-//        (λ head tail => (foldl A B f (f head b) tail))
-//
-//def flatMap (0 A : Type) (0 B: Type) (fun: forall A -> (List B)) (l: List A): List B
-//  = flatten B (map A (List B) fun l)
+def List.take (0 A: Type) (n: Natural) (list: List A): Maybe (List A) = 
+  (case n) (λ _ => Maybe (List A)) 
+    (Maybe.Some (List A) (List.Nil A))
+    (λ pre => (case list) (λ _ => Maybe (List A)) 
+      (Maybe.None (List A))
+      (λ x xs => Maybe.map (List A) (List A) (List.take A pre xs) (List.Cons A x))
+    )
+
+def List.drop (0 A: Type) (n: Natural) (list: List A): Maybe (List A) = 
+  (case n) (λ _ => Maybe (List A)) 
+    (Maybe.Some (List A) list) 
+    (λ pre => (case list) (λ _ => Maybe (List A)) 
+      (Maybe.None (List A))
+      (λ _ xs => List.drop A pre xs)
+    )
+
+def List.at (0 A: Type) (list: List A) (idx: Natural): Maybe A
+  = (case idx) (λ _ => Maybe A)
+        (List.head A list)
+        (λ pre => List.at A list pre)
+
+def List.flatten (0 A: Type) (list: List (List A)): List A
+  = (case list) (λ _ => List A)
+        (List.Nil A)
+        (λ x xs => List.concat A x (List.flatten A xs))
+
+def List.singleton (0 A : Type) (a : A): List A
+  = List.Cons A a (List.Nil A)
+
+def List.map (0 A B: Type) (f: forall A -> B) (list : List A): List B
+  = (case list) (λ _ => List B)
+      (List.Nil B)
+      (λ x xs => List.Cons B (f x) (List.map A B f xs))
+
+def List.foldr (0 A: Type) (0 B: Type) (f: forall A B -> B) (b: B) (list: List A): B
+  = (case list) (λ _ => B)
+        b
+        (λ x xs => f x (List.foldr A B f b xs))
+
+
+def List.foldl (0 A: Type) (0 B: Type) (f: forall A B -> B) (b: B) (list: List A): B
+  = (case list) (λ _ => B)
+        b
+        (λ x xs => (List.foldl A B f (f x b) xs))
+
+
+def List.flatMap (0 A: Type) (B: Type) (l: List A) (fun: forall A -> (List B)): List B
+  = List.flatten B (List.map A (List B) fun l)
+
+def List.elem (0 A: Type) (f: forall A A -> Bool) (value: A) (list: List A): Bool 
+  = (case list) (λ _ => Bool)
+      Bool.False 
+      (λ x xs => 
+        Bool.if Bool (f value x) Bool.True (List.elem A f value xs))
+
+def List.functor: Functor List
+  = Functor.New (λ A => List A) (λ A B f xs => List.map A B f xs)
+
+def List.monad: Monad List 
+  = Monad.New (λ A => List A) (λ A x => List.single A x) (λ A B list f => List.flatMap A B list f)

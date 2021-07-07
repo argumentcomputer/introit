@@ -30,6 +30,7 @@ package introit
   import bitstring
   import parsec
   import io
+  import dict
 where
 
 
