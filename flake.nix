@@ -13,7 +13,7 @@
       name = "introit";
       src = ./.;
       yatima-check = file: pkgs.runCommand "yatima-check" {
-        inherit system src;
+        inherit src;
         buildInputs = [ yatima ];
       } ''
         ${yatima-bin} --no-file-store --root ${src} check ${file} > $out
