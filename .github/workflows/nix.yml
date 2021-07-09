@@ -18,4 +18,4 @@ jobs:
       with:
         name: introit 
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix flake check --impure
+    - run: nix flake check --impure --show-trace
