@@ -1,6 +1,8 @@
 package io
-  import unit
+  import functor
+  import monad
   import text
+  import unit
 where
 
 type IO (A: Type) {
@@ -15,3 +17,20 @@ def IO.read: IO Text
 
 def IO.print (txt: Text): IO Unit
   = IO.Print Unit txt (λ _ => IO.Return Unit Unit.New)
+
+def IO.map (A B: Type) (f: forall A -> B) (io: IO A): IO B
+ = IO.Bind B A io (λ x => IO.Return B (f x))
+
+def IO.pure (0 A: Type) (value: A): IO A 
+  = IO.Return A value
+
+def IO.bind (A B: Type) (io: IO A) (f: forall A -> IO B): IO B 
+  = IO.Bind B A io f
+
+def IO.functor: Functor IO 
+  = Functor.New (λ A => IO A) (λ A B f io => IO.map A B f io)
+
+def IO.monad: Monad IO 
+  = Monad.New (λ A => IO A) 
+      (λ A value => IO.pure A value) 
+      (λ A B io f => IO.bind A B io f)
