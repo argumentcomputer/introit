@@ -1,0 +1,7 @@
+package io_test
+	import io
+	import unit
+	import text
+where
+
+def main: IO Unit = IO.print "Hello, world!"
