@@ -31,7 +31,7 @@ def List.take (0 A: Type) (n: Natural) (list: List A): Maybe (List A) =
     (Maybe.Some (List A) (List.Nil A))
     (λ pre => (case list) (λ _ => Maybe (List A)) 
       (Maybe.None (List A))
-      (λ x xs => Maybe.map (List A) (List A) (List.take A pre xs) (List.Cons A x))
+      (λ x xs => Maybe.map (List A) (List A) (List.Cons A x) (List.take A pre xs))
     )
 
 def List.drop (0 A: Type) (n: Natural) (list: List A): Maybe (List A) = 
