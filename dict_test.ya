@@ -1,0 +1,24 @@
+package dict_test 
+  import dict 
+  import text 
+  import nat
+  import maybe
+  import bool
+where 
+
+def insert_keys (m: Dict Nat) : Dict Nat
+  = Dict.insert Nat "foo" 1 (Dict.insert Nat "bar" 500 m)
+
+def delete_keys (m: Dict Nat) : Dict Nat
+  = Dict.delete Nat "foo" (Dict.delete Nat "bar" m)
+
+def contains_test (key: Text) (value: Nat) (m: Dict Nat): Bool 
+  = Maybe.eq Nat (Nat.eql) (Dict.lookup Nat key m) (Maybe.Some Nat value)
+
+def should_be_true (m: Dict Nat): Bool 
+  = let newMap: Dict Nat = insert_keys m;
+    (Bool.and) (contains_test "foo" 1 newMap) (contains_test "bar" 500 newMap)
+
+def should_be_false (m: Dict Nat): Bool 
+  = let newMap: Dict Nat = delete_keys m; 
+    (Bool.and) (contains_test "foo" 1 newMap) (contains_test "bar" 500 newMap)

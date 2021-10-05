@@ -1,14 +1,45 @@
-package maybe where
+package maybe 
+  import functor
+  import monad
+  import bool
+where
 
 type Maybe (A: Type) {
   None,
   Some A,
 }
 
-def Maybe.map (0 A B: Type) (m: Maybe A) (f: ∀ A -> B): Maybe B
+def Maybe.isNothing (0 A: Type) (m: Maybe A): Bool 
+  = (case m) (λ _ => Bool) (Bool.True) (λ _ => Bool.False)
+
+def Maybe.eq (0 A: Type) (f: forall A A -> Bool) (a b: Maybe A): Bool 
+  = (case a) (λ _ => Bool)
+      (Maybe.isNothing A b)
+      (λ x => (case b) (λ _ => Bool) 
+        (Bool.False)
+        (λ y => f x y)
+      )
+
+def Maybe.map (0 A B: Type) (f: ∀ A -> B) (m: Maybe A): Maybe B
   = (case m) (λ m => Maybe B) (Maybe.None B) (λ x => Maybe.Some B (f x))
 
 def Maybe.bind (0 A B: Type) (m: Maybe A) (f: ∀ A -> (Maybe B)): Maybe B
   = (case m) (λ m => Maybe B) (Maybe.None B) f
 
+def Maybe.default (0 A: Type) (default: A) (m: Maybe A): A 
+  = (case m) (λ _ => A) (default) (λ x => x)
 
+def Maybe.join (0 A: Type) (m: Maybe (Maybe A)): Maybe A
+  = (case m) (λ _ => Maybe A) (Maybe.None A) (λ x => x)
+  
+def Maybe.or (0 A: Type) (a b: Maybe A): Maybe A 
+  = (case a) (λ _ => Maybe A) (b) (λ x => Maybe.Some A x)
+
+def Maybe.extract (0 A B: Type) (m: Maybe A) (a: B) (f: forall A -> B): B 
+  = (case m) (λ _ => B) (a) (f)
+
+def Maybe.functor: Functor Maybe
+  = Functor.New (λ A => Maybe A) (λ A B f m => Maybe.map A B f m)
+
+def Maybe.monad: Monad Maybe 
+  = Monad.New (λ A => Maybe A) (λ A x => Maybe.Some A x) (λ A B m f => Maybe.bind A B m f)

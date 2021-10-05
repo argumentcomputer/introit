@@ -1,17 +1,36 @@
 package io
+  import functor
+  import monad
+  import bytes
   import unit
-  import text
 where
 
 type IO (A: Type) {
   Return (x: A),
   Bind (B: Type) (io: IO B) (f: ∀ B -> IO A),
-  Print (txt: Text) (∀ Unit -> IO A),
-  Read (nxt: ∀ Text -> IO A): IO A,
+  Print (contents: Bytes): IO Unit,
+  Read: IO Bytes,
 }
 
-def IO.read: IO Text
-  = IO.Read Text (λ x => IO.Return Text x)
+def IO.read: IO Bytes
+  = IO.Read Bytes
 
-def IO.print (txt: Text): IO Unit
-  = IO.Print Unit txt (λ _ => IO.Return Unit Unit.New)
+def IO.print (contents: Bytes): IO Unit
+  = IO.Print Unit contents
+
+def IO.map (A B: Type) (f: forall A -> B) (io: IO A): IO B
+ = IO.Bind B A io (λ x => IO.Return B (f x))
+
+def IO.pure (0 A: Type) (value: A): IO A 
+  = IO.Return A value
+
+def IO.bind (A B: Type) (io: IO A) (f: forall A -> IO B): IO B 
+  = IO.Bind B A io f
+
+def IO.functor: Functor IO 
+  = Functor.New (λ A => IO A) (λ A B f io => IO.map A B f io)
+
+def IO.monad: Monad IO 
+  = Monad.New (λ A => IO A) 
+      (λ A value => IO.pure A value) 
+      (λ A B io f => IO.bind A B io f)

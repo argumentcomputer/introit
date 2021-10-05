@@ -1,0 +1,7 @@
+package io_test
+	import io
+	import unit
+	import bytes
+where
+
+def main: IO Unit = IO.print (#Text.to_bytes "Hello, World!")
