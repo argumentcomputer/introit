@@ -244,3 +244,4 @@ def Vector.head (0 A: Type) (k: Natural) (a : Vector A (Natural.S k)): A
     (λ e => Empty.absurd A (Natural.Z_isnt_S k e))
     (λ k x xs e => x))
     (Equal.Refl Natural (Natural.S k))
+
